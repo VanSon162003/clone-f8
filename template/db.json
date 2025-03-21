@@ -1,0 +1,342 @@
+{
+    "pro": [
+        {
+            "img": "https://files.fullstack.edu.vn/f8-prod/courses/15/62f13d2424a47.png",
+            "title": "HTML CSS Pro",
+            "oldPrice": "2.500.000đ",
+            "mainPrice": "1.299.000đ",
+            "founderImg": "https://fullstack.edu.vn/images/founder.jpeg",
+            "founderName": "Sơn Đặng",
+            "id": 1,
+            "path": "/landing/htmlcss",
+            "video": 591,
+            "resultTime": "116h50p"
+        },
+        {
+            "img": "https://files.fullstack.edu.vn/f8-prod/courses/19/66aa28194b52b.png",
+            "title": "Javascript Pro",
+            "oldPrice": "3.299.000đ",
+            "mainPrice": "1.399.000đ",
+            "founderImg": "https://fullstack.edu.vn/images/founder.jpeg",
+            "founderName": "Sơn Đặng",
+            "id": 2,
+            "path": "/landing/javascript",
+            "video": 193,
+            "resultTime": "36h1p"
+        },
+        {
+            "img": "https://files.fullstack.edu.vn/f8-prod/courses/27/64e184ee5d7a2.png",
+            "title": "Ngôn ngữ Sass",
+            "oldPrice": "400.000đ",
+            "mainPrice": "299.000đ",
+            "founderImg": "https://fullstack.edu.vn/images/founder.jpeg",
+            "founderName": "Sơn Đặng",
+            "id": 3,
+            "path": "/landing/scss",
+            "video": 27,
+            "resultTime": "6h18p"
+        }
+    ],
+
+    "free": [
+        {
+            "img": "https://files.fullstack.edu.vn/f8-prod/courses/7.png",
+            "title": "Kiến Thức Nhập Môn IT",
+            "mainPrice": "Miễn phí",
+            "id": 1,
+            "path": "/courses/lessons-for-newbie",
+            "sumPeople": "133597",
+            "video": 9,
+            "resultTime": "3h12p"
+        },
+        {
+            "img": "https://files.fullstack.edu.vn/f8-prod/courses/21/63e1bcbaed1dd.png",
+            "title": "Lập trình C++ cơ bản, nâng cao",
+            "mainPrice": "Miễn phí",
+            "id": 2,
+            "path": "/courses/lap-trinh-c-co-ban-toi-nang-cao",
+            "sumPeople": "33.598",
+            "video": 55,
+            "resultTime": "10h18p"
+        },
+
+        {
+            "img": "https://files.fullstack.edu.vn/f8-prod/courses/2.png",
+            "title": "HTML CSS từ Zero đến Hero",
+            "mainPrice": "Miễn phí",
+            "id": 3,
+            "path": "/courses/html-css",
+            "sumPeople": "208.221",
+            "video": 117,
+            "resultTime": "29h5p"
+        },
+
+        {
+            "img": "https://files.fullstack.edu.vn/f8-prod/courses/3.png",
+            "title": "Responsive Với Grid System",
+            "mainPrice": "Miễn phí",
+            "id": 4,
+            "path": "/courses/responsive-web-design",
+            "sumPeople": "46.698",
+            "video": 34,
+            "resultTime": "6h31p"
+        },
+
+        {
+            "img": "https://files.fullstack.edu.vn/f8-prod/courses/1.png",
+            "title": "Lập Trình JavaScript Cơ Bản",
+            "mainPrice": "Miễn phí",
+            "id": 5,
+            "path": "/courses/javascript-co-ban",
+            "sumPeople": "145.857",
+            "video": 112,
+            "resultTime": "24h15p"
+        },
+
+        {
+            "img": "https://files.fullstack.edu.vn/f8-prod/courses/12.png",
+            "title": "Lập Trình JavaScript Nâng Cao",
+            "mainPrice": "Miễn phí",
+            "id": 6,
+            "path": "/courses/javascript-nang-cao",
+            "sumPeople": "40.200",
+            "video": 19,
+            "resultTime": "8h41p"
+        },
+
+        {
+            "img": "https://files.fullstack.edu.vn/f8-prod/courses/14/624faac11d109.png",
+            "title": "Làm việc với Terminal & Ubuntu",
+            "mainPrice": "Miễn phí",
+            "id": 7,
+            "path": "/courses/windows-terminal-wsl",
+            "sumPeople": "20.245",
+            "video": 28,
+            "resultTime": "4h59p"
+        },
+
+        {
+            "img": "https://files.fullstack.edu.vn/f8-prod/courses/13/13.png",
+            "title": "Xây Dựng Website với ReactJS",
+            "mainPrice": "Miễn phí",
+            "id": 8,
+            "path": "/courses/reactjs",
+            "sumPeople": "74.068",
+            "video": 112,
+            "resultTime": "27h32p"
+        },
+
+        {
+            "img": "https://files.fullstack.edu.vn/f8-prod/courses/6.png",
+            "title": "Node & ExpressJS",
+            "mainPrice": "Miễn phí",
+            "id": 9,
+            "path": "/courses/nodejs",
+            "sumPeople": "46.882",
+            "video": 36,
+            "resultTime": "12h8p"
+        },
+
+        {
+            "img": "https://files.fullstack.edu.vn/f8-prod/courses/4/61a9e9e701506.png",
+            "title": "App \"Đừng Chạm Tay Lên Mặt\"",
+            "mainPrice": "Miễn phí",
+            "id": 10,
+            "path": "/courses/tool-canh-bao-so-len-mat",
+            "sumPeople": "10.691",
+            "video": 13,
+            "resultTime": "1h34p"
+        }
+    ],
+
+    "video": [
+        {
+            "img": "https://i.ytimg.com/vi/YH-E4Y3EaT4/maxresdefault.jpg",
+            "title": "Sinh viên IT đi thực tập tại doanh nghiệp cần biết những gì?",
+            "time": "34:51",
+            "id": 1,
+            "view": "259.550",
+            "like": "6.366",
+            "comment": "236",
+            "path": "https://www.youtube.com/watch?v=YH-E4Y3EaT4&feature=youtu.be"
+        },
+        {
+            "img": "https://i.ytimg.com/vi/R6plN3FvzFY/maxresdefault.jpg",
+            "title": "Bạn sẽ làm được gì sau khóa học?",
+            "time": "3:15",
+            "id": 2,
+            "view": "1.063.280",
+            "like": "6.251",
+            "comment": "146",
+            "path": "https://www.youtube.com/watch?v=R6plN3FvzFY"
+        },
+
+        {
+            "img": "https://i.ytimg.com/vi/DpvYHLUiZpc/maxresdefault.jpg",
+            "title": "Phương pháp học lập trình của Admin F8?",
+
+            "time": "24:06",
+            "id": 3,
+            "view": "129.726",
+            "like": "6.182",
+            "comment": "339",
+            "path": "https://www.youtube.com/watch?v=DpvYHLUiZpc"
+        },
+
+        {
+            "img": "https://i.ytimg.com/vi/sgq7BH6WxL8/maxresdefault.jpg",
+            "title": "\"Code Thiếu Nhi Battle\" Tranh Giành Trà Sữa Size L",
+            "time": "25:10",
+            "id": 4,
+            "view": "281.558",
+            "like": "5.715",
+            "comment": "181",
+            "path": "https://www.youtube.com/watch?v=sgq7BH6WxL8"
+        },
+
+        {
+            "img": "https://i.ytimg.com/vi/0SJE9dYdpps/maxresdefault.jpg",
+            "title": "Javascript có thể làm được gì? Giới thiệu qua về trang F8 | Học lập...",
+            "time": "7:53",
+            "id": 5,
+            "view": "825.867",
+            "like": "4.411",
+            "comment": "133",
+            "path": "https://www.youtube.com/watch?v=0SJE9dYdpps"
+        },
+
+        {
+            "img": "https://i.ytimg.com/vi/x0fSBAgBrOQ/maxresdefault.jpg",
+            "title": "ReactJS là gì? Tại sao nên học ReactJS?",
+            "time": "10:41",
+            "id": 6,
+            "view": "483.470",
+            "like": "3.777",
+            "comment": "355",
+            "path": "https://www.youtube.com/watch?v=x0fSBAgBrOQ"
+        },
+
+        {
+            "img": "https://i.ytimg.com/vi/AzmdwZ6e_aM/maxresdefault.jpg",
+            "title": "Các thẻ HTML thông dụng",
+
+            "time": "",
+
+            "id": 7,
+            "view": "349.059",
+            "like": "3.594",
+            "comment": "205",
+            "path": "https://www.youtube.com/watch?v=AzmdwZ6e_aM"
+        },
+
+        {
+            "img": "https://i.ytimg.com/vi/oF7isq9IjZM/maxresdefault.jpg",
+            "title": "Làm sao để có thu nhập cao và đi xa hơn trong ngành IT?",
+
+            "time": "25:40",
+            "id": 8,
+            "view": "84.257",
+            "like": "3.449",
+            "comment": "238",
+            "path": "https://www.youtube.com/watch?v=oF7isq9IjZM"
+        }
+    ],
+    "article": [
+        {
+            "img": "https://files.fullstack.edu.vn/f8-prod/blog_posts/65/6139fe28a9844.png",
+            "title": "Tổng hợp các sản phẩm của học viên tại F8",
+            "time": "6",
+            "id": 1,
+            "path": "/blog/tong-hop-cac-san-pham-cua-hoc-vien-tai-f8",
+            "authorPath": "/@sondangf8",
+            "authorName": "Sơn đặng",
+            "admin": true,
+            "authorPro": true,
+            "avatar": "https://files.fullstack.edu.vn/f8-prod/user_avatars/1/64f9a2fd4e064.jpg"
+        },
+        {
+            "img": "https://files.fullstack.edu.vn/f8-prod/blog_posts/279/6153f692d366e.jpg",
+            "title": "[Phần 1] Tạo dự án ReactJS với Webpack và Babel",
+            "time": "12",
+            "id": 2,
+            "path": "/blog/phan-1-tao-du-an-reactjs-voi-webpack-va-babel",
+            "authorPath": "/@sondangf8",
+            "authorName": "Sơn đặng",
+            "admin": true,
+            "authorPro": true,
+            "avatar": "https://files.fullstack.edu.vn/f8-prod/user_avatars/1/64f9a2fd4e064.jpg"
+        },
+        {
+            "img": "https://files.fullstack.edu.vn/f8-prod/blog_posts/677/615436b218d0a.png",
+            "title": "Cách đưa code lên GitHub và tạo GitHub Pages",
+            "time": "4",
+            "id": 3,
+            "path": "/blog/cach-dua-code-len-github-va-tao-github-pages",
+            "authorPath": "/@vominhkha",
+            "authorName": "Vo minh Kha",
+            "admin": false,
+            "authorPro": false,
+            "avatar": "https://files.fullstack.edu.vn/f8-prod/user_avatars/18159/6466353972973.jpg"
+        },
+        {
+            "img": "https://files.fullstack.edu.vn/f8-prod/blog_posts/51/6139c6453456e.png",
+            "title": "Ký sự ngày thứ 25 học ở F8",
+            "time": "1",
+            "id": 4,
+            "path": "/blog/ky-su-ngay-thu-25-hoc-o-f8-1",
+            "authorPath": "/@sonson",
+            "authorName": "Sơn Sơn",
+            "admin": false,
+            "authorPro": false,
+            "avatar": "https://fullstack.edu.vn/assets/feedback-0-BFb1fhaR.jpg"
+        },
+        {
+            "img": "https://files.fullstack.edu.vn/f8-prod/blog_posts/107/613a1f3685814.png",
+            "title": "Các nguồn tài nguyên hữu ích cho 1 front-end developer",
+            "time": "2",
+            "id": 5,
+            "path": "/blog/cac-nguon-tai-nguyen-huu-ich-cho-1-front-end-developer",
+            "authorPath": "/@duongvuong",
+            "authorName": "Dương Vương",
+            "admin": false,
+            "authorPro": true,
+            "avatar": "https://fullstack.edu.vn/assets/feedback-0-BFb1fhaR.jpg"
+        },
+        {
+            "img": "https://files.fullstack.edu.vn/f8-prod/blog_posts/1671/61b6368983c16.jpg",
+            "title": "Thời gian và Động lực",
+            "time": "6",
+            "id": 6,
+            "path": "/blog/thoi-gian-va-dong-luc",
+            "authorPath": "/@dongngo",
+            "authorName": "Dong Ngo",
+            "admin": false,
+            "authorPro": false,
+            "avatar": "https://files.fullstack.edu.vn/f8-prod/user_avatars/9143/6263caafdf588.jpg"
+        },
+        {
+            "img": "https://files.fullstack.edu.vn/f8-prod/blog_posts/273/614043e523ad9.png",
+            "title": "Tổng hợp tài liệu tự học tiếng anh cơ bản.",
+            "time": "10",
+            "id": 7,
+            "path": "/blog/tong-hop-tai-lieu-tu-hoc-tieng-anh-co-ban",
+            "authorPath": "/@trungle",
+            "authorName": "Trung Lê Thành",
+            "admin": false,
+            "authorPro": false,
+            "avatar": "https://files.fullstack.edu.vn/f8-prod/user_avatars/74901/626aa252cdb22.jpg"
+        },
+        {
+            "img": "https://files.fullstack.edu.vn/f8-prod/blog_posts/791/615de64de7e8f.jpg",
+            "title": "Học như thế nào là phù hợp ?",
+            "time": "4",
+            "id": 8,
+            "path": "/blog/hoc-nhu-the-nao-la-phu-hop",
+            "authorPath": "/@ngoctien",
+            "authorName": "Ngoc Tien Pham",
+            "admin": false,
+            "authorPro": false,
+            "avatar": "https://fullstack.edu.vn/assets/feedback-0-BFb1fhaR.jpg"
+        }
+    ]
+}

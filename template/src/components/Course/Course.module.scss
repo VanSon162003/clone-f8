@@ -1,0 +1,53 @@
+.wrapper {
+    margin-top: 50px;
+}
+.headingWrap {
+    display: flex;
+    align-items: baseline;
+}
+
+.heading {
+    margin: 16px auto 0 0;
+    color: #242424;
+    font-size: 2.4rem;
+    font-weight: 900;
+
+    a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #000;
+    }
+}
+
+.body {
+    min-height: 200px;
+    padding-bottom: 0;
+}
+.viewAll {
+    padding: 8px 0 8px 8px;
+    margin-right: 4px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #f05123;
+    background-color: transparent;
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: pointer;
+
+    svg {
+        font-size: 1.2rem;
+        margin-left: 4px;
+        position: relative;
+        top: -1px;
+        transition: ease 0.3s;
+    }
+
+    &:hover svg {
+        translate: 4px;
+    }
+
+    &:hover {
+        text-decoration: underline;
+    }
+}

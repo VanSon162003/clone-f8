@@ -1,0 +1,40 @@
+.wrapper {
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 20;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    padding: 0 28px;
+
+    height: 66px;
+    width: 100vw;
+
+    border-bottom: 1px solid #e8ebed;
+    background-color: #fff;
+    font-size: 1.4rem;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+.img {
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+    border-radius: 8px;
+
+    user-select: none;
+}
+.title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #000;
+}

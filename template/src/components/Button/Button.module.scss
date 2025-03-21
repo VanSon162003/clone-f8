@@ -1,0 +1,30 @@
+.text,
+.primary,
+.secondary {
+    font-size: 1.4rem;
+    cursor: pointer;
+}
+
+.text {
+    font-size: 1.4rem;
+
+    margin-right: 30px;
+    font-weight: 500;
+}
+
+.primary {
+    min-width: 110px;
+
+    flex-shrink: 0;
+    padding: 9px 20px;
+    border-radius: 99px;
+    color: #fff;
+    background: linear-gradient(to right bottom, #ff8f26, #ff5117);
+    font-size: 1.4rem;
+    font-weight: 600;
+    transition: opacity 0.25s;
+
+    &:hover {
+        opacity: 0.8;
+    }
+}
