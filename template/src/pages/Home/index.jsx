@@ -1,12 +1,12 @@
-import getApi from "@/hook/getApi";
+import useApi from "@/hook/useApi";
 import styles from "./Home.module.scss";
 import Course from "@/components/Course";
 
 function Home() {
-    const coursePro = getApi("http://localhost:3000/pro");
-    const courseFree = getApi("http://localhost:3000/free");
-    const courseArticle = getApi("http://localhost:3000/article");
-    const courseVideo = getApi("http://localhost:3000/video");
+    const coursePro = useApi("http://localhost:3000/pro");
+    const courseFree = useApi("http://localhost:3000/free");
+    const courseArticle = useApi("http://localhost:3000/article");
+    const courseVideo = useApi("http://localhost:3000/video");
     return (
         <div className={styles.wrapper}>
             <Course

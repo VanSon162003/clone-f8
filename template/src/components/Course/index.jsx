@@ -15,7 +15,12 @@ function Course({
         <div className={styles.wrapper}>
             <div className={styles.headingWrap}>
                 {courseType === "pro" ? (
-                    <h2 className={styles.heading}>{heading}</h2>
+                    <h2 className={styles.heading}>
+                        <span>
+                            {heading}
+                            <span className={styles.label}>Mới</span>
+                        </span>
+                    </h2>
                 ) : courseType === "video" ? (
                     <h2 className={styles.heading}>
                         <a href={path} target="_blank">

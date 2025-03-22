@@ -24,17 +24,6 @@ function Header() {
             <SearchForm />
 
             <Actions />
-            {/* <nav className="nav">
-                <ul>
-                    <li>
-                        <NavLink to={config.routes.home}>Home</NavLink>
-                    </li>
-
-                    <li>
-                        <NavLink to={config.routes.products}>Product</NavLink>
-                    </li>
-                </ul>
-            </nav> */}
         </header>
     );
 }

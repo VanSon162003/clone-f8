@@ -46,3 +46,50 @@
 .searchIcon:hover {
     opacity: 1;
 }
+
+.closeText {
+    cursor: pointer;
+    padding: 4px 0 4px 4px;
+}
+.tippy {
+    z-index: 9999;
+    position: absolute;
+    inset: 0px auto auto 0px;
+    margin: 0px;
+    transform: translate3d(558.4px, 62.4px, 0px);
+
+    max-width: calc(100vw - 10px);
+}
+
+.tippyWrap {
+    background: #fff;
+    box-shadow: 0 -4px 32px #0003;
+    transition: all ease-in-out 0.3s;
+    border-radius: 10px;
+    padding-left: 0;
+    margin: 0;
+    overflow: hidden;
+    color: #1d2129;
+}
+
+.result {
+    width: 420px;
+    color: #0000008a;
+    min-width: 230px;
+    min-height: 50px;
+    max-height: calc(90vh - 66px);
+    padding: 12px 24px;
+    font-size: 1.4rem;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+
+    .header {
+        display: flex;
+        align-items: center;
+        padding: 6px 0 0;
+
+        svg {
+            margin-right: 8px;
+        }
+    }
+}

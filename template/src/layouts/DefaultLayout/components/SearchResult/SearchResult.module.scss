@@ -1,0 +1,54 @@
+.heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 0 12px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    margin-bottom: 6px;
+
+    h5 {
+        font-size: 1.4rem;
+        font-weight: 500;
+        color: #333;
+        margin: 0;
+    }
+
+    a {
+        font-size: 1.4rem;
+        color: #0000008a;
+
+        &:hover {
+            color: #f05123;
+        }
+    }
+}
+
+.searchItem {
+    display: flex;
+    align-items: center;
+    padding: 6px 0;
+
+    span {
+        font-size: 1.4rem;
+        color: #292929;
+        margin-left: 12px;
+        line-height: 1.6;
+        overflow: hidden;
+        word-wrap: break-word;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    }
+}
+.avatar {
+    font-size: 3.6px;
+    background: transparent;
+    border-radius: 50%;
+
+    img {
+        width: 9em;
+        height: 9em;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+}
