@@ -1,6 +1,6 @@
 import useApi from "@/hook/useApi";
 import styles from "./Home.module.scss";
-import Course from "@/components/Course";
+import Section from "@/components/Section";
 
 function Home() {
     const coursePro = useApi("http://localhost:3000/pro");
@@ -9,13 +9,13 @@ function Home() {
     const courseVideo = useApi("http://localhost:3000/video");
     return (
         <div className={styles.wrapper}>
-            <Course
+            <Section
                 courseType="pro"
                 courseList={coursePro}
                 heading={"Khoá học Pro"}
             />
 
-            <Course
+            <Section
                 courseType="free"
                 courseList={courseFree}
                 heading={"Khoá học Free"}
@@ -23,7 +23,7 @@ function Home() {
                 titleViewAll="Xem lộ trình"
             />
 
-            <Course
+            <Section
                 courseType="article"
                 courseList={courseArticle}
                 heading={"Bài viết nổi bật"}
@@ -31,7 +31,7 @@ function Home() {
                 titleViewAll="Xem tất cả"
             />
 
-            <Course
+            <Section
                 courseType="video"
                 courseList={courseVideo}
                 heading={"Videos nổi bật"}

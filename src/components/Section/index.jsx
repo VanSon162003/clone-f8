@@ -1,10 +1,10 @@
 import React from "react";
 
-import styles from "./Course.module.scss";
-import CourseItem from "../CourseItem";
+import styles from "./Section.module.scss";
+import CourseList from "../CourseList";
 import { Link } from "react-router-dom";
 
-function Course({
+function Section({
     heading,
     courseType = "free",
     courseList,
@@ -56,10 +56,10 @@ function Course({
             </div>
 
             <div className={styles.body}>
-                <CourseItem courseType={courseType} courseList={courseList} />
+                <CourseList courseType={courseType} courseList={courseList} />
             </div>
         </div>
     );
 }
 
-export default Course;
+export default Section;

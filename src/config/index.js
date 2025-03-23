@@ -3,6 +3,8 @@ const config = {
         home: "/",
         products: "/products",
         productDetail: "/products/:id",
+        blog: "/blog",
+        learning: "/learning-paths",
         notFound: "*",
     },
 };
