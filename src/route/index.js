@@ -1,5 +1,9 @@
 import config from "@/config";
 import AdminLayout from "@/layouts/AminLayout";
+import AuthenticationApp from "@/layouts/DefaultLayout/components/AuthenticationApp";
+import ForgotPassWord from "@/layouts/DefaultLayout/components/AuthenticationApp/page/ForgotPassWord";
+import Login from "@/layouts/DefaultLayout/components/AuthenticationApp/page/Login";
+import Register from "@/layouts/DefaultLayout/components/AuthenticationApp/page/Register";
 import NoFooterLayout from "@/layouts/NoFooterLayout";
 import NoHeaderLayout from "@/layouts/NoHeaderLayout";
 import Blog from "@/pages/Blog";
@@ -35,12 +39,33 @@ const routes = [
         path: config.routes.blog,
         component: Blog,
         layout: NoHeaderLayout,
+        protected: true,
     },
 
     {
         path: config.routes.learning,
         component: Learning,
         layout: NoFooterLayout,
+    },
+    {
+        path: config.routes.authenticationApp,
+        component: AuthenticationApp,
+        layout: null,
+    },
+    {
+        path: config.routes.register,
+        component: Register,
+        layout: null,
+    },
+    {
+        path: config.routes.login,
+        component: Login,
+        layout: null,
+    },
+    {
+        path: config.routes.forgotPassWord,
+        component: ForgotPassWord,
+        layout: null,
     },
 ];
 

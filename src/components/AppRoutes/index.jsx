@@ -3,6 +3,8 @@ import { Route, Routes } from "react-router-dom";
 import DefaultLayout from "@/layouts/DefaultLayout";
 import NoLayout from "@/layouts/NoLayout";
 import routes from "@/route";
+import ProtectedRoute from "../ProtectedRoute";
+import { Fragment } from "react";
 
 function AppRoutes() {
     return (
@@ -14,9 +16,20 @@ function AppRoutes() {
                         : route.layout || NoLayout;
 
                 const Component = route.component;
+
+                const RouteElement = route.protected
+                    ? ProtectedRoute
+                    : Fragment;
                 return (
                     <Route key={route.path} element={<Layout />}>
-                        <Route path={route.path} element={<Component />} />
+                        <Route
+                            path={route.path}
+                            element={
+                                <RouteElement>
+                                    <Component />
+                                </RouteElement>
+                            }
+                        />
                     </Route>
                 );
             })}

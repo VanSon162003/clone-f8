@@ -1,0 +1,57 @@
+.wrapper {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: #0006;
+}
+
+.content {
+    position: relative;
+    z-index: 1;
+    width: min(576px, 100% - 32px);
+    height: min(660px, 100% - 32px);
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: #333;
+    background: #16182308;
+    font-size: 2.8rem;
+    line-height: 0;
+    cursor: pointer;
+
+    span {
+        margin-top: -4px;
+    }
+}
+
+.iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}

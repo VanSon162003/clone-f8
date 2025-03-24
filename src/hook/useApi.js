@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-function getApi(url, body = {}) {
+function useApi(url, body = {}) {
     const [data, setData] = useState([]);
 
     useEffect(() => {
@@ -14,4 +14,4 @@ function getApi(url, body = {}) {
     return data;
 }
 
-export default getApi;
+export default useApi;
