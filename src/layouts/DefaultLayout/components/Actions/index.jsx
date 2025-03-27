@@ -71,10 +71,10 @@ function Actions() {
             }
         };
 
-        (async () => {
-            const data = await authService.getCurrentUser();
-            console.log(data.user);
-        })();
+        // (async () => {
+        //     const data = await authService.getCurrentUser();
+        //     console.log(data.user);
+        // })();
 
         document.addEventListener("mousedown", handleClickOutside);
     }, []);
@@ -166,16 +166,17 @@ function Actions() {
         </div>
     ) : (
         <div className={styles.actions}>
+            <Button text onClick={() => handleClickButton("register")}>
+                Đăng ký
+            </Button>
             <Button
-                title={"Đăng ký"}
-                type={"text"}
-                onClick={() => handleClickButton("register")}
-            />
-            <Button
-                title={"Đăng nhập"}
-                type={"primary"}
+                secondary
+                size="small"
+                rounded
                 onClick={() => handleClickButton("login")}
-            />
+            >
+                Đăng nhập
+            </Button>
 
             {isAccess && (
                 <AccessForm isAccess={isAccess} setIsAccess={setIsAccess} />

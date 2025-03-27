@@ -35,10 +35,7 @@ function AccessForm({ setIsAccess, isAccess = false }) {
                     isClosing && styles.turnOffContent
                 }`}
             >
-                <button
-                    className={styles.close}
-                    onClick={() => setIsAccess(false)}
-                >
+                <button className={styles.close} onClick={() => handleClose()}>
                     <span>×</span>
                 </button>
 

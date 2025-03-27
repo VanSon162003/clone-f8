@@ -18,7 +18,7 @@ const send = async (method, url, data, config) => {
 
         return res.data;
     } catch (error) {
-        console.log(error);
+        // console.log(error);
     }
 };
 
