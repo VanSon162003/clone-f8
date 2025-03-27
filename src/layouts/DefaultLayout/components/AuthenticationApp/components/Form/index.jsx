@@ -1,8 +1,9 @@
-import React, { use, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import styles from "./Form.module.scss";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import useAuth from "@/hook/useAuth";
 import useQuery from "@/hook/useQuery";
+import { setToken } from "@/utils/httpRequest";
 
 function Form({ setForm, form, type = "" }) {
     const btnSubmit = useRef(null);
@@ -26,24 +27,17 @@ function Form({ setForm, form, type = "" }) {
 
         if (type === "register") {
             fetchAuth("register", form);
-
-            if (data.access_token) {
-                localStorage.setItem("token", data.access_token);
-                window.top.location.href = `http://localhost:5173${
-                    param.get("continue") ? param.get("continue") : ""
-                }`;
-            }
         } else {
             fetchAuth("login", form);
-
-            if (data.access_token) {
-                localStorage.setItem("token", data.access_token);
-                window.top.location.href = `http://localhost:5173${
-                    param.get("continue") ? param.get("continue") : ""
-                }`;
-            }
         }
     };
+
+    if (data.access_token) {
+        setToken(data.access_token);
+        window.top.location.href = `http://localhost:5173${
+            param.get("continue") ? param.get("continue") : ""
+        }`;
+    }
 
     if (type === "register") {
         if (
@@ -51,7 +45,7 @@ function Form({ setForm, form, type = "" }) {
             form.lastName !== "" &&
             form.email !== "" &&
             form.passWord !== "" &&
-            form.passWordConFirm !== ""
+            form.password_confirmation !== ""
         ) {
             if (btnSubmit.current) {
                 btnSubmit.current.classList.remove(styles.disabled);
@@ -78,7 +72,7 @@ function Form({ setForm, form, type = "" }) {
             <div className={styles.wrapper_juilt}>
                 <div className={styles.wrapper}>
                     <div className={styles.labelGroup}>
-                        <label htmlFor="FirstName">First name</label>
+                        <label htmlFor="FirstName">Tên</label>
                     </div>
                 </div>
 
@@ -86,7 +80,7 @@ function Form({ setForm, form, type = "" }) {
                     <input
                         type="text"
                         name="firstName"
-                        placeholder="First name"
+                        placeholder="Tên"
                         maxLength={20}
                         value={form.firstName}
                         onChange={handleChangInput}
@@ -98,7 +92,7 @@ function Form({ setForm, form, type = "" }) {
             <div className={styles.wrapper_juilt}>
                 <div className={styles.wrapper}>
                     <div className={styles.labelGroup}>
-                        <label htmlFor="LastName">Last name</label>
+                        <label htmlFor="LastName">Tên đệm</label>
                     </div>
                 </div>
 
@@ -106,7 +100,7 @@ function Form({ setForm, form, type = "" }) {
                     <input
                         type="text"
                         name="lastName"
-                        placeholder="Last name"
+                        placeholder="Tên đệm"
                         maxLength={20}
                         value={form.lastName}
                         onChange={handleChangInput}
@@ -138,7 +132,7 @@ function Form({ setForm, form, type = "" }) {
             <div className={styles.wrapper_juilt}>
                 <div className={styles.wrapper}>
                     <div className={styles.labelGroup}>
-                        <label htmlFor="password">password</label>
+                        <label htmlFor="password">Mật khẩu</label>
                     </div>
                 </div>
 
@@ -146,7 +140,7 @@ function Form({ setForm, form, type = "" }) {
                     <input
                         type="password"
                         name="password"
-                        placeholder="password"
+                        placeholder="Mật khẩu"
                         maxLength={20}
                         value={form.password}
                         onChange={handleChangInput}
@@ -159,7 +153,7 @@ function Form({ setForm, form, type = "" }) {
                 <div className={styles.wrapper}>
                     <div className={styles.labelGroup}>
                         <label htmlFor="password_confirmation">
-                            password confirm
+                            Nhập lại mật khẩu
                         </label>
                     </div>
                 </div>
@@ -168,7 +162,7 @@ function Form({ setForm, form, type = "" }) {
                     <input
                         type="password"
                         name="password_confirmation"
-                        placeholder="password confirm"
+                        placeholder="Nhập lại mật khẩu"
                         maxLength={20}
                         value={form.password_confirmation}
                         onChange={handleChangInput}
@@ -180,8 +174,6 @@ function Form({ setForm, form, type = "" }) {
             {errs.message && <p className={styles.message}>{errs.message}</p>}
 
             <button
-                // href={"http://localhost:5173/"}
-                // target="_top"
                 ref={btnSubmit}
                 className={`${styles.wrapperBtn} ${styles.btnPrimary} ${styles.rounded} ${styles.disabled}`}
             >
@@ -213,7 +205,7 @@ function Form({ setForm, form, type = "" }) {
             <div className={styles.wrapper_juilt}>
                 <div className={styles.wrapper}>
                     <div className={styles.labelGroup}>
-                        <label htmlFor="password">password</label>
+                        <label htmlFor="password">Mật khẩu</label>
                     </div>
                 </div>
 
@@ -221,7 +213,7 @@ function Form({ setForm, form, type = "" }) {
                     <input
                         type="password"
                         name="password"
-                        placeholder="password"
+                        placeholder="Mật khẩu"
                         maxLength={20}
                         value={form.password}
                         onChange={handleChangInput}
@@ -236,7 +228,7 @@ function Form({ setForm, form, type = "" }) {
                 ref={btnSubmit}
                 className={`${styles.wrapperBtn} ${styles.btnPrimary} ${styles.rounded} ${styles.disabled}`}
             >
-                Đăng ký
+                {type === "register" ? "đăng ký" : "đăng nhập"}
             </button>
         </form>
     );

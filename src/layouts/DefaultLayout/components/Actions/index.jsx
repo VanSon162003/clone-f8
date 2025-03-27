@@ -7,10 +7,16 @@ import { faBell } from "@fortawesome/free-solid-svg-icons";
 
 import userImg from "@/assets/imgs/user.jpg";
 import proIcon from "@/assets/icons/pro-icon.svg";
+import authService from "@/services/authService";
 
 function Actions() {
     const [isAccess, setIsAccess] = useState(false);
     const [showSetting, setShowSetting] = useState(false);
+
+    const [err, setErr] = useState({});
+
+    const [user, setUser] = useState(null);
+
     const settingRef = useRef(null);
 
     const saveAccessType = (type) => {
@@ -27,6 +33,10 @@ function Actions() {
         if (!token) {
             console.warn("Không tìm thấy token, không thể đăng xuất.");
             return;
+        }
+        if (err.message === "Unauthenticated") {
+            localStorage.removeItem("token");
+            window.top.location.href = "http://localhost:5173/";
         }
 
         try {
@@ -49,6 +59,7 @@ function Actions() {
             localStorage.removeItem("token");
             window.top.location.href = "http://localhost:5173/";
         } catch (error) {
+            setErr(JSON.parse(error.message));
             console.error("Đăng xuất thất bại:", error.message);
         }
     };
@@ -60,11 +71,12 @@ function Actions() {
             }
         };
 
-        document.addEventListener("mousedown", handleClickOutside);
+        (async () => {
+            const data = await authService.getCurrentUser();
+            console.log(data.user);
+        })();
 
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
+        document.addEventListener("mousedown", handleClickOutside);
     }, []);
 
     return token ? (
@@ -165,7 +177,9 @@ function Actions() {
                 onClick={() => handleClickButton("login")}
             />
 
-            {isAccess && <AccessForm setIsAccess={setIsAccess} />}
+            {isAccess && (
+                <AccessForm isAccess={isAccess} setIsAccess={setIsAccess} />
+            )}
         </div>
     );
 }

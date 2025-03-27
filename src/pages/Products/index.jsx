@@ -1,3 +1,5 @@
+import productServices from "@/services/productServices";
+import httpRequest from "@/utils/httpRequest";
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 
@@ -5,12 +7,12 @@ function Products() {
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
-        fetch("https://dummyjson.com/products")
-            .then((res) => res.json())
-            .then((data) => {
-                setProducts(data.products);
-            })
-            .catch((err) => console.log(err));
+        (async () => {
+            const res = await productServices.getAll();
+            if (res.data) {
+                setProducts(res.data);
+            }
+        })();
     }, []);
 
     return (

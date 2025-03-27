@@ -1,3 +1,43 @@
+@keyframes inline {
+    0% {
+        scale: 0;
+        opacity: 0;
+    }
+    100% {
+        scale: 1;
+        opacity: 1;
+    }
+}
+
+@keyframes inlineTurnOff {
+    0% {
+        scale: 1;
+        opacity: 1;
+    }
+    100% {
+        scale: 0;
+        opacity: 0;
+    }
+}
+
+@keyframes overlay {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes overlayTurnOff {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
 .wrapper {
     position: fixed;
     top: 0;
@@ -17,6 +57,15 @@
     bottom: 0;
     left: 0;
     background: #0006;
+    animation-name: overlay;
+    animation-duration: 0.3s;
+    animation-timing-function: linear;
+
+    &.turnOffOverlay {
+        animation-name: overlayTurnOff;
+        animation-duration: 0.3s;
+        animation-timing-function: linear;
+    }
 }
 
 .content {
@@ -27,6 +76,14 @@
     background: #fff;
     border-radius: 16px;
     overflow: hidden;
+    animation-name: inline;
+    animation-duration: 0.3s;
+
+    &.turnOffContent {
+        overflow: hidden;
+        animation-name: inlineTurnOff;
+        animation-duration: 0.3s;
+    }
 }
 
 .close {

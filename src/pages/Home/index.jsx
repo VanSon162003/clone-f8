@@ -3,10 +3,10 @@ import styles from "./Home.module.scss";
 import Section from "@/components/Section";
 
 function Home() {
-    const coursePro = useApi("http://localhost:3000/pro");
-    const courseFree = useApi("http://localhost:3000/free");
-    const courseArticle = useApi("http://localhost:3000/article");
-    const courseVideo = useApi("http://localhost:3000/video");
+    const coursePro = useApi("/pro");
+    const courseFree = useApi("/free");
+    const courseArticle = useApi("/article");
+    const courseVideo = useApi("/video");
     return (
         <div className={styles.wrapper}>
             <Section
