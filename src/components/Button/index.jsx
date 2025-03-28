@@ -21,7 +21,7 @@ function Button({
     to = "",
     href = "",
     onClick,
-    remaining,
+    ...remaining
 }) {
     // const classType =
     //     type === "primary"
@@ -45,7 +45,9 @@ function Button({
     }
 
     const handleClick = () => {
-        disabled && isLoading && onClick && onClick();
+        if (disabled || isLoading) return;
+
+        onClick && onClick();
     };
 
     return (

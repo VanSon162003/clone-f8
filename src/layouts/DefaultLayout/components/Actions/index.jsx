@@ -8,6 +8,7 @@ import { faBell } from "@fortawesome/free-solid-svg-icons";
 import userImg from "@/assets/imgs/user.jpg";
 import proIcon from "@/assets/icons/pro-icon.svg";
 import authService from "@/services/authService";
+import logoutService from "@/services/logoutService";
 
 function Actions() {
     const [isAccess, setIsAccess] = useState(false);
@@ -34,33 +35,22 @@ function Actions() {
             console.warn("Không tìm thấy token, không thể đăng xuất.");
             return;
         }
-        if (err.message === "Unauthenticated") {
-            localStorage.removeItem("token");
-            window.top.location.href = "http://localhost:5173/";
+        if (err) {
+            if (err === "Unauthenticated") {
+                localStorage.removeItem("token");
+                window.top.location.href = "http://localhost:5173/";
+            }
         }
 
         try {
-            const res = await fetch(
-                "https://api01.f8team.dev/api/auth/logout",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
+            const res = await logoutService.logoutUser();
 
-            if (!res.ok) {
-                const errorText = await res.text();
-                throw new Error(errorText);
+            if (res.status === "success") {
+                localStorage.removeItem("token");
+                window.top.location.href = "http://localhost:5173/";
             }
-
-            localStorage.removeItem("token");
-            window.top.location.href = "http://localhost:5173/";
         } catch (error) {
-            setErr(JSON.parse(error.message));
-            console.error("Đăng xuất thất bại:", error.message);
+            setErr(error);
         }
     };
 
@@ -71,10 +61,11 @@ function Actions() {
             }
         };
 
-        // (async () => {
-        //     const data = await authService.getCurrentUser();
-        //     console.log(data.user);
-        // })();
+        token &&
+            (async () => {
+                const data = await authService.getCurrentUser();
+                data.user && setUser(data.user);
+            })();
 
         document.addEventListener("mousedown", handleClickOutside);
     }, []);
@@ -106,7 +97,7 @@ function Actions() {
                         <ul
                             className={`${styles.wrapSetting} ${styles.wrapAnmt}`}
                         >
-                            <a href="#" className={styles.user}>
+                            <a href={`#`} className={styles.user}>
                                 <div className={styles.avaSetting}>
                                     <div className={styles.avatar}>
                                         <img src={userImg} alt="user" />
@@ -119,9 +110,13 @@ function Actions() {
                                 </div>
 
                                 <div className={styles.info}>
-                                    <div className={styles.name}>Sơn văn</div>
+                                    <div className={styles.name}>
+                                        {user.firstName && user.lastName
+                                            ? user.firstName + user.lastName
+                                            : ""}
+                                    </div>
                                     <div className={styles.useName}>
-                                        @sonvan
+                                        @{user.username && user.username}
                                     </div>
                                 </div>
                             </a>
@@ -130,7 +125,13 @@ function Actions() {
 
                             <ul className={styles.list}>
                                 <li>
-                                    <a href="#">Trang cá nhân</a>
+                                    <a
+                                        href={`@${
+                                            user.username && user.username
+                                        }`}
+                                    >
+                                        Trang cá nhân
+                                    </a>
                                 </li>
                             </ul>
 

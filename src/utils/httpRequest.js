@@ -13,12 +13,12 @@ const send = async (method, url, data, config) => {
             method,
             url,
             data,
-            config,
+            ...config,
         });
 
         return res.data;
     } catch (error) {
-        // console.log(error);
+        throw error.response.data.message;
     }
 };
 
@@ -30,11 +30,11 @@ export const post = async (url, data, config) => {
 };
 
 export const put = async (url, data, config) => {
-    return send("get", url, data, config);
+    return send("put", url, data, config);
 };
 
 export const patch = async (url, data, config) => {
-    return send("get", url, data, config);
+    return send("patch", url, data, config);
 };
 export const del = async (url, config) => {
     return send("delete", url, null, config);
