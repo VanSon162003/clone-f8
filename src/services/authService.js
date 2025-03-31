@@ -5,10 +5,35 @@ export const getCurrentUser = async () => {
     return res;
 };
 
+export const updateCurrentUser = async (id, data) => {
+    const res = await httpRequest.put(`/users/${id}`, data);
+    return res;
+};
+
 export const checkEmail = async (email) => {
     const res = await httpRequest.get("/auth/check-email", {
         params: {
             email,
+        },
+    });
+
+    return res.exists;
+};
+
+export const checkPhone = async (phone) => {
+    const res = await httpRequest.get("/auth/check-phone", {
+        params: {
+            phone,
+        },
+    });
+
+    return res.exists;
+};
+
+export const checkUserName = async (username) => {
+    const res = await httpRequest.get("/auth/check-username", {
+        params: {
+            username,
         },
     });
 
@@ -29,7 +54,10 @@ export const login = async (data) => {
 
 export default {
     getCurrentUser,
+    updateCurrentUser,
     checkEmail,
+    checkPhone,
+    checkUserName,
     register,
     login,
 };

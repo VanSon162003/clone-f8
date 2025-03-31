@@ -6,11 +6,14 @@ import Button from "@/components/Button";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShield, faUser } from "@fortawesome/free-solid-svg-icons";
 import Profile from "./components/Profile";
+import Magic from "@/components/Magic";
+import { ToastContainer } from "react-toastify";
 
 function Setting() {
     return (
         <>
-            <div className={styles.magic}></div>
+            <ToastContainer position="top-right" autoClose={1000} />
+            <Magic position="fixed" zIndex={"-1"} />
             <div className={`container ${styles.container}`}>
                 <div className={`row ${styles.row}`}>
                     <div className="col col-4">

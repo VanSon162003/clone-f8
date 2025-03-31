@@ -6,7 +6,8 @@
 
 .header {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
     gap: 4px;
 }
 .title {
@@ -30,4 +31,8 @@
     border-radius: 10px;
     background: #fff;
     overflow: hidden;
+}
+
+.updateBtn {
+    font-size: 1.7rem;
 }

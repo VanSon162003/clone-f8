@@ -4,7 +4,7 @@ import styles from "./ProfileItem.module.scss";
 import Button from "@/components/Button";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 
-function ProfileItem({ label, value }) {
+function ProfileItem({ label = "", value = "" }) {
     return (
         <div className={styles.wrapper}>
             <div className={styles.content}>

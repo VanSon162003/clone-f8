@@ -2,7 +2,14 @@ import React from "react";
 
 import styles from "./Input.module.scss";
 
-function Input({ labelName, name, register = () => ({}), message = "" }) {
+function Input({
+    labelName = "",
+    name = "",
+    register = () => ({}),
+    message = {},
+    type = "text",
+    ...remain
+}) {
     return (
         <div className={styles.wrapper_juilt}>
             <div className={styles.wrapper}>
@@ -13,10 +20,11 @@ function Input({ labelName, name, register = () => ({}), message = "" }) {
 
             <div className={styles.inputWrap}>
                 <input
-                    type="text"
+                    type={type}
                     {...register(name)}
                     placeholder={labelName}
                     id={name}
+                    {...remain}
                 />
             </div>
 

@@ -1,0 +1,303 @@
+import Magic from "@/components/Magic";
+import Button from "@/components/Button";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+
+import styles from "./ProfileForm.module.scss";
+import Input from "@/layouts/DefaultLayout/components/AuthenticationApp/components/Input";
+import { useForm } from "react-hook-form";
+
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import { useEffect, useState } from "react";
+import authService from "@/services/authService";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
+const schema = yup
+    .object({
+        username: yup.string(),
+        email: yup.string().email("Cần nhập đúng định dạng email"),
+    })
+    .required();
+
+function ProfileForm({ user = {}, setShowForm }) {
+    const [isLoading, setIsloading] = useState(false);
+
+    const navigate = useNavigate();
+
+    const {
+        register,
+        handleSubmit,
+        watch,
+        trigger,
+        setError,
+        formState: { errors },
+    } = useForm({
+        defaultValues: {
+            username: user?.username,
+            age: user?.age,
+            gender: user?.gender === "male" ? "nam" : "nữ",
+
+            email: user?.email,
+            phone: user?.phone,
+            birthDate: user?.birthDate,
+        },
+        resolver: yupResolver(schema),
+    });
+
+    const onSubmit = (data) => {
+        const newData = Object.fromEntries(
+            Object.entries(data).filter(([key, value]) => value !== null)
+        );
+
+        if (newData.gender) {
+            const genderMap = {
+                nam: "male",
+                nu: "female",
+                nữ: "female",
+            };
+
+            newData.gender = genderMap[newData.gender] || newData.gender;
+        }
+
+        if (newData) {
+            (async () => {
+                try {
+                    setIsloading(true);
+                    const res = await authService.updateCurrentUser(
+                        user?.id,
+                        newData
+                    );
+                    setIsloading(false);
+
+                    if (res) {
+                        navigate(
+                            `/setting/p/${newData.username || user?.username}`,
+                            { replace: true }
+                        );
+
+                        toast.success("Cập nhật thành công");
+                        setShowForm(false);
+
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+                    }
+                } catch (error) {
+                    setIsloading(false);
+                    toast.error("Cập nhập thất bại");
+                }
+            })();
+        }
+    };
+
+    const ageValue = watch("age");
+    const genderValue = watch("gender");
+    const emailValue = watch("email");
+    const phoneValue = watch("phone");
+    const usernameValue = watch("username");
+
+    useEffect(() => {
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                setShowForm(false);
+            }
+        });
+
+        if (ageValue) {
+            const timeID = setTimeout(() => {
+                if (ageValue < 0) {
+                    setError("age", {
+                        message: "Tuổi không thể nhỏ hơn 0",
+                    });
+                }
+            }, 600);
+
+            return () => {
+                clearTimeout(timeID);
+            };
+        }
+    }, [ageValue]);
+
+    useEffect(() => {
+        if (genderValue) {
+            const timeID = setTimeout(async () => {
+                const ok = await trigger("gender");
+                if (ok) {
+                    const validGenders = ["nam", "nữ", "nu"];
+                    if (!validGenders.includes(genderValue.toLowerCase())) {
+                        setError("gender", {
+                            message: "Giới tính gồm: nam, nữ",
+                        });
+                    }
+                }
+            }, 600);
+
+            return () => {
+                clearTimeout(timeID);
+            };
+        }
+    }, [genderValue]);
+
+    useEffect(() => {
+        if (emailValue) {
+            const timeID = setTimeout(async () => {
+                const ok = await trigger("email");
+                if (ok) {
+                    const res = await authService.checkEmail(
+                        `${emailValue}&exclude_id=${user?.id}`
+                    );
+                    if (res) {
+                        setError("email", { message: "email đã tồn tại" });
+                    }
+                }
+            }, 600);
+            return () => {
+                clearTimeout(timeID);
+            };
+        }
+    }, [emailValue]);
+
+    useEffect(() => {
+        if (phoneValue) {
+            const timeID = setTimeout(async () => {
+                const ok = await trigger("phone");
+                if (ok) {
+                    if (phoneValue.length !== 10) {
+                        setError("phone", {
+                            message: "Số điện thoại chỉ có 10 số",
+                        });
+                    } else {
+                        const res = await authService.checkPhone(
+                            `${phoneValue}&exclude_id=${user?.id}`
+                        );
+                        if (res) {
+                            setError("phone", {
+                                message: "số điện thoại đã tồn tại",
+                            });
+                        }
+                    }
+                }
+            }, 600);
+
+            return () => {
+                clearTimeout(timeID);
+            };
+        }
+    }, [phoneValue]);
+
+    useEffect(() => {
+        if (usernameValue) {
+            const timeID = setTimeout(async () => {
+                const ok = await trigger("username");
+                if (ok) {
+                    const res = await authService.checkUserName(
+                        `${usernameValue}&exclude_id=${user?.id}`
+                    );
+                    if (res) {
+                        setError("username", {
+                            message: "username đã tồn tại",
+                        });
+                    }
+                }
+            }, 600);
+
+            return () => {
+                clearTimeout(timeID);
+            };
+        }
+    }, [usernameValue]);
+
+    return (
+        <form
+            action=""
+            className={styles.wrapper}
+            onSubmit={handleSubmit(onSubmit)}
+        >
+            <div
+                className={styles.overlay}
+                onClick={() => {
+                    setShowForm(false);
+                }}
+            ></div>
+            <div className={styles.inner}>
+                <Magic position="absolute" zIndex={"-1"} />
+
+                <div className={styles.control}>
+                    <Button
+                        onClick={() => {
+                            setShowForm(false);
+                        }}
+                        href="#"
+                        icon={faXmark}
+                        className={styles.close}
+                    />
+                </div>
+
+                <header className={styles.header}>
+                    <h2 className={styles.title}>Cập nhật thông tin của bạn</h2>
+                    <p className={styles.desc}>
+                        Thông tin của bạn sẽ phản ánh ra giao diện
+                    </p>
+                </header>
+
+                <main className={styles.content}>
+                    <Input
+                        labelName="Họ và tên"
+                        name="username"
+                        register={register}
+                        message={errors}
+                    />
+
+                    <Input
+                        labelName="Tuổi"
+                        name="age"
+                        register={register}
+                        message={errors}
+                        type="number"
+                        max="120"
+                    />
+
+                    <Input
+                        labelName="Giới tính"
+                        name="gender"
+                        register={register}
+                        message={errors}
+                    />
+
+                    <Input
+                        labelName="Email"
+                        name="email"
+                        register={register}
+                        message={errors}
+                    />
+
+                    <Input
+                        labelName="Số điện thoại"
+                        name="phone"
+                        register={register}
+                        message={errors}
+                        type="number"
+                    />
+
+                    <Input
+                        labelName="Ngày tháng năm sinh"
+                        name="birthDate"
+                        register={register}
+                        message={errors}
+                        type="date"
+                    />
+
+                    <Button
+                        isLoading={isLoading}
+                        className={`${styles.wrapperBtn} ${styles.btnPrimary} ${styles.rounded} `}
+                    >
+                        Cập nhật
+                    </Button>
+                </main>
+            </div>
+        </form>
+    );
+}
+
+export default ProfileForm;
