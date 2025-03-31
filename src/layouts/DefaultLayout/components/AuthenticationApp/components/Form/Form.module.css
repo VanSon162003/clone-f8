@@ -1,0 +1,33 @@
+.wrapperBtn {
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px 20px;
+  border: 1px solid var(--divider-color);
+  font-weight: 600;
+  font-size: 1.6rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: opacity 0.25s;
+}
+.wrapperBtn.btnPrimary {
+  color: #fff;
+  background-color: #1dbfaf;
+  background-image: linear-gradient(70.06deg, #2cccff -5%, #22dfbf 106%);
+  border: none;
+}
+.wrapperBtn.rounded {
+  border-radius: 999px;
+}
+.wrapperBtn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.message {
+  margin: 8px 0 8px 8px;
+  color: #f33a58;
+  font-size: 1.4rem;
+  font-weight: 500;
+  line-height: 1.5;
+}/*# sourceMappingURL=Form.module.css.map */

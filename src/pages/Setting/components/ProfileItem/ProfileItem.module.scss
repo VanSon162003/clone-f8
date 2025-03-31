@@ -1,0 +1,50 @@
+.wrapper {
+    position: relative;
+    height: 62px;
+    padding: 0 16px;
+    transition: background-color 0.1s;
+
+    &:hover {
+        cursor: pointer;
+        background-color: rgba(0, 0, 0, 0.027);
+    }
+}
+
+.content {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 1px;
+    height: 100%;
+}
+.label {
+    flex-shrink: 0;
+    font-size: 1.6rem;
+}
+
+.value {
+    margin-top: 8px;
+    padding-right: 50px;
+    font-size: 1.5rem;
+    opacity: 0.8;
+    overflow: hidden;
+    word-wrap: break-word;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+}
+
+.rightBtn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 100%;
+    padding: 0 16px;
+    font-size: 1.4rem;
+    opacity: 0.7;
+    outline: none !important;
+    cursor: pointer;
+}

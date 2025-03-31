@@ -1,0 +1,76 @@
+.wrapper {
+  width: 500px;
+  padding: 24px;
+  border-radius: 16px;
+  border: 2px solid #e8e8e8;
+  display: flex;
+  flex-direction: column;
+}
+
+.wrapper + .wrapper {
+  margin-left: 24px;
+}
+
+.body {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+.info {
+  flex: 1;
+}
+
+.title {
+  margin: 0;
+}
+.title a {
+  display: block;
+  color: #242424;
+  font-size: 2rem;
+  font-weight: 900;
+  padding-bottom: 14px;
+}
+
+.desc {
+  margin: 0;
+  font-size: 1.4rem;
+  line-height: 1.6;
+}
+
+.thumb {
+  display: flex;
+  align-items: center;
+  padding-left: 24px;
+}
+
+.thumbRound {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 122px;
+  height: 122px;
+  border-radius: 50%;
+  border: 5px solid #f05123;
+  overflow: hidden;
+}
+.thumbRound img {
+  width: 98px;
+  height: 98px;
+  border-radius: 50%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+.cta {
+  display: flex;
+  margin: auto 0 28px;
+}
+
+.wrapBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.wrapBtn:hover {
+  opacity: 0.8;
+}/*# sourceMappingURL=Roadmap.module.css.map */

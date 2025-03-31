@@ -9,6 +9,7 @@ import userImg from "@/assets/imgs/user.jpg";
 import proIcon from "@/assets/icons/pro-icon.svg";
 import authService from "@/services/authService";
 import logoutService from "@/services/logoutService";
+import { Link } from "react-router-dom";
 
 function Actions() {
     const [isAccess, setIsAccess] = useState(false);
@@ -30,16 +31,17 @@ function Actions() {
     };
     const token = localStorage.getItem("token");
 
+    if (err) {
+        if (err === "Unauthenticated") {
+            localStorage.removeItem("token");
+            window.top.location.href = "http://localhost:5173/";
+        }
+    }
+
     const handleLogout = async () => {
         if (!token) {
             console.warn("Không tìm thấy token, không thể đăng xuất.");
             return;
-        }
-        if (err) {
-            if (err === "Unauthenticated") {
-                localStorage.removeItem("token");
-                window.top.location.href = "http://localhost:5173/";
-            }
         }
 
         try {
@@ -63,12 +65,20 @@ function Actions() {
 
         token &&
             (async () => {
-                const data = await authService.getCurrentUser();
-                data.user && setUser(data.user);
+                try {
+                    const data = await authService.getCurrentUser();
+                    data.user && setUser(data.user);
+                } catch (error) {
+                    setErr(error);
+                }
             })();
 
         document.addEventListener("mousedown", handleClickOutside);
-    }, []);
+
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [token]);
 
     return token ? (
         <div className={styles.actions}>
@@ -111,12 +121,10 @@ function Actions() {
 
                                 <div className={styles.info}>
                                     <div className={styles.name}>
-                                        {user.firstName && user.lastName
-                                            ? user.firstName + user.lastName
-                                            : ""}
+                                        {user?.firstName + user?.lastName}
                                     </div>
                                     <div className={styles.useName}>
-                                        @{user.username && user.username}
+                                        @{user?.username}
                                     </div>
                                 </div>
                             </a>
@@ -125,11 +133,7 @@ function Actions() {
 
                             <ul className={styles.list}>
                                 <li>
-                                    <a
-                                        href={`@${
-                                            user.username && user.username
-                                        }`}
-                                    >
+                                    <a href={`@${user?.username}`}>
                                         Trang cá nhân
                                     </a>
                                 </li>
@@ -153,7 +157,9 @@ function Actions() {
 
                             <ul className={styles.list}>
                                 <li>
-                                    <a href="#">Cài đặt</a>
+                                    <Link to={`/setting/p/${user?.username}`}>
+                                        Cài đặt
+                                    </Link>
                                 </li>
 
                                 <li onClick={handleLogout}>

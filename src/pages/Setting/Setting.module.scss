@@ -1,0 +1,110 @@
+.magic {
+    position: fixed;
+    z-index: -1;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: -2;
+        background: #fff;
+    }
+
+    &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: -1;
+        opacity: 0.08;
+        background-image: radial-gradient(#ffffff40, #fff0 40%),
+            radial-gradient(
+                hsl(44, 100%, 66%) 30%,
+                hsl(338, 68%, 65%),
+                hsla(338, 68%, 65%, 0.4) 41%,
+                transparent 52%
+            ),
+            radial-gradient(hsl(272, 100%, 60%) 37%, transparent 46%),
+            linear-gradient(155deg, transparent 65%, hsl(142, 70%, 49%) 95%),
+            linear-gradient(45deg, #0065e0, #0f8bff);
+        background-size: 200% 200%, 285% 500%, 285% 500%, cover, cover;
+        background-position: bottom left, 109% 68%, 109% 68%, center, center;
+    }
+}
+
+.container,
+.row {
+    height: 100vh;
+}
+
+.wrapper {
+    border-right: 1px solid #dee3e9;
+    padding: 30px 37px 0 0;
+    height: 100%;
+}
+
+.content {
+    position: sticky;
+    top: 30px;
+}
+
+.logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+}
+.heading {
+    margin: 15px 0;
+    font-size: 2.4rem;
+}
+.desc {
+    font-size: 1.5rem;
+    line-height: 1.2;
+    opacity: 0.9;
+}
+.nav {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 20px 0;
+}
+
+.link,
+.linkInner {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.link {
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-size: 1.6rem;
+    font-weight: 500;
+    opacity: 0.9;
+    transition: background-color 0.1s;
+
+    &.active {
+        color: #fff;
+        background: #344854;
+        opacity: 1;
+    }
+
+    &:not(.active):hover {
+        background: #0000001a;
+    }
+}
+
+.iconBtn {
+    font-size: 1.8rem;
+}

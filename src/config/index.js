@@ -10,6 +10,7 @@ const config = {
         register: "/register",
         login: "/login",
         forgotPassWord: "/forgotPassWord",
+        setting: "/setting/p/:username",
     },
 };
 

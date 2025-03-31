@@ -338,5 +338,64 @@
             "authorPro": false,
             "avatar": "https://fullstack.edu.vn/assets/feedback-0-BFb1fhaR.jpg"
         }
+    ],
+    "frontend": [
+        {
+            "src": "https://files.fullstack.edu.vn/f8-prod/courses/7/6200b81f52d83.png",
+            "to": "/learning/lessons-for-newbie"
+        },
+
+        {
+            "src": "https://files.fullstack.edu.vn/f8-prod/courses/15/62385d6c63dfa.png",
+            "to": "/landing/htmlcss"
+        },
+        {
+            "src": "https://files.fullstack.edu.vn/f8-prod/courses/3/6200afe1240bb.png",
+            "to": "/courses/responsive-web-design"
+        },
+        {
+            "src": "https://files.fullstack.edu.vn/f8-prod/courses/1/6200ad9d8a2d8.png",
+            "to": "/learning/javascript-co-ban"
+        },
+        {
+            "src": "https://files.fullstack.edu.vn/f8-prod/courses/1/6200ad9d8a2d8.png",
+            "to": "/learning/javascript-nang-cao"
+        },
+        {
+            "src": "https://files.fullstack.edu.vn/f8-prod/courses/14/624faac2ee23d.png",
+            "to": "/learning/windows-terminal-wsl"
+        },
+        {
+            "src": "https://files.fullstack.edu.vn/f8-prod/courses/13/6200af9262b30.png",
+            "to": "/learning/reactjs"
+        }
+    ],
+    "backend": [
+        {
+            "src": "https://files.fullstack.edu.vn/f8-prod/courses/7/6200b81f52d83.png",
+            "to": "/learning/lessons-for-newbie"
+        },
+
+        {
+            "src": "https://files.fullstack.edu.vn/f8-prod/courses/1/6200ad9d8a2d8.png",
+            "to": "/learning/javascript-co-ban"
+        },
+        {
+            "src": "https://files.fullstack.edu.vn/f8-prod/courses/1/6200ad9d8a2d8.png",
+            "to": "/learning/javascript-nang-cao"
+        },
+        {
+            "src": "https://files.fullstack.edu.vn/f8-prod/courses/14/624faac2ee23d.png",
+            "to": "/learning/windows-terminal-wsl"
+        },
+        {
+            "src": "https://files.fullstack.edu.vn/f8-prod/courses/6/6200afb926038.png",
+            "to": "/courses/nodejs"
+        },
+
+        {
+            "src": "https://files.fullstack.edu.vn/f8-prod/courses/15/62385d6c63dfa.png",
+            "to": "/landing/htmlcss"
+        }
     ]
 }

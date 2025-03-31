@@ -23,13 +23,6 @@ function Button({
     onClick,
     ...remaining
 }) {
-    // const classType =
-    //     type === "primary"
-    //         ? "primary"
-    //         : type === "secondary"
-    //         ? "secondary"
-    //         : "text";
-
     let Component = "button";
 
     const passProp = {};
@@ -69,7 +62,7 @@ function Button({
             ) : (
                 <>
                     {icon && <FontAwesomeIcon icon={icon} />}
-                    <span>{children}</span>
+                    {children}
                 </>
             )}
         </Component>

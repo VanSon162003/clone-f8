@@ -1,0 +1,36 @@
+.container {
+  padding: 8px 44px 0;
+  margin-bottom: 60px;
+}
+.container .top {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 32px 0 80px;
+}
+
+.heading {
+  font-size: 2.4rem;
+  font-weight: 900;
+  line-height: 1.4;
+  color: #242424;
+}
+
+.warp {
+  color: #292929;
+  word-wrap: break-word;
+  line-height: 1.8;
+  font-size: 1.4rem;
+}
+.warp p {
+  margin: 16px 0;
+}
+
+.desc {
+  max-width: 840px;
+}
+
+.content {
+  display: flex;
+  margin-top: 24px;
+}/*# sourceMappingURL=Learning.module.css.map */

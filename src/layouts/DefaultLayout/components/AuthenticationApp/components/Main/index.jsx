@@ -10,16 +10,16 @@ import Google from "@/assets/icons/Google.svg";
 import Facebook from "@/assets/icons/Facebook.svg";
 import github from "@/assets/icons/github.svg";
 import Form from "../Form";
-function Main({ swapAccessType, setSwapAccessType, type = "", setForm, form }) {
+function Main({ swapAccessType, setSwapAccessType, type = "" }) {
     return (
         <main className={styles.main}>
             {type === "register" ? (
                 <div className={styles.content}>
-                    <Form type={type} setForm={setForm} form={form} />
+                    <Form type={type} />
                 </div>
             ) : type === "login" ? (
                 <div className={styles.content}>
-                    <Form type={type} setForm={setForm} form={form} />
+                    <Form type={type} />
                 </div>
             ) : (
                 <div className={styles.content}>

@@ -1,232 +1,131 @@
-import React, { useRef, useState } from "react";
-import styles from "./Form.module.scss";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import useAuth from "@/hook/useAuth";
+import { useEffect, useState } from "react";
 import useQuery from "@/hook/useQuery";
-import { setToken } from "@/utils/httpRequest";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
 
-function Form({ setForm, form, type = "" }) {
-    const btnSubmit = useRef(null);
-    const [data, errs, setErrs, fetchAuth] = useAuth();
+import authService from "@/services/authService";
+import Input from "../Input";
+import { setToken } from "@/utils/httpRequest";
+import schemaRegister from "@/schema/schemaRegister";
+import schemaLogin from "@/schema/schemaLogin";
+
+import styles from "./Form.module.scss";
+
+function Form({ type = "" }) {
+    const {
+        register,
+        handleSubmit,
+        trigger,
+        setError,
+        watch,
+        formState: { errors },
+    } = useForm({
+        resolver: yupResolver(
+            type === "register" ? schemaRegister : schemaLogin
+        ),
+    });
+
+    const [respone, setRespone] = useState();
 
     const { param } = useQuery();
 
-    const handleChangInput = (e) => {
-        setForm((prev) => {
-            return {
-                ...prev,
-                [e.target.name]: e.target.value,
-            };
-        });
+    const emailValue = watch("email");
 
-        setErrs({});
-    };
+    useEffect(() => {
+        if (emailValue) {
+            if (type === "register") {
+                const timeID = setTimeout(async () => {
+                    const ok = await trigger("email");
+                    if (ok) {
+                        const res = await authService.checkEmail(emailValue);
+                        if (res) {
+                            setError("email", {
+                                message: "email đã được sử dụng",
+                            });
+                        }
+                    }
+                }, 800);
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+                return () => {
+                    clearTimeout(timeID);
+                };
+            }
+        }
+    }, [emailValue]);
 
+    const onSubmit = async (data) => {
         if (type === "register") {
-            fetchAuth("register", form);
+            const res = await authService.register(data);
+            setRespone(res);
         } else {
-            fetchAuth("login", form);
+            const res = await authService.login(data);
+            setRespone(res);
         }
     };
 
-    if (data.access_token) {
-        setToken(data.access_token);
+    if (respone?.access_token) {
+        setToken(respone?.access_token);
         window.top.location.href = `http://localhost:5173${
             param.get("continue") ? param.get("continue") : ""
         }`;
     }
 
-    if (type === "register") {
-        if (
-            form.firstName !== "" &&
-            form.lastName !== "" &&
-            form.email !== "" &&
-            form.passWord !== "" &&
-            form.password_confirmation !== ""
-        ) {
-            if (btnSubmit.current) {
-                btnSubmit.current.classList.remove(styles.disabled);
-            }
-        } else {
-            if (btnSubmit.current) {
-                btnSubmit.current.classList.add(styles.disabled);
-            }
-        }
-    } else {
-        if (form.email !== "" && form.passWord !== "") {
-            if (btnSubmit.current) {
-                btnSubmit.current.classList.remove(styles.disabled);
-            }
-        } else {
-            if (btnSubmit.current) {
-                btnSubmit.current.classList.add(styles.disabled);
-            }
-        }
-    }
-
     return type === "register" ? (
-        <form action="" onSubmit={handleSubmit}>
-            <div className={styles.wrapper_juilt}>
-                <div className={styles.wrapper}>
-                    <div className={styles.labelGroup}>
-                        <label htmlFor="FirstName">Tên</label>
-                    </div>
-                </div>
-
-                <div className={styles.inputWrap}>
-                    <input
-                        type="text"
-                        name="firstName"
-                        placeholder="Tên"
-                        maxLength={20}
-                        value={form.firstName}
-                        onChange={handleChangInput}
-                        id="firstName"
-                    />
-                </div>
-            </div>
-
-            <div className={styles.wrapper_juilt}>
-                <div className={styles.wrapper}>
-                    <div className={styles.labelGroup}>
-                        <label htmlFor="LastName">Tên đệm</label>
-                    </div>
-                </div>
-
-                <div className={styles.inputWrap}>
-                    <input
-                        type="text"
-                        name="lastName"
-                        placeholder="Tên đệm"
-                        maxLength={20}
-                        value={form.lastName}
-                        onChange={handleChangInput}
-                        id="lastName"
-                    />
-                </div>
-            </div>
-
-            <div className={styles.wrapper_juilt}>
-                <div className={styles.wrapper}>
-                    <div className={styles.labelGroup}>
-                        <label htmlFor="email">email</label>
-                    </div>
-                </div>
-
-                <div className={styles.inputWrap}>
-                    <input
-                        type="text"
-                        name="email"
-                        placeholder="email"
-                        maxLength={50}
-                        value={form.email}
-                        onChange={handleChangInput}
-                        id="email"
-                    />
-                </div>
-            </div>
-
-            <div className={styles.wrapper_juilt}>
-                <div className={styles.wrapper}>
-                    <div className={styles.labelGroup}>
-                        <label htmlFor="password">Mật khẩu</label>
-                    </div>
-                </div>
-
-                <div className={styles.inputWrap}>
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Mật khẩu"
-                        maxLength={20}
-                        value={form.password}
-                        onChange={handleChangInput}
-                        id="password"
-                    />
-                </div>
-            </div>
-
-            <div className={styles.wrapper_juilt}>
-                <div className={styles.wrapper}>
-                    <div className={styles.labelGroup}>
-                        <label htmlFor="password_confirmation">
-                            Nhập lại mật khẩu
-                        </label>
-                    </div>
-                </div>
-
-                <div className={styles.inputWrap}>
-                    <input
-                        type="password"
-                        name="password_confirmation"
-                        placeholder="Nhập lại mật khẩu"
-                        maxLength={20}
-                        value={form.password_confirmation}
-                        onChange={handleChangInput}
-                        id="password_confirmation"
-                    />
-                </div>
-            </div>
-
-            {errs.message && <p className={styles.message}>{errs.message}</p>}
+        <form action="" onSubmit={handleSubmit(onSubmit)}>
+            <Input
+                labelName={"Tên"}
+                name={"firstName"}
+                message={errors}
+                register={register}
+            />
+            <Input
+                labelName={"Tên đệm"}
+                name={"lastName"}
+                message={errors}
+                register={register}
+            />
+            <Input
+                labelName={"email"}
+                name={"email"}
+                message={errors}
+                register={register}
+            />
+            <Input
+                labelName={"Mật khẩu"}
+                name={"password"}
+                message={errors}
+                register={register}
+            />
+            <Input
+                labelName={"Nhập lại mật khẩu"}
+                name={"password_confirmation"}
+                message={errors}
+                register={register}
+            />
 
             <button
-                ref={btnSubmit}
-                className={`${styles.wrapperBtn} ${styles.btnPrimary} ${styles.rounded} ${styles.disabled}`}
+                className={`${styles.wrapperBtn} ${styles.btnPrimary} ${styles.rounded} `}
             >
                 Đăng ký
             </button>
         </form>
     ) : (
-        <form action="" onSubmit={handleSubmit}>
-            <div className={styles.wrapper_juilt}>
-                <div className={styles.wrapper}>
-                    <div className={styles.labelGroup}>
-                        <label htmlFor="email">email</label>
-                    </div>
-                </div>
-
-                <div className={styles.inputWrap}>
-                    <input
-                        type="text"
-                        name="email"
-                        placeholder="email"
-                        maxLength={50}
-                        value={form.email}
-                        onChange={handleChangInput}
-                        id="email"
-                    />
-                </div>
-            </div>
-
-            <div className={styles.wrapper_juilt}>
-                <div className={styles.wrapper}>
-                    <div className={styles.labelGroup}>
-                        <label htmlFor="password">Mật khẩu</label>
-                    </div>
-                </div>
-
-                <div className={styles.inputWrap}>
-                    <input
-                        type="password"
-                        name="password"
-                        placeholder="Mật khẩu"
-                        maxLength={20}
-                        value={form.password}
-                        onChange={handleChangInput}
-                        id="password"
-                    />
-                </div>
-            </div>
-
-            {errs.message && <p className={styles.message}>{errs.message}</p>}
+        <form action="" onSubmit={handleSubmit(onSubmit)}>
+            <Input
+                labelName={"email"}
+                name={"email"}
+                message={errors}
+                register={register}
+            />
+            <Input
+                labelName={"Mật khẩu"}
+                name={"password"}
+                message={errors}
+                register={register}
+            />
 
             <button
-                ref={btnSubmit}
-                className={`${styles.wrapperBtn} ${styles.btnPrimary} ${styles.rounded} ${styles.disabled}`}
+                className={`${styles.wrapperBtn} ${styles.btnPrimary} ${styles.rounded} `}
             >
                 {type === "register" ? "đăng ký" : "đăng nhập"}
             </button>

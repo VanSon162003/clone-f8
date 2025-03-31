@@ -1,0 +1,65 @@
+.wrapper {
+  margin-top: 50px;
+}
+
+.headingWrap {
+  display: flex;
+  align-items: baseline;
+}
+
+.heading {
+  margin: 16px auto 0 0;
+  color: #242424;
+  font-size: 2.4rem;
+  font-weight: 900;
+}
+.heading a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #000;
+}
+
+.body {
+  min-height: 200px;
+  padding-bottom: 0;
+}
+
+.viewAll {
+  padding: 8px 0 8px 8px;
+  margin-right: 4px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #f05123;
+  background-color: transparent;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+       user-select: none;
+  cursor: pointer;
+}
+.viewAll svg {
+  font-size: 1.2rem;
+  margin-left: 4px;
+  position: relative;
+  top: -1px;
+  transition: ease 0.3s;
+}
+.viewAll:hover svg {
+  translate: 4px;
+}
+.viewAll:hover {
+  text-decoration: underline;
+}
+
+.label {
+  position: relative;
+  right: -8px;
+  top: -6px;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #fff;
+  text-transform: uppercase;
+  border-radius: 4px;
+  padding: 3px 6px;
+  background-color: #1473e6;
+}/*# sourceMappingURL=Section.module.css.map */

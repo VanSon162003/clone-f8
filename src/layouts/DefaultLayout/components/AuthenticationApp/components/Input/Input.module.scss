@@ -1,0 +1,54 @@
+.wrapper_juilt {
+    width: 100%;
+    margin-top: 10px;
+    overflow: hidden;
+}
+.wrapper {
+    text-align: left;
+    color: #292929;
+    width: 100%;
+}
+.labelGroup {
+    display: flex;
+    justify-content: space-between;
+
+    label {
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin: 10px 0 10px 8px;
+        display: block;
+    }
+}
+
+.inputWrap {
+    position: relative;
+    background: #fff;
+    border: 1.5px solid #dee3e9;
+    border-radius: 44px;
+    overflow: hidden;
+    height: 44px;
+    display: flex;
+    transition: border-color 0.3s;
+
+    &:focus-within {
+        border-color: #1dbfaf;
+    }
+
+    input {
+        display: block;
+        width: 100%;
+        padding: 12px 42px 12px 20px;
+        border: none;
+        outline: none;
+        font-size: 1.4rem;
+        background-color: transparent;
+    }
+}
+
+.message {
+    margin: 10px 0 0 8px;
+    color: #f33a58;
+    font-size: 1.4rem;
+    font-weight: 500;
+    line-height: 1.5;
+}
