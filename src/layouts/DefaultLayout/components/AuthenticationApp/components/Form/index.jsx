@@ -94,12 +94,14 @@ function Form({ type = "" }) {
                 labelName={"Mật khẩu"}
                 name={"password"}
                 message={errors}
+                type="password"
                 register={register}
             />
             <Input
                 labelName={"Nhập lại mật khẩu"}
                 name={"password_confirmation"}
                 message={errors}
+                type="password"
                 register={register}
             />
 
@@ -122,6 +124,7 @@ function Form({ type = "" }) {
                 name={"password"}
                 message={errors}
                 register={register}
+                type="password"
             />
 
             <button
