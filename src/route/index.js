@@ -12,7 +12,8 @@ import Learning from "@/pages/Learning";
 import NotFound from "@/pages/NotFound";
 import ProductDetail from "@/pages/ProductDetail";
 import Products from "@/pages/Products";
-import Setting from "@/pages/Setting";
+import SettingApp from "@/pages/SettingApp";
+import Setting from "@/pages/SettingApp/components/Setting";
 
 const routes = [
     {
@@ -65,6 +66,11 @@ const routes = [
     {
         path: config.routes.forgotPassWord,
         component: ForgotPassWord,
+        layout: null,
+    },
+    {
+        path: config.routes.settingApp,
+        component: SettingApp,
         layout: null,
     },
     {

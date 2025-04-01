@@ -2,7 +2,6 @@ import Magic from "@/components/Magic";
 import Button from "@/components/Button";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
-import styles from "./ProfileForm.module.scss";
 import Input from "@/layouts/DefaultLayout/components/AuthenticationApp/components/Input";
 import { useForm } from "react-hook-form";
 
@@ -12,6 +11,8 @@ import { useEffect, useState } from "react";
 import authService from "@/services/authService";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+
+import styles from "./ProfileForm.module.scss";
 
 const schema = yup
     .object({
@@ -71,15 +72,18 @@ function ProfileForm({ user = {}, setShowForm }) {
                     setIsloading(false);
 
                     if (res) {
-                        navigate(
-                            `/setting/p/${newData.username || user?.username}`,
-                            { replace: true }
-                        );
+                        // navigate(
+                        //     `/setting/p/${newData.username || user?.username}`,
+                        //     { replace: true }
+                        // );
 
                         toast.success("Cập nhật thành công");
                         setShowForm(false);
 
                         setTimeout(() => {
+                            window.top.location.replace(
+                                "/setting/p/" + newData.username
+                            );
                             window.location.reload();
                         }, 1500);
                     }

@@ -1,12 +1,12 @@
+import Button from "@/components/Button";
+import Magic from "@/components/Magic";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 
-import logo from "@/assets/imgs/logo-f8.png/";
 import styles from "./Setting.module.scss";
-import Button from "@/components/Button";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import logo from "@/assets/imgs/logo-f8.png/";
 import { faShield, faUser } from "@fortawesome/free-solid-svg-icons";
-import Profile from "./components/Profile";
-import Magic from "@/components/Magic";
+import Profile from "../Profile";
 import { ToastContainer } from "react-toastify";
 
 function Setting() {
