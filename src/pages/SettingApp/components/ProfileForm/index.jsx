@@ -6,25 +6,15 @@ import Input from "@/layouts/DefaultLayout/components/AuthenticationApp/componen
 import { useForm } from "react-hook-form";
 
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import { useEffect, useState } from "react";
 import authService from "@/services/authService";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import styles from "./ProfileForm.module.scss";
+import schemaProfile from "@/schema/schemaProfile";
 
-const schema = yup
-    .object({
-        username: yup.string(),
-        email: yup.string().email("Cần nhập đúng định dạng email"),
-    })
-    .required();
-
-function ProfileForm({ user = {}, setShowForm }) {
+function ProfileForm({ user = {}, setShowForm, setIsRoll }) {
     const [isLoading, setIsloading] = useState(false);
-
-    const navigate = useNavigate();
 
     const {
         register,
@@ -32,7 +22,7 @@ function ProfileForm({ user = {}, setShowForm }) {
         watch,
         trigger,
         setError,
-        formState: { errors },
+        formState: { errors, isValid },
     } = useForm({
         defaultValues: {
             username: user?.username,
@@ -43,10 +33,14 @@ function ProfileForm({ user = {}, setShowForm }) {
             phone: user?.phone,
             birthDate: user?.birthDate,
         },
-        resolver: yupResolver(schema),
+        resolver: yupResolver(schemaProfile),
     });
 
     const onSubmit = (data) => {
+        if (!isValid) {
+            return;
+        }
+
         const newData = Object.fromEntries(
             Object.entries(data).filter(([key, value]) => value !== null)
         );
@@ -72,11 +66,6 @@ function ProfileForm({ user = {}, setShowForm }) {
                     setIsloading(false);
 
                     if (res) {
-                        // navigate(
-                        //     `/setting/p/${newData.username || user?.username}`,
-                        //     { replace: true }
-                        // );
-
                         toast.success("Cập nhật thành công");
                         setShowForm(false);
 
@@ -95,6 +84,10 @@ function ProfileForm({ user = {}, setShowForm }) {
         }
     };
 
+    useEffect(() => {
+        setIsRoll(true);
+    }, [setIsRoll]);
+
     const ageValue = watch("age");
     const genderValue = watch("gender");
     const emailValue = watch("email");
@@ -105,6 +98,7 @@ function ProfileForm({ user = {}, setShowForm }) {
         document.addEventListener("keydown", (e) => {
             if (e.key === "Escape") {
                 setShowForm(false);
+                setIsRoll(false);
             }
         });
 
@@ -222,6 +216,7 @@ function ProfileForm({ user = {}, setShowForm }) {
                 className={styles.overlay}
                 onClick={() => {
                     setShowForm(false);
+                    setIsRoll(false);
                 }}
             ></div>
             <div className={styles.inner}>
@@ -231,6 +226,7 @@ function ProfileForm({ user = {}, setShowForm }) {
                     <Button
                         onClick={() => {
                             setShowForm(false);
+                            setIsRoll(false);
                         }}
                         href="#"
                         icon={faXmark}
@@ -294,7 +290,9 @@ function ProfileForm({ user = {}, setShowForm }) {
 
                     <Button
                         isLoading={isLoading}
-                        className={`${styles.wrapperBtn} ${styles.btnPrimary} ${styles.rounded} `}
+                        className={`${styles.wrapperBtn} ${styles.btnPrimary} ${
+                            styles.rounded
+                        } ${!isValid && styles.disabled} `}
                     >
                         Cập nhật
                     </Button>

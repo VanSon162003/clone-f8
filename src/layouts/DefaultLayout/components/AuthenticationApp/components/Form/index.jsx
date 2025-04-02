@@ -10,6 +10,7 @@ import schemaRegister from "@/schema/schemaRegister";
 import schemaLogin from "@/schema/schemaLogin";
 
 import styles from "./Form.module.scss";
+import Button from "@/components/Button";
 
 function Form({ type = "" }) {
     const {
@@ -25,11 +26,17 @@ function Form({ type = "" }) {
         ),
     });
 
+    const [isLoading, setIsLoading] = useState(false);
+
     const [respone, setRespone] = useState();
+
+    const [messageErr, setMessageErr] = useState("");
 
     const { param } = useQuery();
 
     const emailValue = watch("email");
+
+    const passwordValue = watch("password");
 
     useEffect(() => {
         if (emailValue) {
@@ -53,13 +60,26 @@ function Form({ type = "" }) {
         }
     }, [emailValue]);
 
+    useEffect(() => {
+        setMessageErr("");
+    }, [emailValue, passwordValue]);
+
+    console.log(isLoading);
+
     const onSubmit = async (data) => {
-        if (type === "register") {
-            const res = await authService.register(data);
-            setRespone(res);
-        } else {
-            const res = await authService.login(data);
-            setRespone(res);
+        try {
+            setIsLoading(true);
+            if (type === "register") {
+                const res = await authService.register(data);
+                setRespone(res);
+            } else {
+                const res = await authService.login(data);
+                setRespone(res);
+            }
+        } catch (error) {
+            setMessageErr(error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -105,11 +125,12 @@ function Form({ type = "" }) {
                 register={register}
             />
 
-            <button
+            <Button
+                isLoading={isLoading}
                 className={`${styles.wrapperBtn} ${styles.btnPrimary} ${styles.rounded} `}
             >
                 Đăng ký
-            </button>
+            </Button>
         </form>
     ) : (
         <form action="" onSubmit={handleSubmit(onSubmit)}>
@@ -127,11 +148,20 @@ function Form({ type = "" }) {
                 type="password"
             />
 
-            <button
+            {messageErr && (
+                <div className={styles.message}>
+                    {messageErr === "Invalid credentials"
+                        ? "tài khoản hoặc mật khẩu không đúng"
+                        : messageErr}
+                </div>
+            )}
+
+            <Button
+                isLoading={isLoading}
                 className={`${styles.wrapperBtn} ${styles.btnPrimary} ${styles.rounded} `}
             >
                 {type === "register" ? "đăng ký" : "đăng nhập"}
-            </button>
+            </Button>
         </form>
     );
 }

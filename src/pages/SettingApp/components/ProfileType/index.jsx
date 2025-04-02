@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import styles from "./ProfileType.module.scss";
 import ProfileItem from "../ProfileItem";
 import authService from "@/services/authService";
 import ProfileForm from "../ProfileForm";
+import useRoll from "@/hook/useRoll";
 
 function ProfileType({ type = "" }) {
     const [user, setUser] = useState(null);
 
     const [showForm, setShowForm] = useState(false);
+
+    const [setIsRoll] = useRoll();
 
     useEffect(() => {
         type === "user" &&
@@ -73,7 +76,13 @@ function ProfileType({ type = "" }) {
                 </div>
             </section>
 
-            {showForm && <ProfileForm user={user} setShowForm={setShowForm} />}
+            {showForm && (
+                <ProfileForm
+                    setIsRoll={setIsRoll}
+                    user={user}
+                    setShowForm={setShowForm}
+                />
+            )}
         </>
     );
 }

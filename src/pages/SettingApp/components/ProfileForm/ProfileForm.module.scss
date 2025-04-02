@@ -1,3 +1,23 @@
+@keyframes inline {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes inner {
+    0% {
+        scale: 0;
+        opacity: 0;
+    }
+    100% {
+        scale: 1;
+        opacity: 1;
+    }
+}
+
 .wrapper {
     position: fixed;
     top: 0;
@@ -15,6 +35,10 @@
     bottom: 0;
     left: 0;
     background-color: #000000b3;
+
+    animation-name: inline;
+    animation-duration: 0.3s;
+    animation-timing-function: linear;
 }
 .inner {
     position: relative;
@@ -26,6 +50,9 @@
     border-radius: 16px;
     background-color: #fff;
     overflow: hidden;
+
+    animation-name: inner;
+    animation-duration: 0.3s;
 }
 .control {
     display: flex;
@@ -62,9 +89,11 @@
 }
 
 .content {
+    width: 403px;
     min-height: 122px;
     max-height: 60vh;
     padding-bottom: 30px;
+    padding-right: 43px;
     overflow-y: auto;
 }
 
