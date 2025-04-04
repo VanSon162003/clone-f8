@@ -12,8 +12,13 @@ import { toast } from "react-toastify";
 
 import styles from "./ProfileForm.module.scss";
 import schemaProfile from "@/schema/schemaProfile";
+import useDebounce from "@/hook/useDebounce";
 
-function ProfileForm({ user = {}, setShowForm, setIsRoll }) {
+function ProfileForm({
+    user = {},
+    setShowForm = () => {},
+    setIsRoll = () => {},
+}) {
     const [isLoading, setIsloading] = useState(false);
 
     const {
@@ -88,11 +93,11 @@ function ProfileForm({ user = {}, setShowForm, setIsRoll }) {
         setIsRoll(true);
     }, [setIsRoll]);
 
-    const ageValue = watch("age");
-    const genderValue = watch("gender");
-    const emailValue = watch("email");
-    const phoneValue = watch("phone");
-    const usernameValue = watch("username");
+    const ageValue = useDebounce(watch("age", 600));
+    const genderValue = useDebounce(watch("gender", 600));
+    const emailValue = useDebounce(watch("email", 600));
+    const phoneValue = useDebounce(watch("phone", 600));
+    const usernameValue = useDebounce(watch("username", 600));
 
     useEffect(() => {
         document.addEventListener("keydown", (e) => {
@@ -103,23 +108,17 @@ function ProfileForm({ user = {}, setShowForm, setIsRoll }) {
         });
 
         if (ageValue) {
-            const timeID = setTimeout(() => {
-                if (ageValue < 0) {
-                    setError("age", {
-                        message: "Tuổi không thể nhỏ hơn 0",
-                    });
-                }
-            }, 600);
-
-            return () => {
-                clearTimeout(timeID);
-            };
+            if (ageValue < 0) {
+                setError("age", {
+                    message: "Tuổi không thể nhỏ hơn 0",
+                });
+            }
         }
     }, [ageValue]);
 
     useEffect(() => {
         if (genderValue) {
-            const timeID = setTimeout(async () => {
+            (async () => {
                 const ok = await trigger("gender");
                 if (ok) {
                     const validGenders = ["nam", "nữ", "nu"];
@@ -129,17 +128,13 @@ function ProfileForm({ user = {}, setShowForm, setIsRoll }) {
                         });
                     }
                 }
-            }, 600);
-
-            return () => {
-                clearTimeout(timeID);
-            };
+            })();
         }
     }, [genderValue]);
 
     useEffect(() => {
         if (emailValue) {
-            const timeID = setTimeout(async () => {
+            (async () => {
                 const ok = await trigger("email");
                 if (ok) {
                     const res = await authService.checkEmail(
@@ -149,16 +144,13 @@ function ProfileForm({ user = {}, setShowForm, setIsRoll }) {
                         setError("email", { message: "email đã tồn tại" });
                     }
                 }
-            }, 600);
-            return () => {
-                clearTimeout(timeID);
-            };
+            })();
         }
     }, [emailValue]);
 
     useEffect(() => {
         if (phoneValue) {
-            const timeID = setTimeout(async () => {
+            (async () => {
                 const ok = await trigger("phone");
                 if (ok) {
                     if (phoneValue.length !== 10) {
@@ -176,17 +168,13 @@ function ProfileForm({ user = {}, setShowForm, setIsRoll }) {
                         }
                     }
                 }
-            }, 600);
-
-            return () => {
-                clearTimeout(timeID);
-            };
+            })();
         }
     }, [phoneValue]);
 
     useEffect(() => {
         if (usernameValue) {
-            const timeID = setTimeout(async () => {
+            (async () => {
                 const ok = await trigger("username");
                 if (ok) {
                     const res = await authService.checkUserName(
@@ -198,11 +186,7 @@ function ProfileForm({ user = {}, setShowForm, setIsRoll }) {
                         });
                     }
                 }
-            }, 600);
-
-            return () => {
-                clearTimeout(timeID);
-            };
+            })();
         }
     }, [usernameValue]);
 

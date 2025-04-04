@@ -5,11 +5,14 @@ import ProfileItem from "../ProfileItem";
 import authService from "@/services/authService";
 import ProfileForm from "../ProfileForm";
 import useRoll from "@/hook/useRoll";
+import ProfileFormItem from "../ProfileFormItem";
 
 function ProfileType({ type = "" }) {
     const [user, setUser] = useState(null);
 
     const [showForm, setShowForm] = useState(false);
+    const [showFormItem, setShowFormItem] = useState(false);
+    const [typeFormItem, setTypeFormItem] = useState("");
 
     const [setIsRoll] = useRoll();
 
@@ -18,7 +21,8 @@ function ProfileType({ type = "" }) {
             (async () => {
                 try {
                     const data = await authService.getCurrentUser();
-                    data.user && setUser(data.user);
+
+                    data.data && setUser(data.data);
                 } catch (error) {
                     console.log(error);
                 }
@@ -73,6 +77,13 @@ function ProfileType({ type = "" }) {
                         value={formatDate(user?.createdAt)}
                     />
                     <ProfileItem label={"Xác minh tài khoản"} value={verify} />
+                    <ProfileItem
+                        avatar
+                        label={"Ảnh đại diện"}
+                        setShowFormItem={setShowFormItem}
+                        setTypeFormItem={setTypeFormItem}
+                        user={user}
+                    />
                 </div>
             </section>
 
@@ -81,6 +92,15 @@ function ProfileType({ type = "" }) {
                     setIsRoll={setIsRoll}
                     user={user}
                     setShowForm={setShowForm}
+                />
+            )}
+
+            {showFormItem && (
+                <ProfileFormItem
+                    type={typeFormItem}
+                    setShowFormItem={setShowFormItem}
+                    setIsRoll={setIsRoll}
+                    user={user}
                 />
             )}
         </>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import Button from "@/components/Button";
 import styles from "./Actions.module.scss";
 import AccessForm from "../AccessForm";
@@ -7,19 +7,18 @@ import { faBell } from "@fortawesome/free-solid-svg-icons";
 
 import userImg from "@/assets/imgs/user.jpg";
 import proIcon from "@/assets/icons/pro-icon.svg";
-import authService from "@/services/authService";
 import logoutService from "@/services/logoutService";
 import { Link } from "react-router-dom";
+import { UserContext } from "@/contexts/UserContext";
+import useLoading from "@/hook/useLoading";
 
 function Actions() {
     const [isAccess, setIsAccess] = useState(false);
     const [showSetting, setShowSetting] = useState(false);
 
-    const [err, setErr] = useState({});
-
-    const [user, setUser] = useState(null);
-
     const settingRef = useRef(null);
+
+    const { setIsLoading } = useLoading();
 
     const saveAccessType = (type) => {
         localStorage.setItem("access", type);
@@ -29,14 +28,19 @@ function Actions() {
         setIsAccess(true);
         saveAccessType(type);
     };
+
     const token = localStorage.getItem("token");
 
-    if (err) {
-        if (err === "Unauthenticated") {
-            localStorage.removeItem("token");
-            window.top.location.href = "http://localhost:5173/";
+    const { user, err } = token ? useContext(UserContext) : {};
+
+    useEffect(() => {
+        if (err) {
+            if (err === "Unauthenticated") {
+                localStorage.removeItem("token");
+                window.top.location.href = "http://localhost:5173/";
+            }
         }
-    }
+    }, [err]);
 
     const handleLogout = async () => {
         if (!token) {
@@ -45,6 +49,7 @@ function Actions() {
         }
 
         try {
+            setIsLoading(true);
             const res = await logoutService.logoutUser();
 
             if (res.status === "success") {
@@ -52,7 +57,9 @@ function Actions() {
                 window.top.location.href = "http://localhost:5173/";
             }
         } catch (error) {
-            setErr(error);
+            console.log(error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -62,16 +69,6 @@ function Actions() {
                 setShowSetting(false);
             }
         };
-
-        token &&
-            (async () => {
-                try {
-                    const data = await authService.getCurrentUser();
-                    data.user && setUser(data.user);
-                } catch (error) {
-                    setErr(error);
-                }
-            })();
 
         document.addEventListener("mousedown", handleClickOutside);
 

@@ -5,6 +5,8 @@ export const UserContext = createContext();
 
 function UserProvider({ children }) {
     const [user, setUser] = useState(null);
+    const [err, setErr] = useState({});
+
     const [isLoading, setIsloading] = useState(true);
 
     useEffect(() => {
@@ -12,9 +14,10 @@ function UserProvider({ children }) {
             try {
                 setIsloading(true);
                 const res = await authService.getCurrentUser();
-                setUser(res.user);
+
+                setUser(res.data);
             } catch (error) {
-                console.log(error);
+                setErr(error);
             } finally {
                 setIsloading(false);
             }
@@ -24,6 +27,7 @@ function UserProvider({ children }) {
     const values = {
         user,
         isLoading,
+        err,
     };
 
     return (

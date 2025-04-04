@@ -11,6 +11,8 @@ import schemaLogin from "@/schema/schemaLogin";
 
 import styles from "./Form.module.scss";
 import Button from "@/components/Button";
+import useDebounce from "@/hook/useDebounce";
+import useLoading from "@/hook/useLoading";
 
 function Form({ type = "" }) {
     const {
@@ -26,55 +28,52 @@ function Form({ type = "" }) {
         ),
     });
 
-    const [isLoading, setIsLoading] = useState(false);
-
     const [respone, setRespone] = useState();
 
     const [messageErr, setMessageErr] = useState("");
 
     const { param } = useQuery();
 
-    const emailValue = watch("email");
-
     const passwordValue = watch("password");
 
+    const email = useDebounce(watch("email"), 800);
+
+    const { isLoading, setIsLoading } = useLoading();
+
+    // console.log(isLoading);
+
     useEffect(() => {
-        if (emailValue) {
+        if (email) {
             if (type === "register") {
-                const timeID = setTimeout(async () => {
+                (async () => {
                     const ok = await trigger("email");
                     if (ok) {
-                        const res = await authService.checkEmail(emailValue);
+                        const res = await authService.checkEmail(email);
                         if (res) {
                             setError("email", {
                                 message: "email đã được sử dụng",
                             });
                         }
                     }
-                }, 800);
-
-                return () => {
-                    clearTimeout(timeID);
-                };
+                })();
             }
         }
-    }, [emailValue]);
+    }, [email]);
 
     useEffect(() => {
         setMessageErr("");
-    }, [emailValue, passwordValue]);
-
-    console.log(isLoading);
+    }, [email, passwordValue]);
+    // console.log(isLoading);
 
     const onSubmit = async (data) => {
         try {
             setIsLoading(true);
             if (type === "register") {
                 const res = await authService.register(data);
-                setRespone(res);
+                setRespone(res.data);
             } else {
                 const res = await authService.login(data);
-                setRespone(res);
+                setRespone(res.data);
             }
         } catch (error) {
             setMessageErr(error);
@@ -85,9 +84,9 @@ function Form({ type = "" }) {
 
     if (respone?.access_token) {
         setToken(respone?.access_token);
-        window.top.location.href = `http://localhost:5173${
-            param.get("continue") ? param.get("continue") : ""
-        }`;
+        // window.top.location.href = `http://localhost:5173${
+        //     param.get("continue") ? param.get("continue") : ""
+        // }`;
     }
 
     return type === "register" ? (

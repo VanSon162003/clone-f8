@@ -9,19 +9,24 @@ const httpRequest = axios.create({
 
 const send = async (method, url, data, config) => {
     try {
+        const isPutOrPatch = ["put", "patch"].includes(method.toLowerCase());
+        const effectiveMethod = isPutOrPatch ? "post" : method;
+        const effectivePath = isPutOrPatch
+            ? `${url}${url.includes("?") ? "&" : "?"}_method=${method}`
+            : url;
+
         const res = await httpRequest.request({
-            method,
-            url,
+            method: effectiveMethod,
+            url: effectivePath,
             data,
             ...config,
         });
 
         return res.data;
     } catch (error) {
-        throw error.response.data.message;
+        throw error?.response?.data?.message || "An error occurred";
     }
 };
-
 export const get = async (url, config) => {
     return send("get", url, null, config);
 };

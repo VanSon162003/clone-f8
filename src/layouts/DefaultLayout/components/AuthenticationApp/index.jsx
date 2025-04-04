@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import styles from "./AuthenticationApp.module.scss";
 import Header from "./components/Header";

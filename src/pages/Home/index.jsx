@@ -1,7 +1,6 @@
 import useApi from "@/hook/useApi";
 import styles from "./Home.module.scss";
 import Section from "@/components/Section";
-import useUser from "@/hook/useUser";
 function Home() {
     const coursePro = useApi("/pro");
     const courseFree = useApi("/free");

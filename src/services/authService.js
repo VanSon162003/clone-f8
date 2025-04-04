@@ -10,6 +10,11 @@ export const updateCurrentUser = async (id, data) => {
     return res;
 };
 
+export const updateUserImg = async (data) => {
+    const res = await httpRequest.put(`/users/me`, data);
+    return res;
+};
+
 export const checkEmail = async (email) => {
     const res = await httpRequest.get("/auth/check-email", {
         params: {
@@ -55,6 +60,7 @@ export const login = async (data) => {
 export default {
     getCurrentUser,
     updateCurrentUser,
+    updateUserImg,
     checkEmail,
     checkPhone,
     checkUserName,

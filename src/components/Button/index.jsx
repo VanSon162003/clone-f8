@@ -37,10 +37,10 @@ function Button({
         passProp.href = href;
     }
 
-    const handleClick = () => {
+    const handleClick = (e) => {
         if (disabled || isLoading) return;
 
-        onClick && onClick();
+        onClick && onClick(e);
     };
 
     return (
