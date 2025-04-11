@@ -16,6 +16,8 @@ function ProfileItem({
         setTypeFormItem("file");
     };
 
+    console.log(user);
+
     return (
         <div
             className={`${styles.wrapper} ${avatar && styles.hasImg}`}
