@@ -3,31 +3,43 @@ import Button from "@/components/Button";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import userImg from "@/assets/imgs/user.jpg";
 
+const typeArr = [
+    "username",
+    "age",
+    "gender",
+    "email",
+    "phone",
+    "birthDate",
+    "emailVerifiedAt",
+    "file",
+    "changePassword",
+    "verify",
+];
+
 function ProfileItem({
     label = "",
     value = "",
-    avatar = false,
+    type = "",
     user = {},
     setShowFormItem = () => {},
     setTypeFormItem = () => {},
 }) {
     const handleClick = (e) => {
         setShowFormItem(true);
-        setTypeFormItem("file");
-    };
 
-    console.log(user);
+        typeArr.includes(type) && setTypeFormItem(type);
+    };
 
     return (
         <div
-            className={`${styles.wrapper} ${avatar && styles.hasImg}`}
+            className={`${styles.wrapper} ${type === "file" && styles.hasImg}`}
             onClick={() => {
-                avatar && handleClick();
+                handleClick();
             }}
         >
             <div className={styles.content}>
                 <h4 className={styles.label}>{label}</h4>
-                {avatar ? (
+                {type === "file" ? (
                     <img
                         src={user?.image ? user?.image : userImg}
                         alt="user"

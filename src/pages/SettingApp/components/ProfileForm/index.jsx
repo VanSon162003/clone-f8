@@ -93,11 +93,11 @@ function ProfileForm({
         setIsRoll(true);
     }, [setIsRoll]);
 
-    const ageValue = useDebounce(watch("age", 600));
-    const genderValue = useDebounce(watch("gender", 600));
-    const emailValue = useDebounce(watch("email", 600));
-    const phoneValue = useDebounce(watch("phone", 600));
-    const usernameValue = useDebounce(watch("username", 600));
+    const ageValue = useDebounce(watch("age"), 600);
+    const genderValue = useDebounce(watch("gender"), 600);
+    const emailValue = useDebounce(watch("email"), 600);
+    const phoneValue = useDebounce(watch("phone"), 600);
+    const usernameValue = useDebounce(watch("username"), 600);
 
     useEffect(() => {
         document.addEventListener("keydown", (e) => {

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useContext } from "react";
+import { useState, useEffect, useRef } from "react";
 import Button from "@/components/Button";
 import styles from "./Actions.module.scss";
 import AccessForm from "../AccessForm";
@@ -9,8 +9,8 @@ import userImg from "@/assets/imgs/user.jpg";
 import proIcon from "@/assets/icons/pro-icon.svg";
 import logoutService from "@/services/logoutService";
 import { Link } from "react-router-dom";
-import { UserContext } from "@/contexts/UserContext";
 import useLoading from "@/hook/useLoading";
+import useCurrentUser from "@/hook/useCurrentUser";
 
 function Actions() {
     const [isAccess, setIsAccess] = useState(false);
@@ -31,7 +31,7 @@ function Actions() {
 
     const token = localStorage.getItem("token");
 
-    const { user, err } = token ? useContext(UserContext) : {};
+    const { user, err } = useCurrentUser();
 
     useEffect(() => {
         if (err) {

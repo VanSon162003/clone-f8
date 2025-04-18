@@ -7,7 +7,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 function Input({
     labelName = "",
     name = "",
-    register = () => ({}),
+    register = (name) => ({}),
     message = {},
     type = "text",
     setUrl = () => {},

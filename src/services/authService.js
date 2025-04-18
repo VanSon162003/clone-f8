@@ -12,6 +12,7 @@ export const updateCurrentUser = async (id, data) => {
 
 export const updateUserImg = async (data) => {
     const res = await httpRequest.put(`/users/me`, data);
+
     return res;
 };
 
@@ -22,7 +23,7 @@ export const checkEmail = async (email) => {
         },
     });
 
-    return res.exists;
+    return res.data?.exists;
 };
 
 export const checkPhone = async (phone) => {

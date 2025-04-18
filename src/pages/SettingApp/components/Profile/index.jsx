@@ -2,14 +2,20 @@ import ProfileType from "../ProfileType";
 
 import styles from "./Profile.module.scss";
 
-function Profile() {
+function Profile({ type = "" }) {
+    const title = type === "user" ? "Thông tin cơ bản" : "Mật khẩu và bảo mật";
+    const desc =
+        type === "user"
+            ? "Quản lý thông tin cá nhân của bạn."
+            : "Quản lý mật khẩu và cài đặt bảo mật.";
+
     return (
         <main className={styles.content}>
-            <h1 className={styles.title}>Thông tin cá nhân </h1>
-            <p className={styles.desc}>Quản lý thông tin cá nhân của bạn.</p>
+            <h1 className={styles.title}>{title} </h1>
+            <p className={styles.desc}>{desc}</p>
 
             <div className={styles.inner}>
-                <ProfileType type="user" />
+                <ProfileType type={type} />
             </div>
         </main>
     );

@@ -7,7 +7,6 @@ import Loading from "@/components/Loading";
 
 function DefaultLayout() {
     const { isLoading } = useLoading();
-    console.log(isLoading);
 
     return (
         <>

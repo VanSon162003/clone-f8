@@ -13,6 +13,7 @@ import styles from "./Form.module.scss";
 import Button from "@/components/Button";
 import useDebounce from "@/hook/useDebounce";
 import useLoading from "@/hook/useLoading";
+import Loading from "@/components/Loading";
 
 function Form({ type = "" }) {
     const {
@@ -40,8 +41,6 @@ function Form({ type = "" }) {
 
     const { isLoading, setIsLoading } = useLoading();
 
-    // console.log(isLoading);
-
     useEffect(() => {
         if (email) {
             if (type === "register") {
@@ -49,6 +48,8 @@ function Form({ type = "" }) {
                     const ok = await trigger("email");
                     if (ok) {
                         const res = await authService.checkEmail(email);
+                        console.log(res);
+
                         if (res) {
                             setError("email", {
                                 message: "email đã được sử dụng",
@@ -63,7 +64,6 @@ function Form({ type = "" }) {
     useEffect(() => {
         setMessageErr("");
     }, [email, passwordValue]);
-    // console.log(isLoading);
 
     const onSubmit = async (data) => {
         try {
@@ -84,9 +84,9 @@ function Form({ type = "" }) {
 
     if (respone?.access_token) {
         setToken(respone?.access_token);
-        // window.top.location.href = `http://localhost:5173${
-        //     param.get("continue") ? param.get("continue") : ""
-        // }`;
+        window.top.location.href = `http://localhost:5173${
+            param.get("continue") ? param.get("continue") : ""
+        }`;
     }
 
     return type === "register" ? (

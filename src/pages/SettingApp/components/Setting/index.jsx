@@ -8,8 +8,11 @@ import logo from "@/assets/imgs/logo-f8.png/";
 import { faShield, faUser } from "@fortawesome/free-solid-svg-icons";
 import Profile from "../Profile";
 import { ToastContainer } from "react-toastify";
+import { useState } from "react";
 
 function Setting() {
+    const [type, setType] = useState("user");
+
     return (
         <>
             <ToastContainer position="top-right" autoClose={1000} />
@@ -40,7 +43,12 @@ function Setting() {
 
                                 <nav className={styles.nav}>
                                     <Button
-                                        className={`${styles.link} ${styles.active}`}
+                                        onClick={() => {
+                                            setType("user");
+                                        }}
+                                        className={`${styles.link} ${
+                                            type === "user" && styles.active
+                                        }`}
                                     >
                                         <div className={styles.linkInner}>
                                             <FontAwesomeIcon
@@ -50,7 +58,14 @@ function Setting() {
                                             Thông tin cá nhân
                                         </div>
                                     </Button>
-                                    <Button className={`${styles.link}`}>
+                                    <Button
+                                        className={`${styles.link} ${
+                                            type !== "user" && styles.active
+                                        }`}
+                                        onClick={() => {
+                                            setType("security");
+                                        }}
+                                    >
                                         <div className={styles.linkInner}>
                                             <FontAwesomeIcon
                                                 className={`svg-inline--fa ${styles.iconBtn}`}
@@ -65,7 +80,7 @@ function Setting() {
                     </div>
 
                     <div className="col col-7">
-                        <Profile />
+                        <Profile type={type} />
                     </div>
                 </div>
             </div>
