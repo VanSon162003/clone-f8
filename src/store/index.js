@@ -1,21 +1,26 @@
-import { applyMiddleware, combineReducers, legacy_createStore } from "redux";
-
-import { reducer as productReducer } from "@/reducers/product";
-import { reducer as authReducer } from "@/reducers/auth";
-import { thunk } from "redux-thunk";
 import logger from "redux-logger";
 
-const initState = {};
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import authReducer from "@/features/auth/authSlice";
+
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage";
+
+const rootConfig = {
+    key: "auth",
+    storage,
+};
 
 const rootReducer = combineReducers({
-    product: productReducer,
     auth: authReducer,
 });
 
-const store = legacy_createStore(
-    rootReducer,
-    initState,
-    applyMiddleware(thunk, logger)
-);
+export const store = configureStore({
+    reducer: persistReducer(rootConfig, rootReducer),
+    middleware: (getDefault) => [
+        ...getDefault({ serializableCheck: false }),
+        logger,
+    ],
+});
 
-export default store;
+export const persistor = persistStore(store);

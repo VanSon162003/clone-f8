@@ -7,10 +7,10 @@ import { faBell } from "@fortawesome/free-solid-svg-icons";
 
 import userImg from "@/assets/imgs/user.jpg";
 import proIcon from "@/assets/icons/pro-icon.svg";
-import logoutService from "@/services/logoutService";
 import { Link } from "react-router-dom";
-import useLoading from "@/hook/useLoading";
 import useCurrentUser from "@/hook/useCurrentUser";
+import { useDispatch } from "react-redux";
+import { logoutCurrentUser } from "@/features/auth/authSlice";
 
 function Actions() {
     const [isAccess, setIsAccess] = useState(false);
@@ -18,7 +18,7 @@ function Actions() {
 
     const settingRef = useRef(null);
 
-    const { setIsLoading } = useLoading();
+    const dispatch = useDispatch();
 
     const saveAccessType = (type) => {
         localStorage.setItem("access", type);
@@ -48,19 +48,8 @@ function Actions() {
             return;
         }
 
-        try {
-            setIsLoading(true);
-            const res = await logoutService.logoutUser();
-
-            if (res.status === "success") {
-                localStorage.removeItem("token");
-                window.top.location.href = "http://localhost:5173/";
-            }
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setIsLoading(false);
-        }
+        dispatch(logoutCurrentUser());
+        localStorage.removeItem("token");
     };
 
     useEffect(() => {
@@ -77,7 +66,7 @@ function Actions() {
         };
     }, [token]);
 
-    return token ? (
+    return user ? (
         <div className={styles.actions}>
             <div>
                 <button className={styles.myLearn}>Khoá học của tôi</button>
@@ -95,7 +84,7 @@ function Actions() {
                     onClick={() => setShowSetting(!showSetting)}
                 >
                     <div className={styles.avatar}>
-                        <img src={userImg} alt="user" />
+                        <img src={user ? user.image : userImg} alt="user" />
                         <img className={styles.crown} src={proIcon} alt="" />
                     </div>
                 </div>
@@ -107,7 +96,10 @@ function Actions() {
                             <a href={`#`} className={styles.user}>
                                 <div className={styles.avaSetting}>
                                     <div className={styles.avatar}>
-                                        <img src={userImg} alt="user" />
+                                        <img
+                                            src={user ? user.image : userImg}
+                                            alt="user"
+                                        />
                                         <img
                                             className={styles.crown}
                                             src={proIcon}
@@ -118,7 +110,7 @@ function Actions() {
 
                                 <div className={styles.info}>
                                     <div className={styles.name}>
-                                        {user?.firstName + user?.lastName}
+                                        {user?.username}
                                     </div>
                                     <div className={styles.useName}>
                                         @{user?.username}

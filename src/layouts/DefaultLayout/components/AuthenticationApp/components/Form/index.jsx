@@ -12,8 +12,8 @@ import schemaLogin from "@/schema/schemaLogin";
 import styles from "./Form.module.scss";
 import Button from "@/components/Button";
 import useDebounce from "@/hook/useDebounce";
-import useLoading from "@/hook/useLoading";
-import Loading from "@/components/Loading";
+import { useDispatch, useSelector } from "react-redux";
+import { accessUser, setAuthErr } from "@/features/auth/authSlice";
 
 function Form({ type = "" }) {
     const {
@@ -29,17 +29,17 @@ function Form({ type = "" }) {
         ),
     });
 
-    const [respone, setRespone] = useState();
-
-    const [messageErr, setMessageErr] = useState("");
-
     const { param } = useQuery();
 
     const passwordValue = watch("password");
 
     const email = useDebounce(watch("email"), 800);
 
-    const { isLoading, setIsLoading } = useLoading();
+    const dispatch = useDispatch();
+
+    const isLoading = useSelector((state) => state.auth.loading);
+    const respone = useSelector((state) => state.auth.authRespone);
+    const messageErr = useSelector((state) => state.auth.error);
 
     useEffect(() => {
         if (email) {
@@ -62,32 +62,21 @@ function Form({ type = "" }) {
     }, [email]);
 
     useEffect(() => {
-        setMessageErr("");
+        dispatch(setAuthErr(""));
     }, [email, passwordValue]);
 
-    const onSubmit = async (data) => {
-        try {
-            setIsLoading(true);
-            if (type === "register") {
-                const res = await authService.register(data);
-                setRespone(res.data);
-            } else {
-                const res = await authService.login(data);
-                setRespone(res.data);
-            }
-        } catch (error) {
-            setMessageErr(error);
-        } finally {
-            setIsLoading(false);
-        }
+    const onSubmit = (data) => {
+        dispatch(accessUser({ data, type }));
     };
 
-    if (respone?.access_token) {
-        setToken(respone?.access_token);
-        window.top.location.href = `http://localhost:5173${
-            param.get("continue") ? param.get("continue") : ""
-        }`;
-    }
+    useEffect(() => {
+        if (respone?.access_token) {
+            setToken(respone?.access_token);
+            window.top.location.href = `http://localhost:5173${
+                param.get("continue") ? param.get("continue") : ""
+            }`;
+        }
+    }, [respone]);
 
     return type === "register" ? (
         <form action="" onSubmit={handleSubmit(onSubmit)}>

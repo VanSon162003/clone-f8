@@ -21,11 +21,11 @@ function Roadmap({ type }) {
                 <div className={styles.info}>
                     <h2 className={styles.title}>
                         {type === "frontEnd" ? (
-                            <Button to="/learning-paths/front-end-development">
+                            <Button to={`/learningItem/front-end-development`}>
                                 Lộ trình học Front-end
                             </Button>
                         ) : (
-                            <Button to="/learning-paths/back-end-development">
+                            <Button to={`/learningItem/back-end-development`}>
                                 Lộ trình học Back-end
                             </Button>
                         )}
@@ -53,10 +53,8 @@ function Roadmap({ type }) {
 
             <div className={styles.cta}>
                 {cta &&
-                    cta.map((item) => (
-                        <>
-                            <CtaItem to={item.tp} src={item.src} />
-                        </>
+                    cta.map((item, i) => (
+                        <CtaItem key={i} to={item.tp} src={item.src} />
                     ))}
             </div>
 

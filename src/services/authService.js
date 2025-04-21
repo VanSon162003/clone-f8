@@ -5,6 +5,11 @@ export const getCurrentUser = async () => {
     return res;
 };
 
+export const logoutUser = async () => {
+    const res = await httpRequest.post("/auth/logout");
+    return res;
+};
+
 export const updateCurrentUser = async (id, data) => {
     const res = await httpRequest.put(`/users/${id}`, data);
     return res;
@@ -60,6 +65,7 @@ export const login = async (data) => {
 
 export default {
     getCurrentUser,
+    logoutUser,
     updateCurrentUser,
     updateUserImg,
     checkEmail,

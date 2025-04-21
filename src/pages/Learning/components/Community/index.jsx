@@ -1,7 +1,9 @@
 import React from "react";
 
-import styles from "./Community.module.scss";
 import Button from "@/components/Button";
+
+import styles from "./Community.module.scss";
+import communityImg from "@/assets/imgs/comunity.webp";
 
 function Community() {
     return (
@@ -17,9 +19,14 @@ function Community() {
                 <Button
                     href="https://www.facebook.com/groups/f8official"
                     target="_blank"
+                    className={styles.cta}
                 >
                     Tham gia nhóm
                 </Button>
+            </div>
+
+            <div className={styles.image}>
+                <img src={communityImg} alt="" />
             </div>
         </div>
     );

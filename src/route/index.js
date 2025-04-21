@@ -9,6 +9,7 @@ import NoHeaderLayout from "@/layouts/NoHeaderLayout";
 import Blog from "@/pages/Blog";
 import Home from "@/pages/Home";
 import Learning from "@/pages/Learning";
+import LearningItem from "@/pages/LearningItem";
 import NotFound from "@/pages/NotFound";
 import ProductDetail from "@/pages/ProductDetail";
 import Products from "@/pages/Products";
@@ -77,6 +78,10 @@ const routes = [
         path: config.routes.setting,
         component: Setting,
         layout: null,
+    },
+    {
+        path: config.routes.learningItem,
+        component: LearningItem,
     },
 ];
 
