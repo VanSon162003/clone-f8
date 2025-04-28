@@ -5,7 +5,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 
 import authService from "@/services/authService";
 import Input from "../Input";
-import { setToken } from "@/utils/httpRequest";
+// import { setToken } from "@/utils/httpRequest";
 import schemaRegister from "@/schema/schemaRegister";
 import schemaLogin from "@/schema/schemaLogin";
 
@@ -71,12 +71,14 @@ function Form({ type = "" }) {
 
     useEffect(() => {
         if (respone?.access_token) {
-            setToken(respone?.access_token);
+            localStorage.setItem("token", respone.access_token);
+            localStorage.setItem("refresh_token", respone.refresh_token);
+
             window.top.location.href = `http://localhost:5173${
                 param.get("continue") ? param.get("continue") : ""
             }`;
         }
-    }, [respone]);
+    }, [respone, param]);
 
     return type === "register" ? (
         <form action="" onSubmit={handleSubmit(onSubmit)}>

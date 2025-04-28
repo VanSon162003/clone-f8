@@ -6,15 +6,19 @@ import Login from "@/layouts/DefaultLayout/components/AuthenticationApp/page/Log
 import Register from "@/layouts/DefaultLayout/components/AuthenticationApp/page/Register";
 import NoFooterLayout from "@/layouts/NoFooterLayout";
 import NoHeaderLayout from "@/layouts/NoHeaderLayout";
+import AboutUs from "@/pages/AboutUs";
 import Blog from "@/pages/Blog";
+import ContactUs from "@/pages/ContactUs";
 import Home from "@/pages/Home";
 import Learning from "@/pages/Learning";
 import LearningItem from "@/pages/LearningItem";
 import NotFound from "@/pages/NotFound";
+import Privacy from "@/pages/Privacy";
 import ProductDetail from "@/pages/ProductDetail";
 import Products from "@/pages/Products";
 import SettingApp from "@/pages/SettingApp";
 import Setting from "@/pages/SettingApp/components/Setting";
+import Terms from "@/pages/Terms";
 
 const routes = [
     {
@@ -41,8 +45,6 @@ const routes = [
     {
         path: config.routes.blog,
         component: Blog,
-        layout: NoHeaderLayout,
-        protected: true,
     },
 
     {
@@ -82,6 +84,23 @@ const routes = [
     {
         path: config.routes.learningItem,
         component: LearningItem,
+    },
+    {
+        path: config.routes.aboutUs,
+        component: AboutUs,
+    },
+    {
+        path: config.routes.contactUs,
+        component: ContactUs,
+    },
+
+    {
+        path: config.routes.terms,
+        component: Terms,
+    },
+    {
+        path: config.routes.privacy,
+        component: Privacy,
     },
 ];
 

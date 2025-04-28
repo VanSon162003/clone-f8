@@ -21,17 +21,7 @@ function DefaultLayout() {
                 >
                     <SlideBar />
 
-                    <div
-                        style={{
-                            width: "100%",
-                            margin: " 0 auto",
-                            padding: "0 32px 0 10px",
-                        }}
-                    >
-                        <div className="container-fluid">
-                            <Outlet />
-                        </div>
-                    </div>
+                    <Outlet />
                 </div>
             </main>
 

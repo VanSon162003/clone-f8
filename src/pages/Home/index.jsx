@@ -9,36 +9,40 @@ function Home() {
     const courseVideo = useApi("/video");
 
     return (
-        <div className={styles.wrapper}>
-            <Section
-                courseType="pro"
-                courseList={coursePro}
-                heading={"Khoá học Pro"}
-            />
+        <div className={styles.parent}>
+            <div className="container-fluid">
+                <div className={styles.wrapper}>
+                    <Section
+                        courseType="pro"
+                        courseList={coursePro}
+                        heading={"Khoá học Pro"}
+                    />
 
-            <Section
-                courseType="free"
-                courseList={courseFree}
-                heading={"Khoá học Free"}
-                path={"/learning-paths"}
-                titleViewAll="Xem lộ trình"
-            />
+                    <Section
+                        courseType="free"
+                        courseList={courseFree}
+                        heading={"Khoá học Free"}
+                        path={"/learning-paths"}
+                        titleViewAll="Xem lộ trình"
+                    />
 
-            <Section
-                courseType="article"
-                courseList={courseArticle}
-                heading={"Bài viết nổi bật"}
-                path={"/blog"}
-                titleViewAll="Xem tất cả"
-            />
+                    <Section
+                        courseType="article"
+                        courseList={courseArticle}
+                        heading={"Bài viết nổi bật"}
+                        path={"/blog"}
+                        titleViewAll="Xem tất cả"
+                    />
 
-            <Section
-                courseType="video"
-                courseList={courseVideo}
-                heading={"Videos nổi bật"}
-                path={"https://www.youtube.com/c/F8VNOfficial/videos"}
-                titleViewAll="Xem tất cả"
-            />
+                    <Section
+                        courseType="video"
+                        courseList={courseVideo}
+                        heading={"Videos nổi bật"}
+                        path={"https://www.youtube.com/c/F8VNOfficial/videos"}
+                        titleViewAll="Xem tất cả"
+                    />
+                </div>
+            </div>
         </div>
     );
 }

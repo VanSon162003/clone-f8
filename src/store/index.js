@@ -5,6 +5,9 @@ import authReducer from "@/features/auth/authSlice";
 
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import { profileApi } from "@/services/ProfileService";
+import { setupListeners } from "@reduxjs/toolkit/query";
+import headerReducer from "@/features/auth/headerSlice";
 
 const rootConfig = {
     key: "auth",
@@ -13,6 +16,8 @@ const rootConfig = {
 
 const rootReducer = combineReducers({
     auth: authReducer,
+    header: headerReducer,
+    [profileApi.reducerPath]: profileApi.reducer,
 });
 
 export const store = configureStore({
@@ -20,7 +25,10 @@ export const store = configureStore({
     middleware: (getDefault) => [
         ...getDefault({ serializableCheck: false }),
         logger,
+        profileApi.middleware,
     ],
 });
+
+setupListeners(store.dispatch);
 
 export const persistor = persistStore(store);

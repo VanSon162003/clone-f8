@@ -13,13 +13,14 @@ import { toast } from "react-toastify";
 import styles from "./ProfileForm.module.scss";
 import schemaProfile from "@/schema/schemaProfile";
 import useDebounce from "@/hook/useDebounce";
+import { useUpdateCurrentUserMutation } from "@/services/ProfileService";
 
 function ProfileForm({
     user = {},
     setShowForm = () => {},
     setIsRoll = () => {},
 }) {
-    const [isLoading, setIsloading] = useState(false);
+    const [updateUser, { isLoading, error }] = useUpdateCurrentUserMutation();
 
     const {
         register,
@@ -63,12 +64,7 @@ function ProfileForm({
         if (newData) {
             (async () => {
                 try {
-                    setIsloading(true);
-                    const res = await authService.updateCurrentUser(
-                        user?.id,
-                        newData
-                    );
-                    setIsloading(false);
+                    const res = await updateUser(newData);
 
                     if (res) {
                         toast.success("Cập nhật thành công");
@@ -82,7 +78,6 @@ function ProfileForm({
                         }, 1500);
                     }
                 } catch (error) {
-                    setIsloading(false);
                     toast.error("Cập nhập thất bại");
                 }
             })();

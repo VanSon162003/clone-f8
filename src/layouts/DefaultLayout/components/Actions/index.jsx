@@ -50,6 +50,7 @@ function Actions() {
 
         dispatch(logoutCurrentUser());
         localStorage.removeItem("token");
+        localStorage.removeItem("refresh_token");
     };
 
     useEffect(() => {

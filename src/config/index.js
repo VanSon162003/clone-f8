@@ -13,6 +13,10 @@ const config = {
         forgotPassWord: "/forgotPassWord",
         settingApp: "/setting/p/:username",
         setting: "/setting",
+        aboutUs: "/about-us",
+        contactUs: "/contact-us",
+        terms: "/terms",
+        privacy: "/privacy",
     },
 };
 

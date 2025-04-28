@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./ProfileFormItem.module.scss";
 import Magic from "@/components/Magic";
 import Button from "@/components/Button";
@@ -6,9 +6,9 @@ import { faChevronLeft, faXmark } from "@fortawesome/free-solid-svg-icons";
 import Input from "@/layouts/DefaultLayout/components/AuthenticationApp/components/Input";
 import authService from "@/services/authService";
 import { toast } from "react-toastify";
-import useLoading from "@/hook/useLoading";
 import { useForm } from "react-hook-form";
 import useDebounce from "@/hook/useDebounce";
+import { useUpdateCurrentUserMutation } from "@/services/ProfileService";
 
 const typeArr = [
     "username",
@@ -112,10 +112,10 @@ function ProfileFormItem({
         },
     });
 
-    const { isLoading, setIsLoading } = useLoading();
-
     const [avatar, setAvatar] = useState({});
     const [url, setUrl] = useState("");
+
+    const [updateUser, { isLoading, error }] = useUpdateCurrentUserMutation();
 
     useEffect(() => {
         return () => {
@@ -148,7 +148,6 @@ function ProfileFormItem({
         if (!avatar) return;
         console.log(avatar);
 
-        setIsLoading(true);
         const formData = new FormData();
         formData.append("image", avatar);
 
@@ -165,10 +164,7 @@ function ProfileFormItem({
                 }, 1500);
             }
         } catch (error) {
-            console.log(error);
             toast.error("Cập nhập thất bại");
-        } finally {
-            setIsLoading(false);
         }
     };
 
@@ -254,7 +250,8 @@ function ProfileFormItem({
     }, [usernameValue, setError, trigger, user.id]);
 
     const onSubmit = (data) => {
-        console.log(123);
+        const formData = new FormData();
+        formData.append("image", avatar);
 
         if (data.gender) {
             const genderMap = {
@@ -268,8 +265,7 @@ function ProfileFormItem({
 
         (async () => {
             try {
-                const res = await authService.updateCurrentUser(user?.id, data);
-                console.log(res);
+                const res = await updateUser(data);
 
                 if (res) {
                     toast.success("Cập nhật thành công");

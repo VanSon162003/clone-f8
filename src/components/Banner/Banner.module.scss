@@ -1,0 +1,28 @@
+.wrap {
+    position: sticky;
+    top: 80px;
+
+    display: flex;
+    justify-content: flex-end;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+}
+
+.banner {
+    margin-top: 32px;
+
+    &:hover {
+        opacity: 0.9;
+    }
+
+    img {
+        width: 100%;
+        max-width: 100%;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+}

@@ -10,6 +10,11 @@ export const logoutUser = async () => {
     return res;
 };
 
+export const getProfile = async (username) => {
+    const res = await httpRequest.get(`/users/${username}`);
+    return res;
+};
+
 export const updateCurrentUser = async (id, data) => {
     const res = await httpRequest.put(`/users/${id}`, data);
     return res;
@@ -66,6 +71,7 @@ export const login = async (data) => {
 export default {
     getCurrentUser,
     logoutUser,
+    getProfile,
     updateCurrentUser,
     updateUserImg,
     checkEmail,

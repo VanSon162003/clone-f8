@@ -10,6 +10,52 @@
   width: 100%;
 }
 
+.labelWrap {
+  position: relative;
+  display: block;
+  margin: 30px auto;
+  width: 180px;
+  height: 180px;
+}
+.labelWrap:hover {
+  cursor: pointer;
+  opacity: 0.9;
+}
+.labelWrap::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3019607843);
+  border-radius: 50%;
+  z-index: 1;
+  transition: all 0.3s;
+  opacity: 0;
+  visibility: hidden;
+}
+.labelWrap img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+.addNew {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: 10px;
+  background-color: #fff;
+}
+.addNew:hover {
+  cursor: pointer;
+  background-color: #f2f2f2;
+}
+
 .labelGroup {
   display: flex;
   justify-content: space-between;

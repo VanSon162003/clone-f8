@@ -1,0 +1,68 @@
+.container,
+.row {
+  height: 100vh;
+}
+
+.wrapper {
+  border-right: 1px solid #dee3e9;
+  padding: 30px 37px 0 0;
+  height: 100%;
+}
+
+.content {
+  position: sticky;
+  top: 30px;
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+.heading {
+  margin: 15px 0;
+  font-size: 2.4rem;
+}
+
+.desc {
+  font-size: 1.5rem;
+  line-height: 1.2;
+  opacity: 0.9;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 20px 0;
+}
+
+.link,
+.linkInner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.link {
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-size: 1.6rem;
+  font-weight: 500;
+  opacity: 0.9;
+  transition: background-color 0.1s;
+}
+.link.active {
+  color: #fff;
+  background: #344854;
+  opacity: 1;
+}
+.link:not(.active):hover {
+  background: rgba(0, 0, 0, 0.1019607843);
+}
+
+.iconBtn {
+  font-size: 1.8rem;
+}/*# sourceMappingURL=Setting.module.css.map */

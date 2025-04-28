@@ -1,0 +1,122 @@
+@keyframes inline {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+@keyframes inner {
+  0% {
+    scale: 0;
+    opacity: 0;
+  }
+  100% {
+    scale: 1;
+    opacity: 1;
+  }
+}
+.wrapper {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.7019607843);
+  animation-name: inline;
+  animation-duration: 0.3s;
+  animation-timing-function: linear;
+}
+
+.inner {
+  position: relative;
+  top: -5%;
+  z-index: 1;
+  width: 420px;
+  padding: 10px 30px 30px;
+  border-radius: 16px;
+  background-color: #fff;
+  overflow: hidden;
+  animation-name: inner;
+  animation-duration: 0.3s;
+}
+
+.control {
+  display: flex;
+  align-items: center;
+  margin: 0 -18px;
+}
+
+.close {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  opacity: 0.7;
+  font-size: 2rem;
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+
+.header {
+  margin-top: 10px;
+}
+
+.desc {
+  margin-top: 15px;
+  font-size: 1.5rem;
+  opacity: 0.9;
+}
+
+.title {
+  font-size: 2.4rem;
+}
+
+.content {
+  width: 403px;
+  min-height: 122px;
+  max-height: 60vh;
+  padding-bottom: 30px;
+  padding-right: 43px;
+  overflow-y: auto;
+}
+
+.wrapperBtn {
+  display: block;
+  width: 100%;
+  margin-top: 20px;
+  padding: 12px 20px;
+  border: 1px solid var(--divider-color);
+  font-weight: 600;
+  font-size: 1.6rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: opacity 0.25s;
+}
+.wrapperBtn.btnPrimary {
+  color: #fff;
+  background-color: #1dbfaf;
+  background-image: linear-gradient(70.06deg, #2cccff -5%, #22dfbf 106%);
+  border: none;
+}
+.wrapperBtn.rounded {
+  border-radius: 999px;
+}
+.wrapperBtn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}/*# sourceMappingURL=ProfileForm.module.css.map */

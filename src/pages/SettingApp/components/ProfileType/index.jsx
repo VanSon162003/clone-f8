@@ -1,18 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import styles from "./ProfileType.module.scss";
 import ProfileItem from "../ProfileItem";
-import authService from "@/services/authService";
 import ProfileForm from "../ProfileForm";
 import useRoll from "@/hook/useRoll";
 import ProfileFormItem from "../ProfileFormItem";
-import useLoading from "@/hook/useLoading";
 import Loading from "@/components/Loading";
 import { useSelector } from "react-redux";
+import useCurrentUser from "@/hook/useCurrentUser";
 
 function ProfileType({ type = "" }) {
-    // const [user, setUser] = useState(null);
-    const user = useSelector((state) => state.auth.currentUser);
+    const { user } = useCurrentUser();
 
     const isLoading = useSelector((state) => state.auth.loading);
 
@@ -21,24 +19,6 @@ function ProfileType({ type = "" }) {
     const [typeFormItem, setTypeFormItem] = useState("");
 
     const [setIsRoll] = useRoll();
-
-    // const { isLoading, setIsLoading } = useLoading();
-
-    // useEffect(() => {
-    //     type === "user" &&
-    //         (async () => {
-    //             setIsLoading(true);
-    //             try {
-    //                 const data = await authService.getCurrentUser();
-
-    //                 data.data && setUser(data.data);
-    //             } catch (error) {
-    //                 console.log(error);
-    //             } finally {
-    //                 setIsLoading(false);
-    //             }
-    //         })();
-    // }, [type, setIsLoading]);
 
     const verify = user?.emailVerifiedAt
         ? "Tài khoản đã được xác minh"

@@ -1,0 +1,162 @@
+.parent {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 32px 0 10px;
+}
+
+.container {
+  padding: 8px 44px 0;
+  margin-bottom: 60px;
+}
+.container .top {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 32px 0 80px;
+}
+
+.heading {
+  font-size: 2.4rem;
+  font-weight: 900;
+  line-height: 1.4;
+  color: #242424;
+}
+
+.warp {
+  color: #292929;
+  word-wrap: break-word;
+  line-height: 1.8;
+  font-size: 1.4rem;
+}
+.warp p {
+  margin: 16px 0;
+}
+.warp strong {
+  font-weight: 700;
+}
+.warp a[href] {
+  color: #f05123;
+  text-decoration: underline;
+}
+.warp blockquote {
+  margin-left: 0;
+  padding: 0 0 2px 20px;
+  border-left: 3px solid #f05123;
+  color: #6d6d6d;
+  font-weight: 600;
+}
+.warp blockquote p {
+  margin: 0;
+}
+
+.desc {
+  max-width: 840px;
+}
+
+.content {
+  display: flex;
+  margin-top: 24px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -12px;
+  margin-right: -12px;
+}
+
+.col {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.col8 {
+  width: 66.66667%;
+}
+
+.col4 {
+  width: 33.33333%;
+}
+
+.wrapper {
+  color: #292929;
+  word-wrap: break-word;
+  line-height: 1.8;
+  font-size: 1.6rem;
+}
+.wrapper strong {
+  font-weight: 700;
+}
+.wrapper hr {
+  border: none;
+  border-color: transparent;
+  height: 1px;
+  background-color: #ddd;
+  margin: 40px 0;
+}
+.wrapper a[href] {
+  color: #f05123;
+  text-decoration: underline;
+}
+.wrapper p,
+.wrapper ul,
+.wrapper ol,
+.wrapper table,
+.wrapper blockquote {
+  margin: 16px 0;
+}
+.wrapper ul {
+  list-style: disc;
+}
+.wrapper ol {
+  list-style: decimal;
+}
+.wrapper ul,
+.wrapper ol {
+  padding-left: 24px;
+}
+.wrapper h1,
+.wrapper h2,
+.wrapper h3,
+.wrapper h4,
+.wrapper h5,
+.wrapper h6 {
+  font-weight: 600;
+}
+.wrapper h2[data-appended] {
+  position: relative;
+  scroll-margin-top: 100px;
+}
+.wrapper h2 {
+  font-size: 2.2rem;
+}
+.wrapper h3 {
+  font-size: 1.8rem;
+}
+.wrapper a[data-link] {
+  position: absolute;
+  top: 51%;
+  left: -36px;
+  transform: translateY(-50%);
+  padding: 8px;
+  text-decoration: none;
+  color: #666;
+  display: none;
+  opacity: 0.6;
+}
+.wrapper a[data-link] svg {
+  height: 0.8em;
+}
+.wrapper h2[data-appended]:hover a[data-link] {
+  display: block;
+}
+.wrapper blockquote {
+  margin-left: 0;
+  padding: 0 0 2px 20px;
+  border-left: 3px solid #f05123;
+  color: #6d6d6d;
+  font-weight: 600;
+}
+.wrapper blockquote p {
+  margin: 0;
+}/*# sourceMappingURL=Privacy.module.css.map */

@@ -1,10 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
-import useApi from "@/hook/useApi";
+import { useEffect, useRef, useState } from "react";
 
 import styles from "./SearchForm.module.scss";
 
 import searchImg from "@/assets/icons/search.svg";
-import { data } from "react-router-dom";
 import SearchResult from "../SearchResult";
 function SearchForm() {
     const [value, setValue] = useState("");

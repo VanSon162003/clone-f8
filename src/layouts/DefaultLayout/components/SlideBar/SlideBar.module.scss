@@ -1,5 +1,38 @@
 .slide {
     flex-shrink: 0;
+
+    &.hidden {
+        position: fixed;
+        left: 0;
+        top: 80px;
+        z-index: 1;
+        padding-right: 20px;
+        transform: translate(-96px);
+        transition: transform ease 0.5s;
+        will-change: transform;
+
+        &:hover {
+            transform: translate(0);
+        }
+
+        &:hover::after {
+            background-color: transparent;
+        }
+
+        &::after {
+            content: "";
+            position: absolute;
+            right: 7px;
+            bottom: 0;
+            width: 4px;
+            height: 100%;
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+            background-color: #0000004d;
+            transition: transform ease 0.5s, opacity ease 0.5s,
+                background-color ease 0.3s;
+        }
+    }
 }
 
 .wrapper {

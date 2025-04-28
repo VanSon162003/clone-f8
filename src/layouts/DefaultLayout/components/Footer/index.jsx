@@ -1,12 +1,27 @@
-import config from "@/config";
-import React from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import logo from "@/assets/imgs/logo-f8.png";
 import dmca from "@/assets/imgs/hmc.png";
 
 import styles from "./Footer.module.scss";
+import Button from "@/components/Button";
+import {
+    faSquareFacebook,
+    faSquareYoutube,
+    faTiktok,
+} from "@fortawesome/free-brands-svg-icons";
+import { useDispatch } from "react-redux";
+import { setHeaderBack, setSlideBack } from "@/features/auth/headerSlice";
 
 function Footer() {
+    const dispatch = useDispatch();
+
+    const handleClick = (type = "") => {
+        if (type === "about") dispatch(setSlideBack(true));
+        else dispatch(setSlideBack(false));
+
+        dispatch(setHeaderBack(true));
+    };
+
     return (
         <footer className={styles.wrapper}>
             <div className="container-fluid">
@@ -53,19 +68,33 @@ function Footer() {
                         <h2 className={styles.heading}>Về F8</h2>
                         <ul className={styles.list}>
                             <li>
-                                <Link to={"/about-us"}>Giới thiệu</Link>
+                                <Button
+                                    onClick={() => handleClick("about")}
+                                    to={"/about-us"}
+                                >
+                                    Giới thiệu
+                                </Button>
                             </li>
 
                             <li>
-                                <Link to={"/contact-us"}>Liên hệ</Link>
+                                <Button
+                                    onClick={handleClick}
+                                    to={"/contact-us"}
+                                >
+                                    Liên hệ
+                                </Button>
                             </li>
 
                             <li>
-                                <Link to={"/terms"}>Điều khoản</Link>
+                                <Button onClick={handleClick} to={"/terms"}>
+                                    Điều khoản
+                                </Button>
                             </li>
 
                             <li>
-                                <Link to={"/privacy"}>Bảo mật</Link>
+                                <Button onClick={handleClick} to={"/privacy"}>
+                                    Bảo mật
+                                </Button>
                             </li>
                         </ul>
                     </div>
@@ -217,77 +246,29 @@ function Footer() {
                             </p>
 
                             <div className={styles.social}>
-                                <a
-                                    className={`${styles.socialItem}`}
-                                    href="https://www.youtube.com/channel/YOUR_CHANNEL_ID"
+                                <Button
+                                    className={`${styles.socialItem} ${styles.youtube}`}
                                     target="_blank"
-                                    rel="noopener noreferrer"
-                                    aria-label="YouTube"
-                                    title="YouTube"
                                     href="https://www.youtube.com/@F8VNOfficial"
-                                >
-                                    <svg
-                                        className={styles.svgInline}
-                                        aria-hidden="true"
-                                        focusable="false"
-                                        data-prefix="fab"
-                                        data-icon="square-youtube"
-                                        role="img"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 448 512"
-                                    >
-                                        <path
-                                            fill="#eb2c3b"
-                                            d="M282 256.2l-95.2-54.1V310.3L282 256.2zM384 32H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64zm14.4 136.1c7.6 28.6 7.6 88.2 7.6 88.2s0 59.6-7.6 88.1c-4.2 15.8-16.5 27.7-32.2 31.9C337.9 384 224 384 224 384s-113.9 0-142.2-7.6c-15.7-4.2-28-16.1-32.2-31.9C42 315.9 42 256.3 42 256.3s0-59.7 7.6-88.2c4.2-15.8 16.5-28.2 32.2-32.4C110.1 128 224 128 224 128s113.9 0 142.2 7.7c15.7 4.2 28 16.6 32.2 32.4z"
-                                        ></path>
-                                    </svg>
-                                </a>
+                                    title="YouTube"
+                                    icon={faSquareYoutube}
+                                />
 
-                                <a
-                                    className={`${styles.socialItem}`}
-                                    title="F8 trên Facebook"
+                                <Button
+                                    className={`${styles.socialItem} ${styles.facebook}`}
                                     target="_blank"
-                                    rel="noreferrer"
                                     href="https://www.facebook.com/sondnf8"
-                                >
-                                    <svg
-                                        aria-hidden="true"
-                                        focusable="false"
-                                        data-prefix="fab"
-                                        data-icon="square-facebook"
-                                        role="img"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 448 512"
-                                    >
-                                        <path
-                                            fill="#4867aa"
-                                            d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64h98.2V334.2H109.4V256h52.8V222.3c0-87.1 39.4-127.5 125-127.5c16.2 0 44.2 3.2 55.7 6.4V172c-6-.6-16.5-1-29.6-1c-42 0-58.2 15.9-58.2 57.2V256h83.6l-14.4 78.2H255V480H384c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64z"
-                                        ></path>
-                                    </svg>
-                                </a>
+                                    title="F8 trên Facebook"
+                                    icon={faSquareFacebook}
+                                />
 
-                                <a
-                                    className={`${styles.socialItem}`}
-                                    title="F8 trên Tiktok"
+                                <Button
+                                    className={`${styles.socialItem} ${styles.tiktok}`}
                                     target="_blank"
-                                    rel="noreferrer"
                                     href="https://www.tiktok.com/"
-                                >
-                                    <svg
-                                        aria-hidden="true"
-                                        focusable="false"
-                                        data-prefix="fab"
-                                        data-icon="tiktok"
-                                        role="img"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 448 512"
-                                    >
-                                        <path
-                                            fill="#ccc"
-                                            d="M448,209.91a210.06,210.06,0,0,1-122.77-39.25V349.38A162.55,162.55,0,1,1,185,188.31V278.2a74.62,74.62,0,1,0,52.23,71.18V0l88,0a121.18,121.18,0,0,0,1.86,22.17h0A122.18,122.18,0,0,0,381,102.39a121.43,121.43,0,0,0,67,20.14Z"
-                                        ></path>
-                                    </svg>
-                                </a>
+                                    title="F8 trên Tiktok"
+                                    icon={faTiktok}
+                                />
                             </div>
                         </div>
                     </div>

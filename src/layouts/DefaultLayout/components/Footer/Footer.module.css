@@ -95,6 +95,15 @@
   padding: 12px;
   font-size: 3.2rem;
 }
+.socialItem.youtube {
+  color: #eb2c3b;
+}
+.socialItem.facebook {
+  color: #4867aa;
+}
+.socialItem.tiktok {
+  color: #ccc;
+}
 .socialItem svg {
   width: 28px;
   height: 28px;

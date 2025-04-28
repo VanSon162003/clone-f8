@@ -6,6 +6,7 @@
 
 html {
   font-size: 62.5%;
+  overscroll-behavior: none;
 }
 
 body {
@@ -59,4 +60,8 @@ h6,
 strong,
 b {
   font-weight: 600;
+}
+
+.container {
+  max-width: 1320px;
 }/*# sourceMappingURL=base.css.map */

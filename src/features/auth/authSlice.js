@@ -10,6 +10,7 @@ const initialState = {
 
 export const getCurrentUser = createAsyncThunk("auth/get-user", async () => {
     const res = await authService.getCurrentUser();
+
     return res.data;
 });
 
@@ -67,6 +68,22 @@ export const authSlice = createSlice({
                 state.currentUser = null;
                 state.error = action.payload;
                 state.loading = false;
+                state.authRespone = null;
+            })
+
+            // accessUser (login/register)
+            .addCase(accessUser.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(accessUser.fulfilled, (state, action) => {
+                state.authRespone = action.payload;
+                state.loading = false;
+            })
+            .addCase(accessUser.rejected, (state, action) => {
+                state.authRespone = null;
+                state.error = action.payload;
+                state.loading = false;
             })
 
             // logout user
@@ -85,21 +102,6 @@ export const authSlice = createSlice({
 
                 state.currentUser = null;
                 state.authRespone = null;
-                state.loading = false;
-            })
-
-            // accessUser (login/register)
-            .addCase(accessUser.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(accessUser.fulfilled, (state, action) => {
-                state.authRespone = action.payload;
-                state.loading = false;
-            })
-            .addCase(accessUser.rejected, (state, action) => {
-                state.authRespone = null;
-                state.error = action.payload;
                 state.loading = false;
             });
     },

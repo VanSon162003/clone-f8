@@ -1,0 +1,176 @@
+.parent {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 32px 0 10px;
+}
+
+.container {
+    padding: 8px 44px 0;
+    margin-bottom: 60px;
+    .top {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin: 32px 0 80px;
+    }
+}
+
+.heading {
+    font-size: 2.4rem;
+    font-weight: 900;
+    line-height: 1.4;
+    color: #242424;
+}
+
+.warp {
+    color: #292929;
+    word-wrap: break-word;
+    line-height: 1.8;
+    font-size: 1.4rem;
+    p {
+        margin: 16px 0;
+    }
+
+    strong {
+        font-weight: 700;
+    }
+
+    a[href] {
+        color: #f05123;
+        text-decoration: underline;
+    }
+
+    blockquote {
+        margin-left: 0;
+        padding: 0 0 2px 20px;
+        border-left: 3px solid #f05123;
+        color: #6d6d6d;
+        font-weight: 600;
+
+        p {
+            margin: 0;
+        }
+    }
+}
+
+.desc {
+    max-width: 840px;
+}
+
+.content {
+    display: flex;
+    margin-top: 24px;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: -12px;
+    margin-right: -12px;
+}
+
+.col {
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+.col8 {
+    width: 66.66667%;
+}
+
+.col4 {
+    width: 33.33333%;
+}
+
+.wrapper {
+    color: #292929;
+    word-wrap: break-word;
+    line-height: 1.8;
+    font-size: 1.6rem;
+    strong {
+        font-weight: 700;
+    }
+
+    hr {
+        border: none;
+        border-color: transparent;
+        height: 1px;
+        background-color: #ddd;
+        margin: 40px 0;
+    }
+    a[href] {
+        color: #f05123;
+        text-decoration: underline;
+    }
+
+    p,
+    ul,
+    ol,
+    table,
+    blockquote {
+        margin: 16px 0;
+    }
+
+    ul {
+        list-style: disc;
+    }
+
+    ol {
+        list-style: decimal;
+    }
+
+    ul,
+    ol {
+        padding-left: 24px;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-weight: 600;
+    }
+
+    h2[data-appended] {
+        position: relative;
+        scroll-margin-top: 100px;
+    }
+    h2 {
+        font-size: 2.2rem;
+    }
+    h3 {
+        font-size: 1.8rem;
+    }
+
+    a[data-link] {
+        position: absolute;
+        top: 51%;
+        left: -36px;
+        transform: translateY(-50%);
+        padding: 8px;
+        text-decoration: none;
+        color: #666;
+        display: none;
+        opacity: 0.6;
+    }
+    a[data-link] svg {
+        height: 0.8em;
+    }
+
+    h2[data-appended]:hover a[data-link] {
+        display: block;
+    }
+
+    blockquote {
+        margin-left: 0;
+        padding: 0 0 2px 20px;
+        border-left: 3px solid #f05123;
+        color: #6d6d6d;
+        font-weight: 600;
+        p {
+            margin: 0;
+        }
+    }
+}
