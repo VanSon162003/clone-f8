@@ -22,6 +22,7 @@
         "concurrently": "^9.1.2",
         "json-server": "^0.17.4",
         "json-server-auth": "^2.1.0",
+        "nodemailer": "^7.0.3",
         "prop-types": "^15.8.1",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
@@ -33,6 +34,7 @@
         "redux-logger": "^3.0.6",
         "redux-persist": "^6.0.0",
         "redux-thunk": "^3.1.0",
+        "swiper": "^11.2.6",
         "yup": "^1.6.1"
     },
     "devDependencies": {

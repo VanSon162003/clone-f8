@@ -1,0 +1,16 @@
+.parent {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 32px 0 10px;
+}
+
+.container {
+    padding: 8px 44px 0;
+    margin-bottom: 60px;
+    .top {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin: 32px 0 80px;
+    }
+}

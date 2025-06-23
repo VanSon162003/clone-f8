@@ -4,12 +4,14 @@ import Footer from "./components/Footer";
 import SlideBar from "./components/SlideBar";
 import Loading from "@/components/Loading";
 import { useSelector } from "react-redux";
+import { ToastContainer } from "react-toastify";
 
 function DefaultLayout() {
     const loading = useSelector((state) => state.auth.loading);
 
     return (
         <>
+            <ToastContainer />
             {loading && <Loading />}
             <Header />
             <main>
@@ -20,7 +22,6 @@ function DefaultLayout() {
                     }}
                 >
                     <SlideBar />
-
                     <Outlet />
                 </div>
             </main>

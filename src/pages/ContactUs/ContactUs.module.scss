@@ -1,0 +1,97 @@
+.top {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 32px 0 80px;
+}
+
+.heading {
+    font-size: 2.4rem;
+    font-weight: 900;
+    line-height: 1.4;
+    color: #242424;
+}
+
+.desc {
+    max-width: 840px;
+}
+
+.wrapper {
+    color: #292929;
+    word-wrap: break-word;
+    line-height: 1.8;
+    font-size: 1.4rem;
+
+    p,
+    ul,
+    ol,
+    table,
+    blockquote {
+        margin: 16px 0;
+    }
+}
+
+.warp {
+    font-size: 1.4rem;
+}
+
+.formWrapper {
+}
+
+.listInfo {
+    max-width: 600px;
+    padding-bottom: 48px;
+}
+
+.infoWrapper {
+    display: flex;
+    align-items: center;
+    margin: 0 2px;
+    flex: 1;
+    height: 32px;
+}
+
+.iconWrapper {
+    min-width: 24px;
+}
+
+.icon {
+    color: #444;
+}
+
+.text {
+    margin-left: 3px;
+    line-height: 1.4;
+    color: #444;
+}
+
+.contact {
+    text-decoration: underline !important;
+    line-height: 3.6rem;
+    min-height: 3.6rem;
+    color: #444;
+}
+
+.submitWrap {
+    margin-top: 30px;
+
+    display: flex;
+    justify-content: flex-end;
+}
+
+.wrapBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    &:hover {
+        opacity: 0.8;
+    }
+}
+
+.mapWrapper {
+    margin-left: 30px;
+}
+.map {
+    border: 1px solid #ccc !important;
+    border-radius: 16px;
+}

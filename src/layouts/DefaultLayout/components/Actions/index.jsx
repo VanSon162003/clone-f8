@@ -7,18 +7,19 @@ import { faBell } from "@fortawesome/free-solid-svg-icons";
 
 import userImg from "@/assets/imgs/user.jpg";
 import proIcon from "@/assets/icons/pro-icon.svg";
-import { Link } from "react-router-dom";
 import useCurrentUser from "@/hook/useCurrentUser";
-import { useDispatch } from "react-redux";
-import { logoutCurrentUser } from "@/features/auth/authSlice";
+import Tippy from "@/components/Tippy";
 
 function Actions() {
     const [isAccess, setIsAccess] = useState(false);
+
     const [showSetting, setShowSetting] = useState(false);
+    const [showNotification, setShowNotification] = useState(false);
+    const [showCourseList, setShowCourseList] = useState(false);
 
     const settingRef = useRef(null);
-
-    const dispatch = useDispatch();
+    const showCourseListRef = useRef(null);
+    const showNotificationRef = useRef(null);
 
     const saveAccessType = (type) => {
         localStorage.setItem("access", type);
@@ -34,131 +35,90 @@ function Actions() {
     const { user, err } = useCurrentUser();
 
     useEffect(() => {
-        if (err) {
-            if (err === "Unauthenticated") {
-                localStorage.removeItem("token");
-                window.top.location.href = "http://localhost:5173/";
-            }
+        if (err === "Unauthenticated") {
+            localStorage.removeItem("token");
+            window.top.location.href = "/";
         }
     }, [err]);
-
-    const handleLogout = async () => {
-        if (!token) {
-            console.warn("Không tìm thấy token, không thể đăng xuất.");
-            return;
-        }
-
-        dispatch(logoutCurrentUser());
-        localStorage.removeItem("token");
-        localStorage.removeItem("refresh_token");
-    };
 
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (settingRef.current && !settingRef.current.contains(e.target)) {
                 setShowSetting(false);
             }
+
+            if (
+                showCourseListRef.current &&
+                !showCourseListRef.current.contains(e.target)
+            ) {
+                setShowCourseList(false);
+            }
+
+            if (
+                showNotificationRef.current &&
+                !showNotificationRef.current.contains(e.target)
+            ) {
+                setShowNotification(false);
+            }
         };
 
         document.addEventListener("mousedown", handleClickOutside);
-
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [token]);
+    }, []);
+
+    const closeAllPopups = () => {
+        setShowNotification(false);
+        setShowCourseList(false);
+        setShowSetting(false);
+    };
 
     return user ? (
         <div className={styles.actions}>
-            <div>
-                <button className={styles.myLearn}>Khoá học của tôi</button>
+            <div ref={showNotificationRef}>
+                <button
+                    onClick={() => {
+                        const next = !showNotification;
+                        closeAllPopups();
+                        setShowNotification(next);
+                    }}
+                    className={styles.myLearn}
+                >
+                    Khoá học của tôi
+                </button>
+                {showNotification && <Tippy user={user} type="notification" />}
             </div>
 
-            <div>
+            <div ref={showCourseListRef}>
                 <div className={styles.actionBtn}>
-                    <FontAwesomeIcon icon={faBell} />
+                    <Button
+                        onClick={() => {
+                            const next = !showCourseList;
+                            closeAllPopups();
+                            setShowCourseList(next);
+                        }}
+                        icon={faBell}
+                    />
+                    {showCourseList && <Tippy user={user} type="course" />}
                 </div>
             </div>
 
             <div ref={settingRef}>
                 <div
                     className={styles.avatarWrap}
-                    onClick={() => setShowSetting(!showSetting)}
+                    onClick={() => {
+                        const next = !showSetting;
+                        closeAllPopups();
+                        setShowSetting(next);
+                    }}
                 >
                     <div className={styles.avatar}>
-                        <img src={user ? user.image : userImg} alt="user" />
+                        <img src={user?.image || userImg} alt="user" />
                         <img className={styles.crown} src={proIcon} alt="" />
                     </div>
                 </div>
-                {showSetting && (
-                    <div className={styles.tippy}>
-                        <ul
-                            className={`${styles.wrapSetting} ${styles.wrapAnmt}`}
-                        >
-                            <a href={`#`} className={styles.user}>
-                                <div className={styles.avaSetting}>
-                                    <div className={styles.avatar}>
-                                        <img
-                                            src={user ? user.image : userImg}
-                                            alt="user"
-                                        />
-                                        <img
-                                            className={styles.crown}
-                                            src={proIcon}
-                                            alt=""
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className={styles.info}>
-                                    <div className={styles.name}>
-                                        {user?.username}
-                                    </div>
-                                    <div className={styles.useName}>
-                                        @{user?.username}
-                                    </div>
-                                </div>
-                            </a>
-
-                            <hr />
-
-                            <ul className={styles.list}>
-                                <li>
-                                    <a href={`@${user?.username}`}>
-                                        Trang cá nhân
-                                    </a>
-                                </li>
-                            </ul>
-
-                            <hr />
-                            <ul className={styles.list}>
-                                <li>
-                                    <a href="#">Viết blog</a>
-                                </li>
-
-                                <li>
-                                    <a href="#">Bài viết của tôi</a>
-                                </li>
-
-                                <li>
-                                    <a href="#">Bài viết đã lưu</a>
-                                </li>
-                            </ul>
-                            <hr />
-
-                            <ul className={styles.list}>
-                                <li>
-                                    <Link to={`/setting/p/${user?.username}`}>
-                                        Cài đặt
-                                    </Link>
-                                </li>
-
-                                <li onClick={handleLogout}>
-                                    <a href="#">Đăng xuất</a>
-                                </li>
-                            </ul>
-                        </ul>
-                    </div>
-                )}
+                {showSetting && <Tippy user={user} type="profile" />}
             </div>
         </div>
     ) : (
@@ -174,7 +134,6 @@ function Actions() {
             >
                 Đăng nhập
             </Button>
-
             {isAccess && (
                 <AccessForm isAccess={isAccess} setIsAccess={setIsAccess} />
             )}

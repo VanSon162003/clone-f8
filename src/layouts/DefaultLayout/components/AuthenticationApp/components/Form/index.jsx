@@ -48,7 +48,6 @@ function Form({ type = "" }) {
                     const ok = await trigger("email");
                     if (ok) {
                         const res = await authService.checkEmail(email);
-                        console.log(res);
 
                         if (res) {
                             setError("email", {

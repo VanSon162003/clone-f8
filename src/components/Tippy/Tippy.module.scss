@@ -1,0 +1,144 @@
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tippy {
+    position: absolute;
+    z-index: 9999;
+    inset: 0px 0px auto auto;
+    margin: 0px;
+    transform: var(--main-transForm);
+}
+
+.avatar {
+    font-size: 3.2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.7em;
+    position: relative;
+    background: linear-gradient(180deg, #ffd900, #b45264 93.68%);
+    border-radius: 50%;
+
+    img {
+        width: 9em;
+        height: 9em;
+        object-fit: cover;
+        border-radius: 50%;
+        cursor: pointer;
+    }
+    .crown {
+        position: absolute;
+        width: 3.2em !important;
+        height: 3.2em !important;
+        top: -0.2em;
+        right: -2em;
+        transform: rotate(55deg);
+    }
+}
+
+.wrapSetting {
+    min-width: 230px;
+    padding: 8px 24px !important;
+    z-index: inherit;
+
+    hr {
+        margin: 8px 0;
+        border: none;
+        border-top: solid 1px rgba(0, 0, 0, 0.05);
+    }
+}
+
+.wrapperNotification {
+    min-width: 380px;
+    padding-bottom: 12px;
+}
+
+.wrapAnmt {
+    background: #fff;
+    box-shadow: 0 -4px 32px #0003;
+    transition: all ease-in-out 0.3s;
+    animation: fadeIn ease 0.3s;
+    border-radius: 10px;
+    padding-left: 0;
+    margin: 0;
+    overflow: hidden;
+    will-change: opacity, transform;
+    color: #1d2129;
+}
+
+// profile
+.user {
+    display: flex;
+    align-items: center;
+}
+.avaSetting {
+    position: relative;
+    margin: 10px 0;
+}
+.info {
+    margin-left: 20px;
+}
+.name {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #292929;
+}
+.useName {
+    margin-top: 8px;
+    font-size: 1.4rem;
+    color: #757575;
+}
+
+.list {
+    padding-left: 0;
+    margin: 0;
+
+    a {
+        font-size: 1.4rem;
+        color: #666;
+        display: block;
+        padding: 10px 0;
+        cursor: pointer;
+    }
+}
+
+// notification
+
+.header {
+    padding: 14px 20px 16px;
+    display: flex;
+    align-items: center;
+}
+
+.heading {
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+.viewAllBtn {
+    font-size: 1.4rem;
+    margin-left: auto;
+    color: #f05123;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.content {
+    max-height: 68vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+//course
+
+.wrapperCourseList {
+    width: 400px;
+}

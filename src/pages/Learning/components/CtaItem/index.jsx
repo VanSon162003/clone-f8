@@ -1,8 +1,5 @@
-import React from "react";
-
 import styles from "./CtaItem.module.scss";
 import Button from "@/components/Button";
-import useApi from "@/hook/useApi";
 
 function CtaItem({ to, src }) {
     return (

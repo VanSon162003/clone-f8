@@ -1,3 +1,21 @@
+@keyframes shake {
+    0% {
+        transform: translate(0);
+    }
+    25% {
+        transform: translate(-4px);
+    }
+    50% {
+        transform: translate(4px);
+    }
+    75% {
+        transform: translate(-4px);
+    }
+    100% {
+        transform: translate(0);
+    }
+}
+
 .wrapper_juilt {
     width: 100%;
     margin-top: 10px;
@@ -80,7 +98,8 @@
     display: flex;
     transition: border-color 0.3s;
 
-    &:focus-within {
+    &:not(.invalid):focus-within,
+    &:not(.invalid):hover {
         border-color: #1dbfaf;
     }
 
@@ -95,10 +114,69 @@
     }
 }
 
+.invalid {
+    background-color: #fdebee !important;
+    border-color: #f33a58 !important;
+    transition: 0.2s;
+
+    &:focus,
+    &:hover {
+        background-color: inherit !important;
+        border-color: #f33a58 !important;
+    }
+}
+
 .message {
     margin: 10px 0 0 8px;
     color: #f33a58;
     font-size: 1.4rem;
     font-weight: 500;
     line-height: 1.5;
+}
+
+.textArea {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: #fff;
+    border: 2px solid rgb(232, 232, 232);
+    border-radius: 8px;
+    color: #333;
+    display: block;
+    font-size: 1.4rem;
+    font-family: inherit;
+    min-height: 96px;
+    padding: 12px;
+    resize: none;
+    -webkit-transition: background-color 0.15s cubic-bezier(0.2, 0.2, 0.2, 1),
+        border-color 0.15s cubic-bezier(0.2, 0.2, 0.2, 1);
+    transition: background-color 0.15s cubic-bezier(0.2, 0.2, 0.2, 1),
+        border-color 0.15s cubic-bezier(0.2, 0.2, 0.2, 1);
+    width: 100%;
+    outline: none;
+
+    &:not(.invalid):focus-within,
+    &:not(.invalid):hover {
+        border-color: #1dbfaf;
+        outline: none;
+    }
+}
+
+.errorIcon {
+    width: 32px;
+    pointer-events: none;
+    animation: shake 0.35s linear 1;
+    color: #f33a58;
+}
+.iconContainer {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    padding: 0 10px 0 0;
+    background: none;
+    border: none;
+    cursor: pointer;
 }

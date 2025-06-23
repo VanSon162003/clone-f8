@@ -28,7 +28,7 @@ function Roadmap({ type }) {
 
     const dispatch = useDispatch();
 
-    const handeClick = () => {
+    const handleClick = () => {
         dispatch(setHeaderBack(true));
     };
 
@@ -38,11 +38,11 @@ function Roadmap({ type }) {
                 <div className={styles.info}>
                     <h2 className={styles.title}>
                         {type === "frontEnd" ? (
-                            <Button onClick={handeClick} to={link}>
+                            <Button onClick={handleClick} to={link}>
                                 Lộ trình học Front-end
                             </Button>
                         ) : (
-                            <Button onClick={handeClick} to={link}>
+                            <Button onClick={handleClick} to={link}>
                                 Lộ trình học Back-end
                             </Button>
                         )}
@@ -56,7 +56,7 @@ function Roadmap({ type }) {
                 </div>
                 <div className={styles.thumb}>
                     <Button
-                        onClick={handeClick}
+                        onClick={handleClick}
                         to={link}
                         className={styles.thumbRound}
                     >
@@ -76,7 +76,7 @@ function Roadmap({ type }) {
 
             <div>
                 <Button
-                    onClick={handeClick}
+                    onClick={handleClick}
                     to={link}
                     rounded
                     primary

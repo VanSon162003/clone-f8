@@ -1,0 +1,29 @@
+.heading {
+    font-size: 2.4rem;
+    font-weight: 900;
+    line-height: 1.4;
+    color: #242424;
+}
+
+.warp {
+    color: #292929;
+    word-wrap: break-word;
+    line-height: 1.8;
+    font-size: 1.4rem;
+    p {
+        margin: 16px 0;
+    }
+}
+
+.desc {
+    max-width: 840px;
+}
+
+.content {
+    display: flex;
+    margin-top: 24px;
+}
+
+.leftLayout {
+    padding: 0 64px 44px 0;
+}

@@ -9,7 +9,7 @@ function useApi(url, body = {}) {
             .then((result) => {
                 setData(result);
             });
-    }, []);
+    }, [url]);
 
     return data;
 }

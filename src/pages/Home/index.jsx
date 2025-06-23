@@ -1,6 +1,7 @@
 import useApi from "@/hook/useApi";
 import styles from "./Home.module.scss";
 import Section from "@/components/Section";
+import CustomSlideshow from "@/components/SlideShow";
 
 function Home() {
     const coursePro = useApi("/pro");
@@ -11,6 +12,9 @@ function Home() {
     return (
         <div className={styles.parent}>
             <div className="container-fluid">
+                <div className="container ">
+                    <CustomSlideshow />
+                </div>
                 <div className={styles.wrapper}>
                     <Section
                         courseType="pro"
