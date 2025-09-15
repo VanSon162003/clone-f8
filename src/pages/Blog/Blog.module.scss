@@ -27,3 +27,10 @@
 .leftLayout {
     padding: 0 64px 44px 0;
 }
+
+.top {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 32px 0 80px;
+}

@@ -12,7 +12,7 @@
 .tippy {
     position: absolute;
     z-index: 9999;
-    inset: 0px 0px auto auto;
+    inset: var(--tippy-inset, 0px 0px auto auto);
     margin: 0px;
     transform: var(--main-transForm);
 }
@@ -141,4 +141,41 @@
 
 .wrapperCourseList {
     width: 400px;
+}
+// option
+
+.wrapperOptions {
+    min-width: 230px;
+
+    background: #fff;
+    box-shadow: 0 -4px 32px #0003;
+    transition: all ease-in-out 0.3s;
+    animation: fadeIn ease 0.3s;
+    border-radius: 10px;
+    padding-left: 0;
+    margin: 0;
+    overflow: hidden;
+    will-change: opacity, transform;
+    color: #1d2129;
+}
+
+.options {
+    padding: 8px 0;
+
+    li {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        padding: 12px 20px;
+        font-size: 1.4rem;
+        cursor: pointer;
+        color: #444;
+        transition: 0.3s;
+
+        &:hover {
+            color: #292929;
+            background-color: #f0f0f0;
+        }
+    }
 }

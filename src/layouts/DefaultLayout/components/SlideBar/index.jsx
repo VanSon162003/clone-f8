@@ -1,23 +1,34 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./SlideBar.module.scss";
-import { NavLink, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Button from "@/components/Button";
 import {
-    faComment,
     faComments,
     faHouse,
     faNewspaper,
     faRoad,
 } from "@fortawesome/free-solid-svg-icons";
 import useCurrentUser from "@/hook/useCurrentUser";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setSlideBack } from "@/features/auth/headerSlice";
 
 function SlideBar() {
     const location = useLocation();
+    console.log(location);
 
     const [active, setActive] = useState(location.pathname);
 
     const { user } = useCurrentUser();
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        if (
+            location.pathname === "/about-us" ||
+            location.pathname.startsWith("/blog/")
+        )
+            dispatch(setSlideBack(true));
+        else dispatch(setSlideBack(false));
+    }, [location]);
 
     const handleClickSlideBar = (e) => {
         function getParent(element, selector) {
@@ -42,8 +53,6 @@ function SlideBar() {
     };
 
     const slideBack = useSelector((state) => state.header.slideBack);
-
-    console.log(slideBack);
 
     return (
         <div className={`${styles.slide} ${slideBack ? styles.hidden : ""}`}>

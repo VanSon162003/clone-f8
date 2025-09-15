@@ -9,19 +9,8 @@ import {
     faSquareYoutube,
     faTiktok,
 } from "@fortawesome/free-brands-svg-icons";
-import { useDispatch } from "react-redux";
-import { setHeaderBack, setSlideBack } from "@/features/auth/headerSlice";
 
 function Footer() {
-    const dispatch = useDispatch();
-
-    const handleClick = (type = "") => {
-        if (type === "about") dispatch(setSlideBack(true));
-        else dispatch(setSlideBack(false));
-
-        dispatch(setHeaderBack(true));
-    };
-
     return (
         <footer className={styles.wrapper}>
             <div className="container-fluid">
@@ -68,33 +57,19 @@ function Footer() {
                         <h2 className={styles.heading}>Về F8</h2>
                         <ul className={styles.list}>
                             <li>
-                                <Button
-                                    onClick={() => handleClick("about")}
-                                    to={"/about-us"}
-                                >
-                                    Giới thiệu
-                                </Button>
+                                <Button to={"/about-us"}>Giới thiệu</Button>
                             </li>
 
                             <li>
-                                <Button
-                                    onClick={handleClick}
-                                    to={"/contact-us"}
-                                >
-                                    Liên hệ
-                                </Button>
+                                <Button to={"/contact-us"}>Liên hệ</Button>
                             </li>
 
                             <li>
-                                <Button onClick={handleClick} to={"/terms"}>
-                                    Điều khoản
-                                </Button>
+                                <Button to={"/terms"}>Điều khoản</Button>
                             </li>
 
                             <li>
-                                <Button onClick={handleClick} to={"/privacy"}>
-                                    Bảo mật
-                                </Button>
+                                <Button to={"/privacy"}>Bảo mật</Button>
                             </li>
                         </ul>
                     </div>

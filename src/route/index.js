@@ -8,6 +8,7 @@ import NoFooterLayout from "@/layouts/NoFooterLayout";
 import NoHeaderLayout from "@/layouts/NoHeaderLayout";
 import AboutUs from "@/pages/AboutUs";
 import Blog from "@/pages/Blog";
+import BlogDetail from "@/pages/BlogDetail";
 import ContactUs from "@/pages/ContactUs";
 import Home from "@/pages/Home";
 import Learning from "@/pages/Learning";
@@ -45,6 +46,11 @@ const routes = [
     {
         path: config.routes.blog,
         component: Blog,
+    },
+
+    {
+        path: config.routes.blogDetail,
+        component: BlogDetail,
     },
 
     {

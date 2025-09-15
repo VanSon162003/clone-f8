@@ -1,5 +1,5 @@
 .avatar {
-    font-size: 2.1px;
+    font-size: var(--font-size, 0.32rem);
     background: transparent;
     border-radius: 50%;
 
@@ -37,4 +37,25 @@
     font-size: 1.2rem;
     color: #1b74e4;
     margin-left: 6px;
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+
+    font-size: 1.4rem;
+    margin-left: 16px;
+}
+
+.time {
+    color: #757575;
+    margin: 0;
+
+    .dot {
+        padding: 0 4px;
+        color: #757575;
+        font-weight: 500;
+    }
 }
