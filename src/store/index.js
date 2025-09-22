@@ -24,7 +24,6 @@ export const store = configureStore({
     reducer: persistReducer(rootConfig, rootReducer),
     middleware: (getDefault) => [
         ...getDefault({ serializableCheck: false }),
-        logger,
         // profileApi.middleware,
     ],
 });

@@ -69,7 +69,7 @@ function Avatar({
                     )}
                 </div>
             ) : (
-                <div>
+                <div className={styles.row}>
                     <Button href={username}>
                         <span className={styles.useName}>{authorName}</span>
                     </Button>

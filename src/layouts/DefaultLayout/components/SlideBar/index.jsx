@@ -14,7 +14,6 @@ import { setSlideBack } from "@/features/auth/headerSlice";
 
 function SlideBar() {
     const location = useLocation();
-    console.log(location);
 
     const [active, setActive] = useState(location.pathname);
 

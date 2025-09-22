@@ -2,6 +2,7 @@ import Button from "@/components/Button";
 import styles from "./BlogItem.module.scss";
 import Avatar from "@/components/Avatar";
 import Actions from "@/components/Actions";
+import { timeAgo } from "@/utils/timeAgo";
 
 function BlogItem() {
     const mockUser = {
@@ -24,13 +25,13 @@ function BlogItem() {
         updatedAt: "2022-07-01T07:41:35.000000Z",
     };
 
-    const timeAgo = (dateString) => {
-        const createdDate = new Date(dateString);
-        const now = new Date();
-        const diffMs = now - createdDate;
-        const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-        return `${diffDays} ngày trước`;
-    };
+    // const timeAgo = (dateString) => {
+    //     const createdDate = new Date(dateString);
+    //     const now = new Date();
+    //     const diffMs = now - createdDate;
+    //     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    //     return `${diffDays} ngày trước`;
+    // };
 
     const renderBlogItem = (index) => {
         return (

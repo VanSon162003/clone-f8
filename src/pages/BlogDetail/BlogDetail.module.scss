@@ -131,6 +131,11 @@
 
 .bodyBottom {
     margin-top: 60px;
+
+    hr {
+        margin: 60px 0;
+        border-top: 3px solid #f05123;
+    }
 }
 
 .tags {
@@ -150,14 +155,28 @@
 
 .relatedPost {
     margin-top: 60px;
-}
 
-.relatedHeading {
-    font-size: 2.2rem;
-}
+    .relatedHeading {
+        font-size: 2.2rem;
+        line-height: 1.8;
+    }
 
-.noResult {
-    margin-top: 16px;
-    font-size: 1.6rem;
-    color: #757575;
+    .noResult {
+        margin-top: 16px;
+        font-size: 1.6rem;
+        color: #757575;
+    }
+
+    .list {
+        margin-top: 16px;
+        padding-left: 28px;
+        list-style-type: disc;
+        font-size: 1.6rem;
+
+        a {
+            display: inline-block;
+            padding: 4px 0;
+            color: #292929;
+        }
+    }
 }
