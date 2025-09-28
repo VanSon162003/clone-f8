@@ -78,6 +78,7 @@ export const authSlice = createSlice({
             })
             .addCase(accessUser.fulfilled, (state, action) => {
                 state.authRespone = action.payload;
+                state.currentUser = action.payload.user || null;
                 state.loading = false;
             })
             .addCase(accessUser.rejected, (state, action) => {

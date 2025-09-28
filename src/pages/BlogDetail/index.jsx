@@ -37,7 +37,6 @@ function BlogDetail() {
 
     return (
         <>
-            <Editor />
             <ParentCard>
                 <div className="row">
                     <div className="col col-3  col-xxl-2 d-lg-none ">

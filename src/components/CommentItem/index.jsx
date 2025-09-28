@@ -4,6 +4,7 @@ import Button from "../Button";
 import styles from "./CommentItem.module.scss";
 import { timeAgo } from "@/utils/timeAgo";
 import ReactionButton from "../ReactionButton";
+import Editor from "../Editor";
 
 function CommentItem({
     id,
@@ -21,8 +22,14 @@ function CommentItem({
     reactionCount = 0,
     initialActed = [],
     userReaction = null,
+    handleEditComment = () => {},
+    handleReupComment = () => {},
+    user = {},
 }) {
     const [isOpenReplies, setIsOpenReplies] = useState(false);
+    const [typeEdit, setTypeEdit] = useState("");
+
+    const [isOpenEdit, setIsOpenEdit] = useState(false);
 
     const [acted, setActed] = useState([]);
     const [currentUserReaction, setCurrentUserReaction] =
@@ -139,6 +146,14 @@ function CommentItem({
         });
     };
 
+    const handleOpenComment = () => {
+        setIsOpenEdit(true);
+    };
+
+    const handleCloseComment = () => {
+        setIsOpenEdit(false);
+    };
+
     return (
         <>
             <div
@@ -160,7 +175,10 @@ function CommentItem({
 
                 <div className={styles.body}>
                     <div className={styles.wrap}>
-                        <p>{content}</p>
+                        <div
+                            className={styles.content}
+                            dangerouslySetInnerHTML={{ __html: content }}
+                        />
                     </div>
                 </div>
 
@@ -175,7 +193,13 @@ function CommentItem({
                                     userReaction={currentUserReaction}
                                 />
                             </span>
-                            <Button className={styles.interaction}>
+                            <Button
+                                onClick={() => {
+                                    handleOpenComment();
+                                    setTypeEdit("submitComment");
+                                }}
+                                className={styles.interaction}
+                            >
                                 Phản hồi
                             </Button>
                         </div>
@@ -224,6 +248,34 @@ function CommentItem({
                             {isOpen && (
                                 <div className={styles.tippy}>
                                     <ul className={styles.optionsList}>
+                                        {user?.id === 8 && (
+                                            <>
+                                                <li>
+                                                    <Button
+                                                        className={
+                                                            styles.option
+                                                        }
+                                                        onClick={() => {
+                                                            handleOpenComment();
+                                                            setTypeEdit(
+                                                                "editComment"
+                                                            );
+                                                        }}
+                                                    >
+                                                        Chỉnh sửa
+                                                    </Button>
+                                                </li>
+                                                <li>
+                                                    <Button
+                                                        className={
+                                                            styles.option
+                                                        }
+                                                    >
+                                                        Xoá bình luận
+                                                    </Button>
+                                                </li>
+                                            </>
+                                        )}
                                         <li>
                                             <Button className={styles.option}>
                                                 Báo cáo vi phạm
@@ -235,6 +287,16 @@ function CommentItem({
                         </div>
                     </div>
                 </div>
+                {isOpenEdit && (
+                    <Editor
+                        onCancel={handleCloseComment}
+                        onEdit={handleEditComment}
+                        type={typeEdit}
+                        content={typeEdit === "editComment" ? content : ""}
+                        onSubmit={handleReupComment}
+                        id={id}
+                    />
+                )}
             </div>
 
             {replies.length > 0 &&
@@ -265,6 +327,9 @@ function CommentItem({
                                     type="replies"
                                     openTippyId={openTippyId}
                                     setOpenTippyId={setOpenTippyId}
+                                    handleEditComment={handleEditComment}
+                                    handleReupComment={handleReupComment}
+                                    user={reply.user}
                                 />
                             );
                         })}
