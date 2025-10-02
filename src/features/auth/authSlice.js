@@ -58,7 +58,7 @@ export const authSlice = createSlice({
         builder
             // get user
             .addCase(getCurrentUser.pending, (state) => {
-                state.loading = true;
+                state.loading = false;
             })
             .addCase(getCurrentUser.fulfilled, (state, action) => {
                 state.currentUser = action.payload;

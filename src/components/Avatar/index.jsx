@@ -12,6 +12,7 @@ function Avatar({
     fontSize,
     blog = false,
     username,
+    flexCenter = false,
 }) {
     return (
         <>
@@ -23,7 +24,7 @@ function Avatar({
                         }}
                         className={`${styles.avatar} ${
                             authorPro && styles.pro
-                        }`}
+                        } `}
                     >
                         <img src={avatar} alt={authorName} />
 
@@ -40,7 +41,7 @@ function Avatar({
                         }}
                         className={`${styles.avatar} ${
                             authorPro && styles.pro
-                        }`}
+                        } ${flexCenter && styles.flexCenter}`}
                     >
                         <img src={avatar} alt={authorName} />
 

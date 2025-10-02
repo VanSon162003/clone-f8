@@ -20,6 +20,8 @@ import Products from "@/pages/Products";
 import SettingApp from "@/pages/SettingApp";
 import Setting from "@/pages/SettingApp/components/Setting";
 import Terms from "@/pages/Terms";
+import Profile from "@/pages/Profile";
+import WritePost from "@/pages/WritePost";
 
 const routes = [
     {
@@ -107,6 +109,15 @@ const routes = [
     {
         path: config.routes.privacy,
         component: Privacy,
+    },
+
+    {
+        path: config.routes.profile,
+        component: Profile,
+    },
+    {
+        path: config.routes.writePost,
+        component: WritePost,
     },
 ];
 

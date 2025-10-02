@@ -1,82 +1,144 @@
-import { useState, useEffect, useRef } from "react";
+import {
+    useState,
+    useEffect,
+    useRef,
+    forwardRef,
+    useImperativeHandle,
+} from "react";
 import "react-quill-new/dist/quill.snow.css";
 import ReactQuill from "react-quill-new";
 import styles from "./Editor.module.scss";
+import { toast } from "react-toastify";
 
-function Editor({
-    onCancel,
-    onSubmit,
-    onEdit,
-    type = "addComment",
-    content,
-    id,
-}) {
-    const [value, setValue] = useState(() => {
-        return content || "";
-    });
-    const [activeFormats, setActiveFormats] = useState({});
-    const [error, setError] = useState("");
-    const quillRef = useRef(null);
+const Editor = forwardRef(
+    (
+        {
+            onCancel,
+            onSubmit,
+            onEdit,
+            onContentChange,
+            onPublish,
+            onSaveDraft,
+            type = "addComment",
+            content = "",
+            id,
+        },
+        ref
+    ) => {
+        const [value, setValue] = useState(content);
+        const [error, setError] = useState("");
+        const [activeFormats, setActiveFormats] = useState({});
+        const quillRef = useRef(null);
+        const editorRef = useRef(null);
 
-    /*
-    Keyboard shortcuts supported:
-    - Bold: Ctrl+B
-    - Italic: Ctrl+I  
-    - Blockquote: Ctrl+Shift+Q
-    - Code Block: Ctrl+Shift+C
-    - Inline Code: Ctrl+Shift+X
-    - Link: Ctrl+K (prompts for URL)
-    - Clean Format: Ctrl+Shift+Z
-    */
+        // Expose focus method to parent
+        useImperativeHandle(ref, () => ({
+            focus: () => {
+                if (quillRef.current) {
+                    const quill = quillRef.current.getEditor();
+                    quill.focus();
+                }
+            },
+        }));
 
-    const modules = {
-        toolbar: [
-            ["bold", "italic"],
-            ["blockquote", "code", "code-block"],
-            ["image", "link"],
-            ["clean"],
-        ],
-    };
+        // ----------------- CONFIG -----------------
+        const modules = {
+            toolbar:
+                type === "writePost"
+                    ? []
+                    : [
+                          ["bold", "italic"],
+                          ["blockquote", "code", "code-block"],
+                          ["image", "link"],
+                          ["clean"],
+                      ],
+        };
 
-    const formats = [
-        "bold",
-        "italic",
-        "blockquote",
-        "code",
-        "code-block",
-        "image",
-        "link",
-    ];
+        const formats = [
+            "bold",
+            "italic",
+            "blockquote",
+            "code",
+            "code-block",
+            "image",
+            "link",
+        ];
 
-    const isContentEmpty = (content) => {
-        if (!content) return true;
+        const placeholder =
+            type === "writePost"
+                ? "Nhập tiêu đề bài viết..."
+                : type === "writePostContent"
+                ? "Nhập nội dung bài viết..."
+                : "Nhập bình luận mới của bạn";
 
-        const textOnly = content.replace(/<[^>]*>/g, "").trim();
-        return textOnly === "";
-    };
+        // ----------------- UTILS -----------------
+        const isContentEmpty = (content) => {
+            if (!content) return true;
+            return content.replace(/<[^>]*>/g, "").trim() === "";
+        };
 
-    const handleValueChange = (content) => {
-        setValue(content);
-        if (error && !isContentEmpty(content)) {
-            setError("");
-        }
-    };
+        const updateToolbarClasses = (formats) => {
+            const toolbarButtons =
+                document.querySelectorAll(".ql-toolbar button");
+            toolbarButtons.forEach((button) => {
+                button.classList.remove("ql-active-custom");
+                if (button.className.includes("ql-bold") && formats.bold)
+                    button.classList.add("ql-active-custom");
+                if (button.className.includes("ql-italic") && formats.italic)
+                    button.classList.add("ql-active-custom");
+                if (
+                    button.className.includes("ql-blockquote") &&
+                    formats.blockquote
+                )
+                    button.classList.add("ql-active-custom");
+                if (
+                    button.className.includes("ql-code-block") &&
+                    formats["code-block"]
+                )
+                    button.classList.add("ql-active-custom");
+                if (
+                    button.className.includes("ql-code") &&
+                    !button.className.includes("ql-code-block") &&
+                    formats.code
+                )
+                    button.classList.add("ql-active-custom");
+                if (button.className.includes("ql-link") && formats.link)
+                    button.classList.add("ql-active-custom");
+            });
+        };
 
-    useEffect(() => {
-        if (quillRef.current) {
+        useEffect(() => {
+            if (!editorRef.current) return;
+
+            const toolbar = editorRef.current.querySelector("[role=toolbar]");
+            const quillEl = editorRef.current.querySelector(".quill");
+            const dataPlaceholder =
+                editorRef.current.querySelector("[data-placeholder]");
+
+            if (type === "writePost") {
+                toolbar.style.display = "none";
+                quillEl.style.paddingTop = "16px";
+            }
+
+            if (type === "writePostContent") {
+                dataPlaceholder.style.minHeight = "400px";
+            }
+        }, [type]);
+
+        useEffect(() => {
+            if (!quillRef.current) return;
+
             const quill = quillRef.current.getEditor();
 
             const handleSelectionChange = (range) => {
                 if (range) {
                     const formats = quill.getFormat(range);
                     setActiveFormats(formats);
-                    // Cập nhật manually active classes
                     updateToolbarClasses(formats);
                 }
             };
 
             const handleTextChange = (delta, oldDelta, source) => {
-                // Chỉ xử lý khi thay đổi từ user, không phải từ API
                 if (source === "user") {
                     const selection = quill.getSelection();
                     if (selection) {
@@ -87,7 +149,6 @@ function Editor({
                 }
             };
 
-            // Thêm event listener cho toolbar buttons để xử lý click trực tiếp
             const handleToolbarClick = () => {
                 setTimeout(() => {
                     const selection = quill.getSelection();
@@ -104,249 +165,202 @@ function Editor({
 
             const toolbarButtons =
                 document.querySelectorAll(".ql-toolbar button");
-            toolbarButtons.forEach((button) => {
-                button.addEventListener("click", handleToolbarClick);
-            });
+            toolbarButtons.forEach((btn) =>
+                btn.addEventListener("click", handleToolbarClick)
+            );
 
             return () => {
                 quill.off("selection-change", handleSelectionChange);
                 quill.off("text-change", handleTextChange);
-
-                toolbarButtons.forEach((button) => {
-                    button.removeEventListener("click", handleToolbarClick);
-                });
+                toolbarButtons.forEach((btn) =>
+                    btn.removeEventListener("click", handleToolbarClick)
+                );
             };
-        }
-    }, []);
+        }, []);
 
-    const updateToolbarClasses = (formats) => {
-        const toolbarButtons = document.querySelectorAll(".ql-toolbar button");
+        // ----------------- HANDLERS -----------------
+        const handleValueChange = (content) => {
+            setValue(content);
 
-        toolbarButtons.forEach((button) => {
-            const className = button.className;
-
-            button.classList.remove("ql-active-custom");
-
-            if (className.includes("ql-bold")) {
-                if (formats.bold) {
-                    button.classList.add("ql-active-custom");
-                }
+            // Gọi callback để parent component nhận được giá trị mới
+            if (onContentChange) {
+                onContentChange(content);
             }
 
-            if (className.includes("ql-italic")) {
-                if (formats.italic) {
-                    button.classList.add("ql-active-custom");
-                }
-            }
-
-            if (className.includes("ql-blockquote")) {
-                if (formats.blockquote) {
-                    button.classList.add("ql-active-custom");
-                }
-            }
-
-            if (className.includes("ql-code-block")) {
-                if (formats["code-block"]) {
-                    button.classList.add("ql-active-custom");
-                }
-            }
+            const textOnly = content.replace(/<[^>]*>/g, "").trim();
+            const quill = editorRef.current?.querySelector(".quill");
+            if (!quill) return;
 
             if (
-                className.includes("ql-code") &&
-                !className.includes("ql-code-block")
+                type === "writePost" &&
+                textOnly.length > 0 &&
+                textOnly.length < 3
             ) {
-                if (formats.code && !formats["code-block"]) {
-                    button.classList.add("ql-active-custom");
-                }
+                setError("Tiêu đề phải có ít nhất 3 ký tự");
+                quill.style.border = "1px solid #ffcdd2";
+                quill.style.background = "#fff";
+            } else if (
+                type === "writePostContent" &&
+                textOnly.length > 0 &&
+                textOnly.length < 10
+            ) {
+                setError("Nội dung phải có ít nhất 10 ký tự");
+                quill.style.border = "1px solid #ffcdd2";
+                quill.style.background = "#fff";
+            } else if (!isContentEmpty(content)) {
+                setError("");
+                quill.style.border = "1px solid #3498db";
+                quill.style.background = "#eef4fc";
+            } else {
+                setError("");
+                quill.style.border = "1px solid transparent";
+                quill.style.background = "#eef4fc";
             }
+        };
 
-            if (className.includes("ql-link")) {
-                if (formats.link) {
-                    button.classList.add("ql-active-custom");
-                }
+        const handleBlur = () => {
+            const quill = editorRef.current?.querySelector(".quill");
+            if (!quill) return;
+
+            quill.style.border = "1px solid transparent";
+            quill.style.background = "#eef4fc";
+
+            if (isContentEmpty(value)) {
+                const errorMsg =
+                    type === "writePost"
+                        ? "Vui lòng nhập tiêu đề"
+                        : "Vui lòng nhập nội dung";
+                setError(errorMsg);
+                quill.style.border = "1px solid #ffcdd2";
+                quill.style.background = "#fff";
             }
-        });
-    };
+        };
 
-    const handleKeyDown = (e) => {
-        // Detect various keyboard shortcuts
-        if (e.ctrlKey || e.metaKey) {
-            let shortcutDetected = false;
+        const handleFocus = () => {
+            const quill = editorRef.current?.querySelector(".quill");
+            if (!quill) return;
 
-            // Bold: Ctrl+B
-            if (e.key === "b") {
-                shortcutDetected = true;
+            quill.style.border = "1px solid #3498db";
+            setError(""); // Clear error on focus
+        };
+
+        const handleSubmit = () => {
+            if (isContentEmpty(value)) {
+                setError("Nội dung không được để trống");
+                return;
             }
-
-            // Italic: Ctrl+I
-            else if (e.key === "i") {
-                shortcutDetected = true;
+            setError("");
+            if (onSubmit) {
+                onSubmit(value, id);
+                onCancel?.();
             }
+        };
 
-            // Blockquote: Ctrl+Shift+Q
-            else if (e.shiftKey && e.key === "Q") {
-                e.preventDefault(); // Prevent default browser behavior
-                if (quillRef.current) {
-                    const quill = quillRef.current.getEditor();
-                    const format = quill.getFormat();
-                    quill.format("blockquote", !format.blockquote);
-                }
-                shortcutDetected = true;
+        const handleEdit = () => {
+            if (isContentEmpty(value)) {
+                setError("Nội dung không được để trống");
+                return;
             }
-
-            // Code Block: Ctrl+Shift+C
-            else if (e.shiftKey && e.key === "C") {
-                e.preventDefault();
-                if (quillRef.current) {
-                    const quill = quillRef.current.getEditor();
-                    const format = quill.getFormat();
-                    quill.format("code-block", !format["code-block"]);
-                }
-                shortcutDetected = true;
+            setError("");
+            if (onEdit) {
+                onEdit(value, id);
+                onCancel?.();
             }
+        };
 
-            // Inline Code: Ctrl+Shift+X
-            else if (e.shiftKey && e.key === "X") {
-                e.preventDefault();
-                if (quillRef.current) {
-                    const quill = quillRef.current.getEditor();
-                    const format = quill.getFormat();
-                    // Only toggle inline code if not in code block
-                    if (!format["code-block"]) {
-                        quill.format("code", !format.code);
-                    }
-                }
-                shortcutDetected = true;
+        // Handlers cho writePostContent - gọi callback từ parent
+        const handlePostPublish = () => {
+            if (onPublish) {
+                onPublish();
             }
+        };
 
-            // Link: Ctrl+K
-            else if (e.key === "k") {
-                e.preventDefault();
-                if (quillRef.current) {
-                    const quill = quillRef.current.getEditor();
-                    const selection = quill.getSelection();
-                    if (selection && selection.length > 0) {
-                        const format = quill.getFormat();
-                        if (format.link) {
-                            // Remove link if already exists
-                            quill.format("link", false);
-                        } else {
-                            // Add link - you might want to show a dialog here
-                            const url = prompt("Enter URL:");
-                            if (url) {
-                                quill.format("link", url);
-                            }
-                        }
-                    }
-                }
-                shortcutDetected = true;
+        const handleSaveDraft = () => {
+            if (onSaveDraft) {
+                onSaveDraft();
             }
+        };
 
-            // Clean formatting: Ctrl+Shift+Z
-            else if (e.shiftKey && e.key === "Z") {
-                e.preventDefault();
-                if (quillRef.current) {
-                    const quill = quillRef.current.getEditor();
-                    const selection = quill.getSelection();
-                    if (selection) {
-                        // Remove all formatting from selection
-                        quill.removeFormat(selection);
-                    }
-                }
-                shortcutDetected = true;
-            }
-
-            if (shortcutDetected) {
-                setTimeout(() => {
-                    if (quillRef.current) {
-                        const quill = quillRef.current.getEditor();
-                        const selection = quill.getSelection();
-                        if (selection) {
-                            const formats = quill.getFormat(selection);
-                            setActiveFormats(formats);
-                            updateToolbarClasses(formats);
-                        }
-                    }
-                }, 10);
-            }
-        }
-    };
-
-    const handleSubmit = () => {
-        if (isContentEmpty(value)) {
-            setError("Nội dung bình luận không được để trống");
-            return;
-        }
-
-        setError("");
-
-        if (onSubmit) {
-            onSubmit(value, id);
-            onCancel();
-        }
-    };
-
-    const handleEdit = () => {
-        if (isContentEmpty(value)) {
-            setError("Nội dung bình luận không được để trống");
-            return;
-        }
-
-        setError("");
-
-        if (onEdit) {
-            onEdit(value, id);
-            onCancel();
-        }
-    };
-
-    return (
-        <>
-            <div className={styles.commentEditor}>
+        // ----------------- RENDER -----------------
+        return (
+            <div ref={editorRef} className={styles.commentEditor}>
                 <ReactQuill
                     ref={quillRef}
                     tabIndex={1}
                     theme="snow"
                     value={value}
                     onChange={handleValueChange}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
                     modules={modules}
                     formats={formats}
-                    placeholder="Nhập bình luận mới của bạn"
-                    onKeyDown={handleKeyDown}
+                    placeholder={placeholder}
                 />
 
-                {/* Error message */}
                 {error && <div className={styles.errorMessage}>{error}</div>}
 
-                <div className={styles.buttonsBar}>
-                    <button className={styles.btn} onClick={() => onCancel()}>
-                        <div className={styles.inner}>
-                            <span className={styles.title}>HUỶ</span>
+                {/* Buttons */}
+                {type !== "writePost" &&
+                    (type === "writePostContent" ? (
+                        <div className={styles.buttonsBar}>
+                            <button
+                                onClick={handleSaveDraft}
+                                className={styles.btn}
+                            >
+                                <div className={styles.inner}>
+                                    <span className={styles.title}>
+                                        LƯU BẢN NHÁP
+                                    </span>
+                                </div>
+                            </button>
+                            <button
+                                onClick={handlePostPublish}
+                                className={`${styles.btn} ${styles.primary}`}
+                            >
+                                <div className={styles.inner}>
+                                    <span className={styles.title}>
+                                        XUẤT BẢN
+                                    </span>
+                                </div>
+                            </button>
                         </div>
-                    </button>
-                    {type === "editComment" ? (
-                        <button
-                            className={`${styles.btn} ${styles.primary}`}
-                            onClick={handleEdit}
-                        >
-                            <div className={styles.inner}>
-                                <span className={styles.title}>LƯU LẠI</span>
-                            </div>
-                        </button>
                     ) : (
-                        <button
-                            className={`${styles.btn} ${styles.primary}`}
-                            onClick={handleSubmit}
-                        >
-                            <div className={styles.inner}>
-                                <span className={styles.title}>BÌNH LUẬN</span>
-                            </div>
-                        </button>
-                    )}
-                </div>
+                        <div className={styles.buttonsBar}>
+                            <button className={styles.btn} onClick={onCancel}>
+                                <div className={styles.inner}>
+                                    <span className={styles.title}>HUỶ</span>
+                                </div>
+                            </button>
+                            {type === "editComment" ? (
+                                <button
+                                    className={`${styles.btn} ${styles.primary}`}
+                                    onClick={handleEdit}
+                                >
+                                    <div className={styles.inner}>
+                                        <span className={styles.title}>
+                                            LƯU LẠI
+                                        </span>
+                                    </div>
+                                </button>
+                            ) : (
+                                <button
+                                    className={`${styles.btn} ${styles.primary}`}
+                                    onClick={handleSubmit}
+                                >
+                                    <div className={styles.inner}>
+                                        <span className={styles.title}>
+                                            BÌNH LUẬN
+                                        </span>
+                                    </div>
+                                </button>
+                            )}
+                        </div>
+                    ))}
             </div>
-        </>
-    );
-}
+        );
+    }
+);
+
+Editor.displayName = "Editor";
 
 export default Editor;

@@ -19,10 +19,14 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Avatar from "../Avatar";
 
-function CourseItem({ item, courseType }) {
+function CourseItem({ item, courseType, courseEnrolled = false }) {
     return (
         <div
-            className="col col-md-6"
+            className={`${
+                courseEnrolled
+                    ? "col-4 col-xl-6 col-lg-4 col-md-6"
+                    : "col col-md-6"
+            }`}
             style={{ marginTop: "36px" }}
             key={item.id}
         >

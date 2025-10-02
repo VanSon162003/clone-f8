@@ -11,6 +11,7 @@ import CourseListDetail from "../CourseListDetail";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebook, faTwitter } from "@fortawesome/free-brands-svg-icons";
 import { faEnvelope, faFlag, faLink } from "@fortawesome/free-solid-svg-icons";
+import Button from "../Button";
 
 function Tippy({ user = {}, type = "", className }) {
     const dispatch = useDispatch();
@@ -69,7 +70,10 @@ function Tippy({ user = {}, type = "", className }) {
             >
                 {type === "profile" ? (
                     <>
-                        <a href={`#`} className={styles.user}>
+                        <Button
+                            to={`/profile/@${user?.username}`}
+                            className={styles.user}
+                        >
                             <div className={styles.avaSetting}>
                                 <div className={styles.avatar}>
                                     <img
@@ -92,30 +96,32 @@ function Tippy({ user = {}, type = "", className }) {
                                     @{user?.username}
                                 </div>
                             </div>
-                        </a>
+                        </Button>
 
                         <hr />
 
                         <ul className={styles.list}>
                             <li>
-                                <a href={`/@${user?.username}`}>
+                                <Button to={`/profile/@${user?.username}`}>
                                     Trang cá nhân
-                                </a>
+                                </Button>
                             </li>
                         </ul>
 
                         <hr />
                         <ul className={styles.list}>
                             <li>
-                                <a href="#">Viết blog</a>
+                                <Button to="/new-post">Viết blog</Button>
                             </li>
 
                             <li>
-                                <a href="#">Bài viết của tôi</a>
+                                <Button to="/me/posts">Bài viết của tôi</Button>
                             </li>
 
                             <li>
-                                <a href="#">Bài viết đã lưu</a>
+                                <Button to="/me/bookmark">
+                                    Bài viết đã lưu
+                                </Button>
                             </li>
                         </ul>
                         <hr />

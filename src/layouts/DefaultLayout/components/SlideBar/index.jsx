@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./SlideBar.module.scss";
 import { useLocation } from "react-router-dom";
 import Button from "@/components/Button";
@@ -20,13 +20,22 @@ function SlideBar() {
     const { user } = useCurrentUser();
     const dispatch = useDispatch();
 
+    const slideBar = useRef(null);
+
     useEffect(() => {
         if (
             location.pathname === "/about-us" ||
-            location.pathname.startsWith("/blog/")
+            location.pathname.startsWith("/blog/") ||
+            location.pathname.startsWith("/profile/")
         )
             dispatch(setSlideBack(true));
         else dispatch(setSlideBack(false));
+
+        if (location.pathname.startsWith("/new-post")) {
+            slideBar.current.style = "display: none";
+        } else {
+            slideBar.current.style = "display: block";
+        }
     }, [location]);
 
     const handleClickSlideBar = (e) => {
@@ -54,7 +63,10 @@ function SlideBar() {
     const slideBack = useSelector((state) => state.header.slideBack);
 
     return (
-        <div className={`${styles.slide} ${slideBack ? styles.hidden : ""}`}>
+        <div
+            ref={slideBar}
+            className={`${styles.slide} ${slideBack ? styles.hidden : ""}`}
+        >
             <div className={styles.wrapper}>
                 <ul className={styles.list} onClick={handleClickSlideBar}>
                     <li>

@@ -18,6 +18,8 @@ const config = {
         contactUs: "/contact-us",
         terms: "/terms",
         privacy: "/privacy",
+        profile: "/profile/:username",
+        writePost: "/new-post",
     },
 };
 
