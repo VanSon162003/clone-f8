@@ -23,6 +23,7 @@ import Terms from "@/pages/Terms";
 import Profile from "@/pages/Profile";
 import WritePost from "@/pages/WritePost";
 import MyPost from "@/pages/MyPost";
+import MyBookmark from "@/pages/MyBookmark";
 
 const routes = [
     {
@@ -131,6 +132,10 @@ const routes = [
     {
         path: config.routes.myPostPublished,
         component: MyPost,
+    },
+    {
+        path: config.routes.myBookmark,
+        component: MyBookmark,
     },
 ];
 

@@ -7,7 +7,12 @@ import { useEffect, useRef, useState } from "react";
 import Tippy from "@/components/Tippy";
 import { useNavigate } from "react-router-dom";
 
-function PostItem({ post = {}, removePost, isPublished = false }) {
+function PostItem({
+    post = {},
+    removePost,
+    isPublished = false,
+    type = "myPost",
+}) {
     const [openTippy, setOpenTippy] = useState(false);
     const actionMore = useRef();
     const tippyRef = useRef();
@@ -42,7 +47,9 @@ function PostItem({ post = {}, removePost, isPublished = false }) {
             <h3 title={post?.title}>
                 <Button
                     to={
-                        isPublished
+                        type === "myBookmark"
+                            ? `/blog/${post.slug}`
+                            : isPublished
                             ? `/blog/${post.slug}`
                             : `/post/edit?id=${post?.id}`
                     }
@@ -54,7 +61,9 @@ function PostItem({ post = {}, removePost, isPublished = false }) {
             <div className={styles.author}>
                 <Button
                     to={
-                        isPublished
+                        type === "myBookmark"
+                            ? `/blog/${post.slug}`
+                            : isPublished
                             ? `/blog/${post.slug}`
                             : `/post/edit?id=${post?.id}`
                     }
@@ -79,7 +88,7 @@ function PostItem({ post = {}, removePost, isPublished = false }) {
                 <Tippy
                     onEdit={handleEdit}
                     onRemove={handleRemove}
-                    type="myPost"
+                    type={type}
                     ref={tippyRef}
                 />
             )}

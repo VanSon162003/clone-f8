@@ -23,6 +23,7 @@ const config = {
         postEdit: "/post/edit",
         myPost: "/me/posts",
         myPostPublished: "/me/posts/published",
+        myBookmark: "me/bookmark/posts",
     },
 };
 

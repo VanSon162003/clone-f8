@@ -27,7 +27,7 @@ function Tippy({ user = {}, type = "", className, ref, onEdit, onRemove }) {
             ? styles.wrapperNotification
             : type === "options"
             ? styles.wrapperOptions
-            : type === "myPost"
+            : type === "myPost" || type === "myBookmark"
             ? styles.wrapperMyPost
             : styles.wrapperCourseList;
 
@@ -38,7 +38,7 @@ function Tippy({ user = {}, type = "", className, ref, onEdit, onRemove }) {
             ? "translate3d(-123.2px, 60px, 0px)"
             : type === "options"
             ? "translate3d(0px)"
-            : type === "myPost"
+            : type === "myPost" || type === "myBookmark"
             ? "translate3d(-16.8px, 32px, 0px)"
             : "translate3d(0, 46.8px, 0px)";
 
@@ -188,6 +188,10 @@ function Tippy({ user = {}, type = "", className, ref, onEdit, onRemove }) {
                     <>
                         <li onClick={() => onEdit()}>Chỉnh sửa</li>
                         <li onClick={() => onRemove()}>Xóa</li>
+                    </>
+                ) : type === "myBookmark" ? (
+                    <>
+                        <li onClick={() => onRemove()}>Xóa khỏi mục đã lưu</li>
                     </>
                 ) : (
                     <>
