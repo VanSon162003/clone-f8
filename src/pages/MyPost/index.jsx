@@ -3,7 +3,7 @@ import ParentCard from "@/components/ParentCard";
 import Banner from "@/components/Banner";
 import Button from "@/components/Button";
 import { useLocation } from "react-router-dom";
-import PostItem from "./components/PostItem";
+import PostItem from "@/components/PostItem";
 import { useState } from "react";
 
 const myPost = {
