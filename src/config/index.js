@@ -20,6 +20,9 @@ const config = {
         privacy: "/privacy",
         profile: "/profile/:username",
         writePost: "/new-post",
+        postEdit: "/post/edit",
+        myPost: "/me/posts",
+        myPostPublished: "/me/posts/published",
     },
 };
 

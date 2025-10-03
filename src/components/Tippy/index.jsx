@@ -13,14 +13,12 @@ import { faFacebook, faTwitter } from "@fortawesome/free-brands-svg-icons";
 import { faEnvelope, faFlag, faLink } from "@fortawesome/free-solid-svg-icons";
 import Button from "../Button";
 
-function Tippy({ user = {}, type = "", className }) {
+function Tippy({ user = {}, type = "", className, ref, onEdit, onRemove }) {
     const dispatch = useDispatch();
 
     const token = localStorage.getItem("token");
 
     const tippyInset = type === "options" ? "40px 0px auto auto" : "";
-
-    console.log(type);
 
     const wrap =
         type === "profile"
@@ -29,6 +27,8 @@ function Tippy({ user = {}, type = "", className }) {
             ? styles.wrapperNotification
             : type === "options"
             ? styles.wrapperOptions
+            : type === "myPost"
+            ? styles.wrapperMyPost
             : styles.wrapperCourseList;
 
     const tippyTransform =
@@ -38,6 +38,8 @@ function Tippy({ user = {}, type = "", className }) {
             ? "translate3d(-123.2px, 60px, 0px)"
             : type === "options"
             ? "translate3d(0px)"
+            : type === "myPost"
+            ? "translate3d(-16.8px, 32px, 0px)"
             : "translate3d(0, 46.8px, 0px)";
 
     // const arrType = useRef(["profile, notification, courseList"]);
@@ -57,6 +59,7 @@ function Tippy({ user = {}, type = "", className }) {
 
     return (
         <div
+            ref={ref}
             className={`${styles.tippy} ${className}`}
             style={{
                 "--main-transForm": tippyTransform,
@@ -180,6 +183,11 @@ function Tippy({ user = {}, type = "", className }) {
                             <FontAwesomeIcon icon={faFlag} />
                             <span>Báo cáo bài viết</span>
                         </li>
+                    </>
+                ) : type === "myPost" ? (
+                    <>
+                        <li onClick={() => onEdit()}>Chỉnh sửa</li>
+                        <li onClick={() => onRemove()}>Xóa</li>
                     </>
                 ) : (
                     <>

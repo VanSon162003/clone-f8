@@ -3,7 +3,7 @@ import Editor from "@/components/Editor";
 import styles from "./WritePost.module.scss";
 import ParentCard from "@/components/ParentCard";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Model from "@/components/Model";
 import ScrollLock from "@/components/ScrollLock";
 import UploadImg from "@/components/UploadImg";
@@ -19,6 +19,8 @@ function WritePost() {
         tags: ["ok"],
         publish: "now",
     });
+
+    const [searchParams] = useSearchParams();
     const [openModelEdit, setOpenModelEdit] = useState(false);
     const [errorModel, seErrorModel] = useState(null);
 
@@ -26,6 +28,14 @@ function WritePost() {
     const contentEditorRef = useRef(null);
 
     const navigate = useNavigate();
+
+    const id = searchParams.get("id"); // lấy ra id cần edit
+
+    useEffect(() => {
+        if (id) {
+            // fetch duwx lieeuj
+        }
+    }, [id]);
 
     const isContentEmpty = (value) => {
         if (!value) return true;

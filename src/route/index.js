@@ -4,8 +4,8 @@ import AuthenticationApp from "@/layouts/DefaultLayout/components/Authentication
 import ForgotPassWord from "@/layouts/DefaultLayout/components/AuthenticationApp/page/ForgotPassWord";
 import Login from "@/layouts/DefaultLayout/components/AuthenticationApp/page/Login";
 import Register from "@/layouts/DefaultLayout/components/AuthenticationApp/page/Register";
-import NoFooterLayout from "@/layouts/NoFooterLayout";
-import NoHeaderLayout from "@/layouts/NoHeaderLayout";
+// import NoFooterLayout from "@/layouts/NoFooterLayout";
+// import NoHeaderLayout from "@/layouts/NoHeaderLayout";
 import AboutUs from "@/pages/AboutUs";
 import Blog from "@/pages/Blog";
 import BlogDetail from "@/pages/BlogDetail";
@@ -22,6 +22,7 @@ import Setting from "@/pages/SettingApp/components/Setting";
 import Terms from "@/pages/Terms";
 import Profile from "@/pages/Profile";
 import WritePost from "@/pages/WritePost";
+import MyPost from "@/pages/MyPost";
 
 const routes = [
     {
@@ -118,6 +119,18 @@ const routes = [
     {
         path: config.routes.writePost,
         component: WritePost,
+    },
+    {
+        path: config.routes.postEdit,
+        component: WritePost,
+    },
+    {
+        path: config.routes.myPost,
+        component: MyPost,
+    },
+    {
+        path: config.routes.myPostPublished,
+        component: MyPost,
     },
 ];
 

@@ -1,0 +1,57 @@
+.wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px;
+    border-radius: 16px;
+    border: 2px solid #e8e8e8;
+
+    h3 {
+        margin-top: 0;
+        padding-right: 24px;
+        a {
+            display: block;
+            color: #333;
+            font-size: 1.9rem;
+            line-height: 1.6;
+        }
+    }
+
+    .author {
+        display: flex;
+        font-size: 1.4rem;
+        color: #0000008a;
+
+        a {
+            color: #029e74;
+        }
+
+        .dot {
+            padding: 0 6px;
+        }
+    }
+
+    .more {
+        margin-left: 4px;
+        font-size: 1.6rem;
+        padding: 4px 8px;
+        position: absolute;
+        top: 8px;
+        right: 16px;
+        color: #666;
+
+        &:hover {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        svg {
+            display: inline-block;
+            height: 1em;
+            overflow: visible;
+            vertical-align: -0.125em;
+            fill: currentColor;
+        }
+    }
+}

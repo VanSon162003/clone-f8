@@ -31,7 +31,10 @@ function SlideBar() {
             dispatch(setSlideBack(true));
         else dispatch(setSlideBack(false));
 
-        if (location.pathname.startsWith("/new-post")) {
+        if (
+            location.pathname.startsWith("/new-post") ||
+            location.pathname.startsWith("/post/edit")
+        ) {
             slideBar.current.style = "display: none";
         } else {
             slideBar.current.style = "display: block";

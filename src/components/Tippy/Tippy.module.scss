@@ -61,6 +61,30 @@
     padding-bottom: 12px;
 }
 
+.wrapperMyPost {
+    min-width: 200px;
+    padding: 8px 0;
+
+    li {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        padding: 12px 20px;
+        font-size: 1.4rem;
+        cursor: pointer;
+        color: #444;
+        transition: 0.3s;
+
+        user-select: none;
+
+        &:hover {
+            color: #292929;
+            background-color: #f0f0f0;
+        }
+    }
+}
+
 .wrapAnmt {
     background: #fff;
     box-shadow: 0 -4px 32px #0003;
