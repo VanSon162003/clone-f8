@@ -109,6 +109,10 @@ function WritePost() {
         }, 3000);
     };
 
+    const handleCancelModel = () => {
+        setOpenModelEdit(false);
+    };
+
     const handleChangeModelEdit = (type, value) => {
         let plainText = getPlainText(value);
 
@@ -227,7 +231,7 @@ function WritePost() {
             </ParentCard>
             {openModelEdit && <ScrollLock />}
             {openModelEdit && (
-                <Model>
+                <Model notOverlayCancel onCancel={handleCancelModel}>
                     <div className={styles.model}>
                         <h3 className={styles.title}>Xuất bản bài viết</h3>
 
@@ -437,7 +441,10 @@ function WritePost() {
                         </div>
 
                         <div className={styles.actions}>
-                            <Button className={`${styles.wrap}`}>
+                            <Button
+                                onClick={handleCancelModel}
+                                className={`${styles.wrap}`}
+                            >
                                 <div className={styles.inner}>
                                     <div className={styles.title}>HUỶ</div>
                                 </div>
