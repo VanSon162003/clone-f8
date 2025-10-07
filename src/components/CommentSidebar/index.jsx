@@ -7,7 +7,7 @@ import ScrollLock from "../ScrollLock";
 import CommentItem from "../CommentItem";
 import Editor from "../Editor";
 
-function CommentSidebar({ open = false }) {
+function CommentSidebar({ open = false, onCancel }) {
     const [isOpen, setIsOpen] = useState(open);
     const [isOpenCommentEditor, setIsOpenCommentEditor] = useState(false);
     const [openTippyId, setOpenTippyId] = useState(null);
@@ -73,13 +73,18 @@ function CommentSidebar({ open = false }) {
         },
     ]);
 
+    console.log(open);
+
     useEffect(() => {
         setIsOpen(open);
     }, [open]);
 
     useEffect(() => {
         const handleCommentSideBar = (e) => {
-            if (e.key === "Escape") setIsOpen(false);
+            if (e.key === "Escape") {
+                setIsOpen(false);
+                onCancel();
+            }
         };
 
         document.addEventListener("keydown", handleCommentSideBar);
@@ -91,6 +96,7 @@ function CommentSidebar({ open = false }) {
 
     const handleCommentSideBar = () => {
         setIsOpen(!isOpen);
+        onCancel();
     };
 
     const handleOpenComment = () => {

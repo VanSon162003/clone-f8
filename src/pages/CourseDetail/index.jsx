@@ -13,6 +13,7 @@ import {
 import Button from "@/components/Button";
 import Model from "@/components/Model";
 import ScrollLock from "@/components/ScrollLock";
+import { useNavigate, useParams } from "react-router-dom";
 
 const mockData = {
     data: {
@@ -121,6 +122,9 @@ function CourseDetail() {
     const [isCollapseAll, setIsCollapseAll] = useState(false);
     const [openIntroduce, setOpenIntroduce] = useState(false);
 
+    const navigator = useNavigate();
+    const { slug } = useParams();
+
     const totalTrack = course.tracks.length;
     const totalLesson = course.tracks.reduce((acc, track) => {
         return (acc += track.track_steps.length);
@@ -173,6 +177,12 @@ function CourseDetail() {
 
     const onCancel = () => {
         setOpenIntroduce(false);
+    };
+
+    const handleRegisterLesson = () => {
+        // fetch dữ liệu cập nhật is_register với slug
+
+        navigator(`/learning/${slug}`);
     };
 
     return (
@@ -488,7 +498,11 @@ function CourseDetail() {
                                     {course.is_pro ? "Mất phí" : "Miễn phí"}
                                 </h5>
 
-                                <Button className={styles.wrapper} rounded>
+                                <Button
+                                    onClick={handleRegisterLesson}
+                                    className={styles.wrapper}
+                                    rounded
+                                >
                                     <span className={styles.inner}>
                                         <span className={styles.title}>
                                             ĐĂNG KÝ HỌC

@@ -25,6 +25,7 @@ const config = {
         myPostPublished: "/me/posts/published",
         myBookmark: "/me/bookmark/posts",
         courseDetail: "/courses/:slug",
+        courseLessonPage: "/learning/:lesson",
     },
 };
 

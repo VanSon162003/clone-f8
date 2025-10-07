@@ -25,6 +25,7 @@ import WritePost from "@/pages/WritePost";
 import MyPost from "@/pages/MyPost";
 import MyBookmark from "@/pages/MyBookmark";
 import CourseDetail from "@/pages/CourseDetail";
+import CourseLessonPage from "@/pages/CourseLessonPage";
 
 const routes = [
     {
@@ -142,6 +143,12 @@ const routes = [
     {
         path: config.routes.courseDetail,
         component: CourseDetail,
+    },
+
+    {
+        path: config.routes.courseLessonPage,
+        component: CourseLessonPage,
+        layout: null,
     },
 ];
 
