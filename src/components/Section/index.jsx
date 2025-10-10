@@ -3,14 +3,25 @@ import React from "react";
 import styles from "./Section.module.scss";
 import CourseList from "../CourseList";
 import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import formatNumberVN from "@/utils/formatNumberVN";
 
 function Section({
     heading,
     courseType = "free",
-    courseList,
+    courseList = [],
     path = null,
     titleViewAll = "",
 }) {
+    let viewCountCoursesFree = null;
+
+    if (courseType === "free") {
+        viewCountCoursesFree = courseList.reduce((acc, course) => {
+            return acc + +course.total_view;
+        }, 0);
+    }
+
     return (
         <div className={styles.wrapper}>
             <div className={styles.headingWrap}>
@@ -28,29 +39,24 @@ function Section({
                         </a>
                     </h2>
                 ) : (
-                    <h2 className={styles.heading}>
-                        <Link to={path}>{heading}</Link>
-                    </h2>
+                    <div className={styles.flexCenter}>
+                        {viewCountCoursesFree && (
+                            <p className={styles.subHeading}>
+                                {formatNumberVN(viewCountCoursesFree)}+ người đã
+                                học
+                            </p>
+                        )}
+                        <h2 className={styles.heading}>
+                            <Link to={path}>{heading}</Link>
+                        </h2>
+                    </div>
                 )}
 
                 {courseType !== "pro" && (
                     <Link to={path} className={styles.viewAll}>
                         {titleViewAll}
-                        <svg
-                            aria-hidden="true"
-                            focusable="false"
-                            data-prefix="fas"
-                            data-icon="chevron-right"
-                            className="svg-inline--fa fa-chevron-right "
-                            role="img"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 320 512"
-                        >
-                            <path
-                                fill="currentColor"
-                                d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"
-                            ></path>
-                        </svg>
+
+                        <FontAwesomeIcon icon={faChevronRight} />
                     </Link>
                 )}
             </div>

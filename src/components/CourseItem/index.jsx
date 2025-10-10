@@ -8,7 +8,6 @@ import pro from "@/assets/icons/pro.svg";
 import styles from "./CourseItem.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-    faCircleCheck,
     faCirclePlay,
     faClock,
     faComment,
@@ -18,8 +17,21 @@ import {
     faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import Avatar from "../Avatar";
+import formatNumberVN from "@/utils/formatNumberVN";
 
-function CourseItem({ item, courseType, courseEnrolled = false }) {
+function CourseItem({ item = {}, courseType, courseEnrolled = false }) {
+    const formatCurrencyVND = (value) => {
+        const number = Math.round(parseFloat(value) / 1000) * 1000;
+        return new Intl.NumberFormat("vi-VN").format(number) + "đ";
+    };
+
+    const path =
+        courseType === "video"
+            ? item.video_id
+            : courseType === "pro" || courseType === "free"
+            ? `/courses/${item.slug}`
+            : `/blog/${item.slug}`;
+
     return (
         <div
             className={`${
@@ -32,13 +44,13 @@ function CourseItem({ item, courseType, courseEnrolled = false }) {
         >
             <div className={`${styles.wrapper} ${styles.courseItem}`}>
                 <Link
-                    to={item.path}
+                    to={path}
                     className={styles.link}
                     target={courseType === "video" ? "_blank" : "_self"}
                 >
                     <img
-                        src={item.img}
-                        alt={item.title}
+                        src={item?.thumbnail}
+                        alt={item?.title}
                         className={styles.thumb}
                     />
 
@@ -52,7 +64,7 @@ function CourseItem({ item, courseType, courseEnrolled = false }) {
                             </div>
 
                             <div className={styles.duration}>
-                                <span>{item.time}</span>
+                                <span>{item.duration}</span>
                             </div>
                         </div>
                     )}
@@ -61,28 +73,29 @@ function CourseItem({ item, courseType, courseEnrolled = false }) {
                 <div className={styles.content}>
                     <h3 className={styles.title}>
                         <Link
-                            to={item.path}
+                            to={path}
                             target={courseType === "video" ? "_blank" : "_self"}
                         >
                             {item.title}
                         </Link>
                     </h3>
 
-                    {courseType === "pro" ||
-                        (courseType === "free" && (
-                            <div className={styles.price}>
-                                {/* thay đổi khi khác type */}
+                    {(courseType === "pro" || courseType === "free") && (
+                        <div className={styles.price}>
+                            {/* thay đổi khi khác type */}
 
-                                {courseType === "pro" && (
-                                    <span className={styles.oldPrice}>
-                                        {item.oldPrice}
-                                    </span>
-                                )}
-                                <span className={styles.mainPrice}>
-                                    {item.mainPrice}
+                            {courseType === "pro" && (
+                                <span className={styles.oldPrice}>
+                                    {formatCurrencyVND(item.old_price)}
                                 </span>
-                            </div>
-                        ))}
+                            )}
+                            <span className={styles.mainPrice}>
+                                {item.is_pro
+                                    ? formatCurrencyVND(item.price)
+                                    : "Miễn phí"}
+                            </span>
+                        </div>
+                    )}
 
                     {/* thay đổi khi khác type */}
 
@@ -93,17 +106,19 @@ function CourseItem({ item, courseType, courseEnrolled = false }) {
                                     <>
                                         <div className={styles.avatar}>
                                             <img
-                                                src={item.founderImg}
-                                                alt={item.founderName}
-                                                title="người hướng dẫn: Sơn Đặng"
+                                                src={item.creator.avatar}
+                                                alt={item.creator.full_name}
+                                                title={`người hướng dẫn: ${item.creator.full_name}`}
                                             />
                                         </div>
-                                        <span>{item.founderName}</span>
+                                        <span>{item.creator.full_name}</span>
                                     </>
                                 ) : (
                                     <div className={styles.infoItem}>
                                         <FontAwesomeIcon icon={faUser} />
-                                        <span>{item.sumPeople}</span>
+                                        <span>
+                                            {formatNumberVN(item.total_view)}
+                                        </span>
                                     </div>
                                 )}
                             </div>
@@ -114,7 +129,7 @@ function CourseItem({ item, courseType, courseEnrolled = false }) {
                             >
                                 <FontAwesomeIcon icon={faCirclePlay} />
 
-                                <span>{item.video}</span>
+                                <span>{item.total_lesson}</span>
                             </div>
 
                             <div
@@ -122,72 +137,41 @@ function CourseItem({ item, courseType, courseEnrolled = false }) {
                                 title="Tổng thời lượng video: 116h50p"
                             >
                                 <FontAwesomeIcon icon={faClock} />
-                                <span>{item.resultTime}</span>
+                                <span>{item.total_duration}</span>
                             </div>
                         </div>
                     ) : courseType === "article" ? (
                         <Link to={item.pathAuthor} className={styles.author}>
                             <Avatar
-                                avatar={item.avatar}
+                                avatar={item.user.avatar}
                                 authorPro={item.authorPro}
                                 pro={pro}
-                                authorName={item.authorName}
+                                authorName={item.user.full_name}
                                 admin={item.admin}
                             />
 
-                            {/* <div>
-                                <div
-                                    className={`${styles.avatar} ${
-                                        item.authorPro && styles.pro
-                                    }`}
-                                >
-                                    <img
-                                        src={item.avatar}
-                                        alt={item.authorName}
-                                    />
-
-                                    {item.authorPro && (
-                                        <img
-                                            src={pro}
-                                            alt="pro"
-                                            className={styles.crown}
-                                        />
-                                    )}
-                                </div>
-                            </div>
-
-                            <div>
-                                <span className={styles.useName}>
-                                    {item.authorName}
-                                </span>
-
-                                {item.admin && (
-                                    <FontAwesomeIcon
-                                        className={styles.iconLike}
-                                        icon={faCircleCheck}
-                                    />
-                                )}
-                            </div> */}
                             <span>·</span>
-                            {`${item.time} phút đọc`}
+                            {`${item.reading_time} phút đọc`}
                         </Link>
                     ) : (
                         <div className={styles.status}>
                             <div>
                                 <FontAwesomeIcon icon={faEye} />
 
-                                <span>{item.view}</span>
+                                <span>{formatNumberVN(item.views_count)}</span>
                             </div>
 
                             <div>
                                 <FontAwesomeIcon icon={faThumbsUp} />
 
-                                <span>{item.like}</span>
+                                <span>{formatNumberVN(item.likes_count)}</span>
                             </div>
 
                             <div>
                                 <FontAwesomeIcon icon={faComment} />
-                                <span>{item.comment}</span>
+                                <span>
+                                    {formatNumberVN(item.comments_count)}
+                                </span>
                             </div>
                         </div>
                     )}

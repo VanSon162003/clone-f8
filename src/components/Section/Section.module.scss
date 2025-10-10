@@ -4,6 +4,14 @@
 .headingWrap {
     display: flex;
     align-items: baseline;
+    justify-content: space-between;
+    align-items: end;
+}
+
+.subHeading {
+    color: #82919b;
+    font-size: 1.4rem;
+    margin-bottom: 0;
 }
 
 .heading {

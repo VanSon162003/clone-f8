@@ -1,13 +1,51 @@
-import useApi from "@/hook/useApi";
 import styles from "./Home.module.scss";
 import Section from "@/components/Section";
 import CustomSlideshow from "@/components/SlideShow";
+import {
+    useGetAllCoursesQuery,
+    useGetAllCoursesVideoQuery,
+} from "@/services/coursesService";
+import { useGetPopularPostsQuery } from "@/services/postsService";
+import { useEffect, useState } from "react";
 
 function Home() {
-    const coursePro = useApi("/pro");
-    const courseFree = useApi("/free");
-    const courseArticle = useApi("/article");
-    const courseVideo = useApi("/video");
+    const [coursePro, setCoursePro] = useState([]);
+    const [courseFree, setCourseFree] = useState([]);
+    const [courseArticle, setCourseArticle] = useState([]);
+    const [courseVideo, setCourseVideo] = useState([]);
+
+    const {
+        data: responseData,
+        isLoading,
+        isSuccess,
+    } = useGetAllCoursesQuery(undefined, {
+        refetchOnMountOrArgChange: true,
+    });
+
+    const popularPosts = useGetPopularPostsQuery(undefined, {
+        refetchOnMountOrArgChange: true,
+    });
+
+    const videoData = useGetAllCoursesVideoQuery(undefined, {
+        refetchOnMountOrArgChange: true,
+    });
+
+    useEffect(() => {
+        const data = responseData?.data || [];
+
+        if (isSuccess) {
+            setCoursePro(data.filter((course) => course.is_pro));
+            setCourseFree(data.filter((course) => !course.is_pro));
+        }
+
+        if (popularPosts.isSuccess) {
+            setCourseArticle(popularPosts.data.data);
+        }
+
+        if (videoData.isSuccess) {
+            setCourseVideo(videoData.data.data);
+        }
+    }, [responseData, videoData, isSuccess]);
 
     return (
         <div className={styles.parent}>
