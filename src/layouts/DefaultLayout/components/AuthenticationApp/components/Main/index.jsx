@@ -1,109 +1,57 @@
-import React, { useState } from "react";
 import styles from "./Main.module.scss";
 import { Link } from "react-router-dom";
 
-import logo from "@/assets/imgs/logo-f8.png";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser } from "@fortawesome/free-regular-svg-icons";
-
-import Google from "@/assets/icons/Google.svg";
-import Facebook from "@/assets/icons/Facebook.svg";
-import github from "@/assets/icons/github.svg";
 import Form from "../Form";
-function Main({ swapAccessType, setSwapAccessType, type = "" }) {
+import Button from "@/components/Button";
+
+import { useAuth0 } from "@auth0/auth0-react";
+import { useEffect } from "react";
+import authService from "@/services/authService";
+
+function Main({ type = "" }) {
+    const { loginWithPopup, user, isAuthenticated, getAccessTokenSilently } =
+        useAuth0();
+
+    const handleLogin = async () => {
+        try {
+            await loginWithPopup();
+
+            const accessToken = await getAccessTokenSilently();
+
+            localStorage.setItem("token", accessToken);
+        } catch (err) {
+            console.error("Lỗi khi đăng nhập Auth0:", err);
+        }
+    };
+
+    useEffect(() => {
+        if (isAuthenticated && user) {
+            (async () => {
+                try {
+                    const { data } = await authService.loginWithAuth0({ user });
+
+                    localStorage.setItem("token", data.access_token || "");
+                    localStorage.setItem(
+                        "refresh_token",
+                        data.refresh_token || ""
+                    );
+
+                    window.top.location.reload();
+                } catch (error) {
+                    console.log("lỗi khi gọi api", error);
+                }
+            })();
+        }
+    }, [isAuthenticated, user]);
     return (
         <main className={styles.main}>
             {type === "register" ? (
                 <div className={styles.content}>
                     <Form type={type} />
                 </div>
-            ) : type === "login" ? (
-                <div className={styles.content}>
-                    <Form type={type} />
-                </div>
             ) : (
                 <div className={styles.content}>
-                    <Link
-                        to={
-                            swapAccessType === "register"
-                                ? "/register"
-                                : "/login"
-                        }
-                        className={styles.wrapper}
-                    >
-                        <FontAwesomeIcon
-                            icon={faUser}
-                            className={`${styles.icon} ${styles.iconUser}`}
-                        />
-
-                        <span className={styles.title}>
-                            Sử dụng email / số điện thoại
-                        </span>
-                    </Link>
-
-                    <div className={styles.frag}>
-                        <Link
-                            to={
-                                swapAccessType === "register"
-                                    ? "/register"
-                                    : "/login"
-                            }
-                            className={styles.wrapper}
-                        >
-                            <img
-                                className={styles.icon}
-                                src={Google}
-                                alt="google"
-                            />
-                            <span className={styles.title}>
-                                {swapAccessType === "register"
-                                    ? "Đăng ký với Google"
-                                    : "Đăng nhập với Google"}
-                            </span>
-                        </Link>
-
-                        <Link
-                            to={
-                                swapAccessType === "register"
-                                    ? "/register"
-                                    : "/login"
-                            }
-                            className={styles.wrapper}
-                        >
-                            <img
-                                className={styles.icon}
-                                src={Facebook}
-                                alt="facebook"
-                            />
-
-                            <span className={styles.title}>
-                                {swapAccessType === "register"
-                                    ? "Đăng ký với Facebook"
-                                    : "Đăng nhập với Facebook"}
-                            </span>
-                        </Link>
-
-                        <Link
-                            to={
-                                swapAccessType === "register"
-                                    ? "/register"
-                                    : "/login"
-                            }
-                            className={styles.wrapper}
-                        >
-                            <img
-                                className={styles.icon}
-                                src={github}
-                                alt="github"
-                            />
-
-                            <span className={styles.title}>
-                                {swapAccessType === "register"
-                                    ? "Đăng ký với Github"
-                                    : "Đăng nhập với Github"}
-                            </span>
-                        </Link>
-                    </div>
+                    <Form type={type} />
                 </div>
             )}
 
@@ -119,35 +67,39 @@ function Main({ swapAccessType, setSwapAccessType, type = "" }) {
                 </p>
             ) : (
                 <p className={styles.regisOrLogin}>
-                    {swapAccessType === "register" ? (
+                    {type === "register" ? (
                         <>
                             {"Bạn đã có tài khoản? "}
-                            <button
-                                onClick={() => {
-                                    setSwapAccessType("login");
-                                }}
-                            >
-                                Đăng nhập
-                            </button>
+                            <button>Đăng nhập</button>
                         </>
                     ) : (
                         <>
                             {"Bạn chưa có tài khoản? "}
-                            <button
-                                onClick={() => {
-                                    setSwapAccessType("register");
-                                }}
-                            >
-                                Đăng ký
-                            </button>
+                            <button>Đăng ký</button>
                         </>
                     )}
                 </p>
             )}
 
-            <Link to={"/forGotPassWord"} className={styles.forgotPassword}>
-                Quên mật khẩu
-            </Link>
+            <div className={styles.options}>
+                <Link to={"/forGot-passWord"} className={styles.forgotPassword}>
+                    Quên mật khẩu
+                </Link>
+
+                <Button onClick={handleLogin} className={styles.forgotPassword}>
+                    {type === "login" ? "Đăng nhập" : "Đăng ký"} bằng phương
+                    thức khác
+                </Button>
+
+                {type !== "register" && (
+                    <Link
+                        to={"/resend-email"}
+                        className={styles.forgotPassword}
+                    >
+                        Gửi lại email xác thực
+                    </Link>
+                )}
+            </div>
 
             <p className={styles.attention}>
                 {

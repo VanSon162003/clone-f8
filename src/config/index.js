@@ -11,7 +11,7 @@ const config = {
         authenticationApp: "/authenticationApp",
         register: "/register",
         login: "/login",
-        forgotPassWord: "/forgotPassWord",
+        forgotPassWord: "/forgot-passWord",
         settingApp: "/setting/p/:username",
         setting: "/setting",
         aboutUs: "/about-us",
@@ -26,6 +26,8 @@ const config = {
         myBookmark: "/me/bookmark/posts",
         courseDetail: "/courses/:slug",
         courseLessonPage: "/learning/:lesson",
+        verifyEmail: "/verify-email",
+        resendEmail: "/resend-email",
     },
 };
 

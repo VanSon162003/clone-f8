@@ -12,8 +12,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebook, faTwitter } from "@fortawesome/free-brands-svg-icons";
 import { faEnvelope, faFlag, faLink } from "@fortawesome/free-solid-svg-icons";
 import Button from "../Button";
+import { useAuth0 } from "@auth0/auth0-react";
 
 function Tippy({ user = {}, type = "", className, ref, onEdit, onRemove }) {
+    const { logout } = useAuth0();
     const dispatch = useDispatch();
 
     const token = localStorage.getItem("token");
@@ -42,8 +44,6 @@ function Tippy({ user = {}, type = "", className, ref, onEdit, onRemove }) {
             ? "translate3d(-16.8px, 32px, 0px)"
             : "translate3d(0, 46.8px, 0px)";
 
-    // const arrType = useRef(["profile, notification, courseList"]);
-
     const handleLogout = async () => {
         if (!token) {
             console.warn("Không tìm thấy token, không thể đăng xuất.");
@@ -51,6 +51,8 @@ function Tippy({ user = {}, type = "", className, ref, onEdit, onRemove }) {
         }
 
         dispatch(logoutCurrentUser());
+        // logout();
+
         localStorage.removeItem("token");
         localStorage.removeItem("refresh_token");
     };
@@ -80,7 +82,7 @@ function Tippy({ user = {}, type = "", className, ref, onEdit, onRemove }) {
                             <div className={styles.avaSetting}>
                                 <div className={styles.avatar}>
                                     <img
-                                        src={user ? user.image : userImg}
+                                        src={user ? user.avatar : userImg}
                                         alt="user"
                                     />
                                     <img
@@ -93,7 +95,7 @@ function Tippy({ user = {}, type = "", className, ref, onEdit, onRemove }) {
 
                             <div className={styles.info}>
                                 <div className={styles.name}>
-                                    {user?.username}
+                                    {user?.full_name}
                                 </div>
                                 <div className={styles.useName}>
                                     @{user?.username}
@@ -137,7 +139,7 @@ function Tippy({ user = {}, type = "", className, ref, onEdit, onRemove }) {
                             </li>
 
                             <li onClick={handleLogout}>
-                                <a href="#">Đăng xuất</a>
+                                <Button to="/">Đăng xuất</Button>
                             </li>
                         </ul>
                     </>

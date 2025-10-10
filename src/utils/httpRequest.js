@@ -29,7 +29,7 @@ httpRequest.interceptors.response.use(
                 isRefreshing = true;
                 try {
                     const res = await axios.post(
-                        `${import.meta.env.VITE_BASE_URL}/auth/refresh-token`,
+                        `${import.meta.env.VITE_BASE_URL}auth/refresh-token`,
                         {
                             refresh_token: refreshToken,
                         }
@@ -47,6 +47,8 @@ httpRequest.interceptors.response.use(
 
                     return httpRequest(error.config);
                 } catch (error) {
+                    console.log(error);
+
                     isRefreshing = false;
                     tokenListeners = [];
 

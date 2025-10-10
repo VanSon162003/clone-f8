@@ -26,6 +26,8 @@ import MyPost from "@/pages/MyPost";
 import MyBookmark from "@/pages/MyBookmark";
 import CourseDetail from "@/pages/CourseDetail";
 import CourseLessonPage from "@/pages/CourseLessonPage";
+import VerifyEmail from "@/pages/VerifyEmail";
+import ResendEmail from "@/pages/ResendEmail";
 
 const routes = [
     {
@@ -148,6 +150,17 @@ const routes = [
     {
         path: config.routes.courseLessonPage,
         component: CourseLessonPage,
+        layout: null,
+    },
+
+    {
+        path: config.routes.verifyEmail,
+        component: VerifyEmail,
+        layout: null,
+    },
+    {
+        path: config.routes.resendEmail,
+        component: ResendEmail,
         layout: null,
     },
 ];

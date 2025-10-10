@@ -29,6 +29,7 @@ function Form({ type = "" }) {
         ),
     });
 
+    const [redirected, setRedirected] = useState(false);
     const { param } = useQuery();
 
     const passwordValue = watch("password");
@@ -39,6 +40,7 @@ function Form({ type = "" }) {
 
     const isLoading = useSelector((state) => state.auth.loading);
     const respone = useSelector((state) => state.auth.authRespone);
+
     const messageErr = useSelector((state) => state.auth.error);
 
     useEffect(() => {
@@ -69,27 +71,33 @@ function Form({ type = "" }) {
     };
 
     useEffect(() => {
-        if (respone?.access_token) {
-            localStorage.setItem("token", respone.access_token);
-            localStorage.setItem("refresh_token", respone.refresh_token);
-
-            window.top.location.href = `http://localhost:5173${
-                param.get("continue") ? param.get("continue") : ""
-            }`;
+        if (type === "login" && respone && !redirected) {
+            if (respone.refresh_token && respone.access_token) {
+                setRedirected(true);
+                localStorage.setItem("token", respone.access_token);
+                localStorage.setItem("refresh_token", respone.refresh_token);
+                window.top.location.href = param.get("continue")
+                    ? `/${param.get("continue")}`
+                    : "/";
+            }
+            // setToken(respone.access_token);
+        } else if (type === "register" && respone && !redirected) {
+            window.top.location.href = "/login";
+            setRedirected(true);
         }
-    }, [respone, param]);
+    }, [respone, param, redirected, type]);
 
     return type === "register" ? (
         <form action="" onSubmit={handleSubmit(onSubmit)}>
             <Input
                 labelName={"Tên"}
-                name={"firstName"}
+                name={"frist_name"}
                 message={errors}
                 register={register}
             />
             <Input
                 labelName={"Tên đệm"}
-                name={"lastName"}
+                name={"last_name"}
                 message={errors}
                 register={register}
             />
@@ -149,7 +157,7 @@ function Form({ type = "" }) {
                 isLoading={isLoading}
                 className={`${styles.wrapperBtn} ${styles.btnPrimary} ${styles.rounded} `}
             >
-                {type === "register" ? "đăng ký" : "đăng nhập"}
+                {"đăng nhập"}
             </Button>
         </form>
     );

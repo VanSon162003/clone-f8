@@ -100,3 +100,11 @@
         text-decoration: underline;
     }
 }
+
+.options {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    gap: 20px;
+}

@@ -7,18 +7,13 @@ import Main from "./components/Main";
 function AuthenticationApp() {
     const accessType = localStorage.getItem("access") ?? "";
 
-    const [swapAccessType, setSwapAccessType] = useState(accessType);
-
     return (
         <>
             <div className={styles.magic}></div>
             <div className={styles.wrapperContainer}>
                 <div className={styles.wrapper}>
-                    <Header swapAccessType={swapAccessType} />
-                    <Main
-                        swapAccessType={swapAccessType}
-                        setSwapAccessType={setSwapAccessType}
-                    />
+                    <Header swapAccessType={accessType} />
+                    <Main type={accessType} />
                 </div>
             </div>
         </>

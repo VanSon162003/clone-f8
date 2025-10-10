@@ -2,8 +2,8 @@ import * as yup from "yup";
 
 const schemaRegister = yup
     .object({
-        firstName: yup.string().required("trường này là bắt buộc"),
-        lastName: yup.string().required("trường này là bắt buộc"),
+        frist_name: yup.string().required("trường này là bắt buộc"),
+        last_name: yup.string().required("trường này là bắt buộc"),
         email: yup
             .string()
             .required("trường này là bắt buộc")

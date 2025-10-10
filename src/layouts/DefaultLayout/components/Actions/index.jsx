@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import Button from "@/components/Button";
 import styles from "./Actions.module.scss";
 import AccessForm from "../AccessForm";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell } from "@fortawesome/free-solid-svg-icons";
 
 import userImg from "@/assets/imgs/user.jpg";
@@ -30,7 +29,7 @@ function Actions() {
         saveAccessType(type);
     };
 
-    const token = localStorage.getItem("token");
+    // const token = localStorage.getItem("token");
 
     const { user, err } = useCurrentUser();
 
@@ -114,7 +113,7 @@ function Actions() {
                     }}
                 >
                     <div className={styles.avatar}>
-                        <img src={user?.image || userImg} alt="user" />
+                        <img src={user?.avatar || userImg} alt="user" />
                         <img className={styles.crown} src={proIcon} alt="" />
                     </div>
                 </div>

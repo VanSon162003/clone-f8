@@ -6,7 +6,13 @@ export const getCurrentUser = async () => {
 };
 
 export const logoutUser = async () => {
-    const res = await httpRequest.post("/auth/logout");
+    const refresh_token = localStorage.getItem("refresh_token");
+    const token = localStorage.getItem("token");
+
+    const res = await httpRequest.post("/auth/logout", {
+        refresh_token,
+        token,
+    });
     return res;
 };
 
@@ -68,6 +74,28 @@ export const login = async (data) => {
     return res;
 };
 
+export const forgotPassword = async (token, password) => {
+    const res = await httpRequest.post(`/auth/forgot-password?token=${token}`, {
+        password,
+    });
+    return res;
+};
+
+export const verifyEmail = async (token) => {
+    const res = await httpRequest.post(`/auth/verify-email?token=${token}`);
+    return res;
+};
+
+export const resendEmail = async (email, job) => {
+    const res = await httpRequest.post(`/auth/resend-email`, { email, job });
+    return res;
+};
+
+export const loginWithAuth0 = async (user) => {
+    const res = await httpRequest.post("/auth/protected", user);
+    return res;
+};
+
 export default {
     getCurrentUser,
     logoutUser,
@@ -79,4 +107,8 @@ export default {
     checkUserName,
     register,
     login,
+    verifyEmail,
+    resendEmail,
+    forgotPassword,
+    loginWithAuth0,
 };
