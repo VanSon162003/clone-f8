@@ -10,10 +10,17 @@ export const coursesApi = createApi({
             query: () => `/courses`,
         }),
 
+        getBySlug: builder.query({
+            query: (slug) => `/courses/${slug}`,
+        }),
         getAllCoursesVideo: builder.query({
             query: () => `/courses/videos`,
         }),
     }),
 });
 
-export const { useGetAllCoursesQuery, useGetAllCoursesVideoQuery } = coursesApi;
+export const {
+    useGetAllCoursesQuery,
+    useGetBySlugQuery,
+    useGetAllCoursesVideoQuery,
+} = coursesApi;

@@ -14,11 +14,7 @@ function Home() {
     const [courseArticle, setCourseArticle] = useState([]);
     const [courseVideo, setCourseVideo] = useState([]);
 
-    const {
-        data: responseData,
-        isLoading,
-        isSuccess,
-    } = useGetAllCoursesQuery(undefined, {
+    const { data: responseData, isSuccess } = useGetAllCoursesQuery(undefined, {
         refetchOnMountOrArgChange: true,
     });
 

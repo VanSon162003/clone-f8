@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./CourseDetail.module.scss";
 import ParentCard from "@/components/ParentCard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,110 +14,111 @@ import Button from "@/components/Button";
 import Model from "@/components/Model";
 import ScrollLock from "@/components/ScrollLock";
 import { useNavigate, useParams } from "react-router-dom";
+import { useGetBySlugQuery } from "@/services/coursesService";
 
-const mockData = {
-    data: {
-        course: {
-            id: 12,
-            title: "Lập Trình JavaScript Nâng Cao",
-            certificate_name: "JavaScript Advanced",
-            slug: "javascript-nang-cao",
-            description:
-                "Hiểu sâu hơn về cách Javascript hoạt động, tìm hiểu về IIFE, closure, reference types, this keyword, bind, call, apply, prototype, ...",
-            image_url: "https://files.fullstack.edu.vn/f8-prod/courses/12.png",
-            duration: 31276,
-            is_pro: false,
-            level: {
-                id: 2,
-                title: "Trình độ trung bình",
-                level: 2,
+// const mockData = {
+//     data: {
+//         course: {
+//             id: 12,
+//             title: "Lập Trình JavaScript Nâng Cao",
+//             certificate_name: "JavaScript Advanced",
+//             slug: "javascript-nang-cao",
+//             description:
+//                 "Hiểu sâu hơn về cách Javascript hoạt động, tìm hiểu về IIFE, closure, reference types, this keyword, bind, call, apply, prototype, ...",
+//             image_url: "https://files.fullstack.edu.vn/f8-prod/courses/12.png",
+//             duration: 31276,
+//             is_pro: false,
+//             level: {
+//                 id: 2,
+//                 title: "Trình độ trung bình",
+//                 level: 2,
 
-                created_at: null,
+//                 created_at: null,
 
-                updated_at: null,
-            },
-            will_learns: [
-                {
-                    id: 68,
-                    content:
-                        "Được học kiến thức miễn phí với nội dung chất lượng hơn mất phí",
-                },
-                {
-                    id: 69,
-                    content:
-                        "Các kiến thức nâng cao của Javascript giúp code trở nên tối ưu hơn",
-                },
-                {
-                    id: 70,
-                    content:
-                        "Hiểu được cách tư duy nâng cao của các lập trình viên có kinh nghiệm",
-                },
-            ],
-            requirements: [
-                {
-                    id: 62,
-                    content:
-                        "Hoàn thành khóa học Javascript cơ bản tại F8 hoặc đã nắm chắc Javascript cơ bản",
-                },
-                {
-                    id: 63,
-                    content: "Tư duy mở để dễ dàng tiếp nhận các tư tưởng mới",
-                },
-            ],
-            tracks: [
-                {
-                    id: 74,
-                    title: "IIFE, Scope, Closure",
-                    position: 1,
-                    track_steps: [
-                        {
-                            id: 1,
-                            step: {
-                                title: "Giới thiệu",
-                                position: 1,
-                                duration: 108,
-                            },
-                        },
-                        {
-                            id: 2,
-                            step: {
-                                title: "IIFE là gì?",
-                                position: 2,
-                                duration: 1437,
-                            },
-                        },
-                    ],
-                },
-                {
-                    id: 188,
-                    title: "Hoisting, Strict Mode, Data Types",
-                    position: 2,
-                    track_steps: [
-                        {
-                            id: 3,
-                            step: {
-                                title: "Hoisting là gì?",
-                                position: 3,
-                                duration: 658,
-                            },
-                        },
-                        {
-                            id: 4,
-                            step: {
-                                title: "Strict mode?",
-                                position: 4,
-                                duration: 845,
-                            },
-                        },
-                    ],
-                },
-            ],
-        },
-    },
-};
+//                 updated_at: null,
+//             },
+//             will_learns: [
+//                 {
+//                     id: 68,
+//                     content:
+//                         "Được học kiến thức miễn phí với nội dung chất lượng hơn mất phí",
+//                 },
+//                 {
+//                     id: 69,
+//                     content:
+//                         "Các kiến thức nâng cao của Javascript giúp code trở nên tối ưu hơn",
+//                 },
+//                 {
+//                     id: 70,
+//                     content:
+//                         "Hiểu được cách tư duy nâng cao của các lập trình viên có kinh nghiệm",
+//                 },
+//             ],
+//             requirements: [
+//                 {
+//                     id: 62,
+//                     content:
+//                         "Hoàn thành khóa học Javascript cơ bản tại F8 hoặc đã nắm chắc Javascript cơ bản",
+//                 },
+//                 {
+//                     id: 63,
+//                     content: "Tư duy mở để dễ dàng tiếp nhận các tư tưởng mới",
+//                 },
+//             ],
+//             tracks: [
+//                 {
+//                     id: 74,
+//                     title: "IIFE, Scope, Closure",
+//                     position: 1,
+//                     track_steps: [
+//                         {
+//                             id: 1,
+//                             step: {
+//                                 title: "Giới thiệu",
+//                                 position: 1,
+//                                 duration: 108,
+//                             },
+//                         },
+//                         {
+//                             id: 2,
+//                             step: {
+//                                 title: "IIFE là gì?",
+//                                 position: 2,
+//                                 duration: 1437,
+//                             },
+//                         },
+//                     ],
+//                 },
+//                 {
+//                     id: 188,
+//                     title: "Hoisting, Strict Mode, Data Types",
+//                     position: 2,
+//                     track_steps: [
+//                         {
+//                             id: 3,
+//                             step: {
+//                                 title: "Hoisting là gì?",
+//                                 position: 3,
+//                                 duration: 658,
+//                             },
+//                         },
+//                         {
+//                             id: 4,
+//                             step: {
+//                                 title: "Strict mode?",
+//                                 position: 4,
+//                                 duration: 845,
+//                             },
+//                         },
+//                     ],
+//                 },
+//             ],
+//         },
+//     },
+// };
 
 function CourseDetail() {
-    const [course, setCourse] = useState(mockData.data.course);
+    const [course, setCourse] = useState({});
     const [openCollapse, setOpenCollapse] = useState([]);
     const [isCollapseAll, setIsCollapseAll] = useState(false);
     const [openIntroduce, setOpenIntroduce] = useState(false);
@@ -125,20 +126,24 @@ function CourseDetail() {
     const navigator = useNavigate();
     const { slug } = useParams();
 
-    const totalTrack = course.tracks.length;
-    const totalLesson = course.tracks.reduce((acc, track) => {
-        return (acc += track.track_steps.length);
-    }, 0);
+    const { data, isSuccess } = useGetBySlugQuery(slug, {
+        refetchOnMountOrArgChange: true,
+    });
 
-    const totalSeconds = course.tracks.reduce((acc, track) => {
-        return (
-            acc +
-            track.track_steps.reduce(
-                (sum, step) => sum + (step.step.duration || 0),
-                0
-            )
-        );
-    }, 0);
+    console.log(course);
+
+    useEffect(() => {
+        if (data?.data && isSuccess) {
+            setCourse((prev) => {
+                return {
+                    ...prev,
+                    ...data.data,
+                    requirement: JSON.parse(data.data.requirement),
+                    what_you_learn: JSON.parse(data.data.what_you_learn),
+                };
+            });
+        }
+    }, [data, isSuccess]);
 
     function formatDuration(seconds) {
         const h = Math.floor(seconds / 3600);
@@ -212,10 +217,10 @@ function CourseDetail() {
                                     >
                                         <section className={styles.col}>
                                             <ul className={styles.list}>
-                                                {course.will_learns.map(
+                                                {course?.what_you_learn?.map(
                                                     (item) => {
                                                         return (
-                                                            <li key={item.id}>
+                                                            <li key={item}>
                                                                 <FontAwesomeIcon
                                                                     className={
                                                                         styles.icon
@@ -226,9 +231,7 @@ function CourseDetail() {
                                                                 />
 
                                                                 <span>
-                                                                    {
-                                                                        item.content
-                                                                    }
+                                                                    {item}
                                                                 </span>
                                                             </li>
                                                         );
@@ -252,7 +255,7 @@ function CourseDetail() {
                                             <ul>
                                                 <li className="d-lg-none">
                                                     <strong>
-                                                        {totalTrack}{" "}
+                                                        {course.total_track}{" "}
                                                     </strong>{" "}
                                                     chương
                                                 </li>
@@ -263,7 +266,7 @@ function CourseDetail() {
                                                 </li>
                                                 <li>
                                                     <strong>
-                                                        {totalSeconds}
+                                                        {course.total_lesson}
                                                     </strong>{" "}
                                                     bài học
                                                 </li>
@@ -277,7 +280,7 @@ function CourseDetail() {
                                                         Thời lượng{" "}
                                                         <strong>
                                                             {formatDuration(
-                                                                totalSeconds
+                                                                course.total_duration
                                                             )}
                                                         </strong>
                                                     </span>
@@ -298,7 +301,7 @@ function CourseDetail() {
 
                                     <div className={styles.curriculumPanner}>
                                         <div className={styles.pannerGroup}>
-                                            {course.tracks.map((track) => {
+                                            {course.tracks?.map((track) => {
                                                 const isOpen =
                                                     openCollapse.includes(
                                                         track.id
@@ -348,7 +351,7 @@ function CourseDetail() {
                                                                         }
                                                                     >
                                                                         {
-                                                                            totalLesson
+                                                                            course.total_lesson
                                                                         }{" "}
                                                                         bài học
                                                                     </div>
@@ -369,9 +372,9 @@ function CourseDetail() {
                                                                     }
                                                                 >
                                                                     <div>
-                                                                        {track.track_steps.map(
+                                                                        {track.lessons.map(
                                                                             (
-                                                                                step
+                                                                                lesson
                                                                             ) => {
                                                                                 return (
                                                                                     <div
@@ -379,7 +382,7 @@ function CourseDetail() {
                                                                                             styles.lessonItem
                                                                                         }
                                                                                         key={
-                                                                                            step.id
+                                                                                            lesson.id
                                                                                         }
                                                                                     >
                                                                                         <span
@@ -399,26 +402,20 @@ function CourseDetail() {
                                                                                                 }
                                                                                             >
                                                                                                 {
-                                                                                                    step
-                                                                                                        .step
-                                                                                                        .position
+                                                                                                    lesson.position
                                                                                                 }
                                                                                                 {
                                                                                                     ". "
                                                                                                 }
                                                                                                 {
-                                                                                                    step
-                                                                                                        .step
-                                                                                                        .title
+                                                                                                    lesson.title
                                                                                                 }
                                                                                             </div>
                                                                                         </span>
 
                                                                                         <span>
                                                                                             {formatDurationBySeconds(
-                                                                                                step
-                                                                                                    .step
-                                                                                                    .duration
+                                                                                                lesson.duration
                                                                                             )}
                                                                                         </span>
                                                                                     </div>
@@ -438,7 +435,7 @@ function CourseDetail() {
 
                                 {/* Requirements */}
                                 <div className={styles.topicList}>
-                                    <h2>Bạn sẽ học được gì?</h2>
+                                    <h2>Yêu cầu</h2>
 
                                     <section
                                         className={styles.index_module_row}
@@ -447,7 +444,7 @@ function CourseDetail() {
                                             <ul
                                                 className={`${styles.list} ${styles.column}`}
                                             >
-                                                {course.requirements.map(
+                                                {course.requirement?.map(
                                                     (item) => {
                                                         return (
                                                             <li key={item.id}>
@@ -461,9 +458,7 @@ function CourseDetail() {
                                                                 />
 
                                                                 <span>
-                                                                    {
-                                                                        item.content
-                                                                    }
+                                                                    {item}
                                                                 </span>
                                                             </li>
                                                         );
@@ -484,7 +479,7 @@ function CourseDetail() {
                                     <div
                                         className={styles.bg}
                                         style={{
-                                            backgroundImage: `url(${course.image_url})`,
+                                            backgroundImage: `url(${course.thumbnail})`,
                                         }}
                                     ></div>
 
@@ -517,7 +512,7 @@ function CourseDetail() {
                                             className={styles.icon}
                                         />
 
-                                        <span>{course.level.title}</span>
+                                        <span>{course.level}</span>
                                     </li>
                                     <li>
                                         <FontAwesomeIcon
@@ -525,7 +520,11 @@ function CourseDetail() {
                                             className={styles.icon}
                                         />
                                         <span>
-                                            Tổng số <strong>118</strong> bài học
+                                            Tổng số{" "}
+                                            <strong>
+                                                {course?.total_lesson}
+                                            </strong>{" "}
+                                            bài học
                                         </span>
                                     </li>
                                     <li>
@@ -535,7 +534,12 @@ function CourseDetail() {
                                         />
                                         <span>
                                             Thời lượng{" "}
-                                            <strong>28 giờ 05 phút</strong>
+                                            <strong>
+                                                {" "}
+                                                {formatDuration(
+                                                    course?.total_duration
+                                                )}
+                                            </strong>
                                         </span>
                                     </li>
                                     <li>
