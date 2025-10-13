@@ -2,78 +2,87 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./CommentSidebar.module.scss";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import Avatar from "../Avatar";
-import { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ScrollLock from "../ScrollLock";
 import CommentItem from "../CommentItem";
 import Editor from "../Editor";
+import {
+    useCreateCommentMutation,
+    useDeleteCommentMutation,
+    useEditCommentMutation,
+    useGetAllByTypeQuery,
+} from "@/services/commentsService";
+import { useSelector } from "react-redux";
 
-function CommentSidebar({ open = false, onCancel }) {
+function CommentSidebar({
+    open = false,
+    onCancel = () => {},
+    commentableType,
+    commentableId,
+}) {
     const [isOpen, setIsOpen] = useState(open);
     const [isOpenCommentEditor, setIsOpenCommentEditor] = useState(false);
     const [openTippyId, setOpenTippyId] = useState(null);
-    const [comments, setComments] = useState([
-        {
-            id: 8,
-            content: "oke chưa",
-            reactionCount: 8,
-            parent: null,
-            createdAt: "2025-08-23 15:58:00",
-            updatedAt: "2025-08-23 15:58:00",
-            initialActed: [
-                { id: 1, count: 2, icon: "👍", label: "Thích" },
-                { id: 2, count: 2, icon: "❤️", label: "Yêu thích" },
-                { id: 3, count: 4, icon: "😂", label: "Haha" },
-            ],
-            userReaction: { id: 1, icon: "👍", label: "Thích" },
-            user: {
-                id: 8,
-                fullname: "van son",
-                username: "sonvan",
-                avatar: "/src/assets/imgs/user.jpg",
-            },
-            replies: [
-                {
-                    id: 1,
-                    content: "oke chưa hh",
-                    reactionCount: 3,
-                    parent: 8,
+    const [comments, setComments] = useState([]);
 
-                    initialActed: [
-                        { id: 1, count: 1, icon: "👍", label: "Thích" },
-                        { id: 2, count: 2, icon: "❤️", label: "Yêu thích" },
-                    ],
-                    userReaction: null,
-                    createdAt: "2025-08-23 15:58:00",
-                    updatedAt: "2025-08-23 15:58:00",
-                    user: {
-                        id: 1,
-                        fullname: "van son reply",
-                        username: "sonvan",
-                        avatar: "/src/assets/imgs/user.jpg",
-                    },
-                },
-            ],
-        },
-        {
-            id: 2,
-            content: "oke chưa???",
-            createdAt: "2025-08-23 15:58:00",
-            updatedAt: "2025-08-23 15:58:00",
-            reactionCount: 0,
-            initialActed: [],
-            userReaction: null,
-            parent: null,
-            user: {
-                id: 1,
-                fullname: "van son",
-                username: "sonvan",
-                avatar: "/src/assets/imgs/user.jpg",
-            },
-            replies: [],
-        },
-    ]);
+    const currentUser = useSelector((state) => state.auth.currentUser);
 
-    console.log(open);
+    // lấy 10 comment đầu mỗi khi chạm đáy lấy thêm 10 cái nữa
+
+    const [hasMore, setHasMore] = useState(true);
+
+    const [offset, setOffset] = useState(0);
+    const limit = 5;
+
+    const queryArgs = React.useMemo(
+        () => ({
+            type: commentableType,
+            id: commentableId,
+            limit,
+            offset,
+        }),
+        [commentableType, commentableId, limit, offset]
+    );
+
+    const { data, isFetching } = useGetAllByTypeQuery(queryArgs, {
+        skip: !commentableId,
+        refetchOnMountOrArgChange: true,
+        refetchOnFocus: true,
+        keepUnusedDataFor: 0,
+    });
+
+    const observer = useRef();
+    const lastComment = (node) => {
+        if (isFetching || !hasMore) return;
+
+        if (observer.current) observer.current.disconnect();
+
+        observer.current = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                setOffset((prev) => prev + limit);
+            }
+        });
+
+        if (node) observer.current.observe(node);
+    };
+
+    const [createComment] = useCreateCommentMutation();
+    const [editComment] = useEditCommentMutation();
+    const [deleteComment] = useDeleteCommentMutation();
+
+    // lấy ra comments
+    useEffect(() => {
+        if (data?.data) {
+            setComments((prev) => {
+                const existingIds = new Set(prev.map((c) => c.id));
+                const newOnes = data?.data?.filter(
+                    (c) => !existingIds.has(c?.id)
+                );
+                return [...prev, ...newOnes];
+            });
+            if (data.data.length < limit) setHasMore(false);
+        }
+    }, [data]);
 
     useEffect(() => {
         setIsOpen(open);
@@ -107,42 +116,109 @@ function CommentSidebar({ open = false, onCancel }) {
         setIsOpenCommentEditor(false);
     };
 
-    const handleAddComment = (value) => {
-        const newComment = {
-            id: Math.floor(Math.random() * 900),
-            content: value,
-            reactionCount: 0,
-            parent: null,
+    const handleAddComment = async (value) => {
+        if (!currentUser) return console.log("Đăng nhập trước comment");
 
-            createdAt: "2025-08-23 15:58:00",
-            updatedAt: "2025-08-23 15:58:00",
-            initialActed: [],
-            userReaction: null,
-            user: {
-                id: 8,
-                fullname: "van son adđ",
-                username: "sonvan",
-                avatar: "/src/assets/imgs/user.jpg",
-            },
-            replies: [],
-        };
+        try {
+            await createComment({
+                content: value,
+                type: commentableType,
+                id: commentableId,
+            }).unwrap();
 
-        setComments((prev) => [newComment, ...prev]);
-        handleCloseComment();
+            const newComment = {
+                id: Math.floor(Math.random() * 900),
+                parent_id: null,
+                like_count: 0,
+                content: value,
+
+                deleted_at: null,
+                created_at: Date.now(),
+                updated_at: Date.now(),
+                user: {
+                    id: currentUser.id,
+                    full_name: currentUser.full_name,
+                    username: currentUser.username,
+                    avatar: currentUser.avatar,
+                    commentReactions: [],
+                },
+                replies: [],
+                reactions: [],
+            };
+
+            setComments((prev) => [newComment, ...prev]);
+            handleCloseComment();
+        } catch (error) {
+            console.log(error);
+        }
     };
 
-    const handleEditComment = (newContent, id) => {
-        setComments((prev) => {
-            return prev.map((comment) => {
-                if (comment.id === id) {
-                    return {
-                        ...comment,
-                        content: newContent,
-                    };
-                }
-                return comment;
-            });
-        });
+    const handleEditComment = async (newContent, id) => {
+        if (!currentUser)
+            return console.log("Cần đăng nhập trước khi sửa comment");
+
+        try {
+            await editComment({ id, content: newContent }).unwrap();
+
+            setComments((prev) =>
+                prev.map((comment) => {
+                    if (comment.id === id) {
+                        return {
+                            ...comment,
+                            content: newContent,
+                        };
+                    }
+
+                    if (comment.replies && comment.replies.length > 0) {
+                        const updatedReplies = comment.replies.map((reply) => {
+                            if (reply.id === id) {
+                                return {
+                                    ...reply,
+                                    content: newContent,
+                                };
+                            }
+                            return reply;
+                        });
+
+                        return {
+                            ...comment,
+                            replies: updatedReplies,
+                        };
+                    }
+
+                    return comment;
+                })
+            );
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleDeleteComment = async (id) => {
+        if (!currentUser)
+            return console.log("Cần đăng nhập trước khi xoá comment");
+
+        try {
+            await deleteComment({ id }).unwrap();
+
+            setComments((prev) =>
+                prev
+                    .filter((comment) => comment.id !== id)
+                    .map((comment) => {
+                        if (comment.replies && comment.replies.length > 0) {
+                            return {
+                                ...comment,
+                                replies: comment.replies.filter(
+                                    (reply) => reply.id !== id
+                                ),
+                            };
+                        }
+                        return comment;
+                    })
+            );
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     const addReplyRecursive = (comments, parentId, newReply) => {
@@ -173,31 +249,39 @@ function CommentSidebar({ open = false, onCancel }) {
         return findCommentById;
     };
 
-    const handleReupComment = (content, id) => {
+    const handleReupComment = async (content, id) => {
         const findComment = findCommentById(comments, id);
-        console.log(findComment);
 
-        const parentId = findComment?.id;
+        const parentId = findComment?.id || id;
 
-        const currentUser = {
+        await createComment({
+            content: content,
+            type: commentableType,
+            id: commentableId,
+            parent_id: parentId,
+        });
+
+        const newComment = {
             id: Math.floor(Math.random() * 900),
-            content,
-            reactionCount: 0,
-            initialActed: [],
-            userReaction: null,
-            parent: parentId,
-            createdAt: "2025-08-23 15:58:00",
-            updatedAt: "2025-08-23 15:58:00",
+            parent_id: null,
+            like_count: 0,
+            content: content,
+
+            deleted_at: null,
+            created_at: Date.now(),
+            updated_at: Date.now(),
             user: {
-                id: 8,
-                fullname: "van son reply",
-                username: "sonvan",
-                avatar: "/src/assets/imgs/user.jpg",
+                id: currentUser.id,
+                full_name: currentUser.full_name,
+                username: currentUser.username,
+                avatar: currentUser.avatar,
+                commentReactions: [],
             },
             replies: [],
+            reactions: [],
         };
 
-        setComments((prev) => addReplyRecursive(prev, parentId, currentUser));
+        setComments((prev) => addReplyRecursive(prev, parentId, newComment));
     };
 
     return (
@@ -226,7 +310,7 @@ function CommentSidebar({ open = false, onCancel }) {
                                     <div className={styles.user}>
                                         <Avatar
                                             fontSize={"4.445px"}
-                                            avatar={"/src/assets/imgs/user.jpg"}
+                                            avatar={currentUser?.avatar}
                                         />
                                     </div>
                                     <div
@@ -260,7 +344,13 @@ function CommentSidebar({ open = false, onCancel }) {
                                 <div className={styles.content}>
                                     <div className={styles.header}>
                                         <h2 className={styles.title}>
-                                            {comments.length} bình luận
+                                            {
+                                                comments.reduce(
+                                                    (total, c) =>
+                                                        total + 1 + (c.replies?.length || 0),
+                                                    0
+                                                )
+                                            } bình luận
                                         </h2>
                                         {comments.length > 0 && (
                                             <span
@@ -280,71 +370,65 @@ function CommentSidebar({ open = false, onCancel }) {
                                                         styles.commentList
                                                     }
                                                 >
-                                                    {comments.map((comment) => {
-                                                        return (
-                                                            <CommentItem
-                                                                key={comment.id}
-                                                                id={comment.id}
-                                                                isOpen={
-                                                                    openTippyId ===
-                                                                    comment.id
-                                                                }
-                                                                onToggle={() =>
-                                                                    setOpenTippyId(
+                                                    {comments.map(
+                                                        (comment, i) => {
+                                                            const isLastComment =
+                                                                i ===
+                                                                comments.length -
+                                                                    1;
+                                                            return (
+                                                                <CommentItem
+                                                                    ref={
+                                                                        isLastComment
+                                                                            ? lastComment
+                                                                            : null
+                                                                    }
+                                                                    key={
+                                                                        comment.id
+                                                                    }
+                                                                    id={
+                                                                        comment.id
+                                                                    }
+                                                                    isOpen={
                                                                         openTippyId ===
-                                                                            comment.id
-                                                                            ? null
-                                                                            : comment.id
-                                                                    )
-                                                                }
-                                                                username={
-                                                                    comment.user
-                                                                        .username
-                                                                }
-                                                                avatar={
-                                                                    comment.user
-                                                                        .avatar
-                                                                }
-                                                                fullname={
-                                                                    comment.user
-                                                                        .fullname
-                                                                }
-                                                                replies={
-                                                                    comment.replies
-                                                                }
-                                                                content={
-                                                                    comment.content
-                                                                }
-                                                                reactionCount={
-                                                                    comment.reactionCount
-                                                                }
-                                                                initialActed={
-                                                                    comment.initialActed
-                                                                }
-                                                                userReaction={
-                                                                    comment.userReaction
-                                                                }
-                                                                createdAt={
-                                                                    comment.createdAt
-                                                                }
-                                                                openTippyId={
-                                                                    openTippyId
-                                                                }
-                                                                setOpenTippyId={
-                                                                    setOpenTippyId
-                                                                }
-                                                                handleEditComment={
-                                                                    handleEditComment
-                                                                }
-                                                                handleReupComment={
-                                                                    handleReupComment
-                                                                }
-                                                                user={
-                                                                    comment.user
-                                                                }
-                                                            />
-                                                        );
-                                                    })}
+                                                                        comment.id
+                                                                    }
+                                                                    onToggle={() =>
+                                                                        setOpenTippyId(
+                                                                            openTippyId ===
+                                                                                comment.id
+                                                                                ? null
+                                                                                : comment.id
+                                                                        )
+                                                                    }
+                                                                    comment={
+                                                                        comment
+                                                                    }
+                                                                    openTippyId={
+                                                                        openTippyId
+                                                                    }
+                                                                    setOpenTippyId={
+                                                                        setOpenTippyId
+                                                                    }
+                                                                    handleEditComment={
+                                                                        handleEditComment
+                                                                    }
+                                                                    handleReupComment={
+                                                                        handleReupComment
+                                                                    }
+                                                                    handleDeleteComment={
+                                                                        handleDeleteComment
+                                                                    }
+                                                                    user={
+                                                                        comment.user
+                                                                    }
+                                                                    currentUser={
+                                                                        currentUser
+                                                                    }
+                                                                />
+                                                            );
+                                                        }
+                                                    )}
                                                 </div>
 
                                                 <p

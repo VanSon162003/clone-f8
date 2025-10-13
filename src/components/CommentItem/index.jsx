@@ -1,40 +1,41 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Avatar from "../Avatar";
 import Button from "../Button";
 import styles from "./CommentItem.module.scss";
 import { timeAgo } from "@/utils/timeAgo";
 import ReactionButton from "../ReactionButton";
 import Editor from "../Editor";
+import { useHandleReactionCommentMutation } from "@/services/commentsService";
 
-function CommentItem({
-    id,
-    username = "",
-    createdAt = "",
-    fullname = "",
-    avatar = "",
-    content = "",
-    isOpen,
-    onToggle,
-    replies = [],
-    type = "comments",
-    openTippyId,
-    setOpenTippyId,
-    reactionCount = 0,
-    initialActed = [],
-    userReaction = null,
-    handleEditComment = () => {},
-    handleReupComment = () => {},
-    user = {},
-}) {
+function CommentItem(
+    {
+        id,
+        isOpen,
+        onToggle,
+        comment = {},
+        type = "comments",
+        openTippyId,
+        setOpenTippyId,
+        handleEditComment = () => {},
+        handleReupComment = () => {},
+        handleDeleteComment = () => {},
+        user = {},
+        currentUser = {},
+    },
+    ref
+) {
     const [isOpenReplies, setIsOpenReplies] = useState(false);
     const [typeEdit, setTypeEdit] = useState("");
 
     const [isOpenEdit, setIsOpenEdit] = useState(false);
 
     const [acted, setActed] = useState([]);
-    const [currentUserReaction, setCurrentUserReaction] =
-        useState(userReaction);
-    const [totalReaction, setTotalReaction] = useState(reactionCount);
+    const [currentUserReaction, setCurrentUserReaction] = useState(
+        comment?.currentUserReaction
+    );
+    const [totalReaction, setTotalReaction] = useState(comment?.like_count);
+
+    const [handleReactionComment] = useHandleReactionCommentMutation();
 
     const tippyRef = useRef(null);
 
@@ -48,13 +49,16 @@ function CommentItem({
     ];
 
     useEffect(() => {
-        if (initialActed?.length) {
-            const sorted = [...initialActed].sort((a, b) => b.count - a.count);
+        if (comment.reactions?.length) {
+            const sorted = [...comment.reactions].sort(
+                (a, b) => b.count - a.count
+            );
+
             setActed(sorted);
         }
-        setTotalReaction(reactionCount);
-        setCurrentUserReaction(userReaction);
-    }, [initialActed, reactionCount, userReaction]);
+        setTotalReaction(comment?.like_count);
+        setCurrentUserReaction(user?.commentReactions?.[0]?.reactionType);
+    }, [comment, user]);
 
     useEffect(() => {
         const handleClickOutside = (e) => {
@@ -73,10 +77,22 @@ function CommentItem({
         setIsOpenReplies(true);
     };
 
-    const handleReactionChange = (newReaction) => {
-        setCurrentUserReaction(newReaction);
-        // api
-        console.log("User reaction changed to:", newReaction);
+    const handleReactionChange = async (commentId, newReaction) => {
+        if (!currentUser) return console.log("đăng nhập trước khi thả cảm xúc");
+
+        const checkAction = newReaction.action ? null : newReaction;
+
+        try {
+            await handleReactionComment({
+                commentId,
+                reaction: newReaction,
+            }).unwrap();
+            setCurrentUserReaction(checkAction);
+            // api
+            console.log("User reaction changed to:", newReaction);
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     const handleCountActedIds = ({
@@ -89,13 +105,14 @@ function CommentItem({
             let newActed = [...prevActed];
 
             if (isChange && previousReact) {
-                const prevIndex = newActed.findIndex(
-                    (item) => item.id === previousReact.id
-                );
+                const prevIndex = newActed.findIndex((item) => {
+                    return item.reactionType.id === previousReact.id;
+                });
+
                 if (prevIndex !== -1) {
                     if (newActed[prevIndex].count === 1) {
                         newActed = newActed.filter(
-                            (item) => item.id !== previousReact.id
+                            (item) => item.reactionType.id !== previousReact.id
                         );
                     } else {
                         newActed[prevIndex] = {
@@ -107,12 +124,17 @@ function CommentItem({
             }
 
             const currentIndex = newActed.findIndex(
-                (item) => item.id === react.id
+                (item) => item.reactionType.id === react.id
             );
 
             if (isReact) {
                 if (currentIndex === -1) {
-                    newActed.push({ ...react, count: 1 });
+                    const newReact = {
+                        ...currentUser,
+                        reactionType: react,
+                    };
+
+                    newActed.push({ ...newReact, count: 1 });
                 } else {
                     newActed[currentIndex] = {
                         ...newActed[currentIndex],
@@ -127,7 +149,7 @@ function CommentItem({
                 if (currentIndex !== -1) {
                     if (newActed[currentIndex].count === 1) {
                         newActed = newActed.filter(
-                            (item) => item.id !== react.id
+                            (item) => item.reactionType.id !== react.id
                         );
                     } else {
                         newActed[currentIndex] = {
@@ -160,14 +182,17 @@ function CommentItem({
                 className={`${styles.wrapper} ${
                     type === "replies" && styles.replyMode
                 }`}
+                ref={ref}
             >
                 <div className={styles.header}>
-                    <a href={`/@${username}`} className={styles.user}>
-                        <Avatar fontSize={"4.445px"} avatar={avatar} />
+                    <a href={`/@${user.username}`} className={styles.user}>
+                        <Avatar fontSize={"4.445px"} avatar={user.avatar} />
                         <span className={styles.info}>
-                            <span className={styles.useName}>{fullname}</span>
+                            <span className={styles.useName}>
+                                {user.full_name}
+                            </span>
                             <span className={styles.createdAt}>
-                                {timeAgo(createdAt)}
+                                {timeAgo(comment.created_at)}
                             </span>
                         </span>
                     </a>
@@ -177,7 +202,9 @@ function CommentItem({
                     <div className={styles.wrap}>
                         <div
                             className={styles.content}
-                            dangerouslySetInnerHTML={{ __html: content }}
+                            dangerouslySetInnerHTML={{
+                                __html: comment.content,
+                            }}
                         />
                     </div>
                 </div>
@@ -191,6 +218,7 @@ function CommentItem({
                                     reactions={reactions}
                                     handleCountActedIds={handleCountActedIds}
                                     userReaction={currentUserReaction}
+                                    commentId={comment?.id}
                                 />
                             </span>
                             <Button
@@ -216,7 +244,7 @@ function CommentItem({
                                                         styles.reactionIcon
                                                     }
                                                 >
-                                                    {item.icon}
+                                                    {item?.reactionType?.icon}
                                                 </div>
                                             );
                                         })}
@@ -248,7 +276,7 @@ function CommentItem({
                             {isOpen && (
                                 <div className={styles.tippy}>
                                     <ul className={styles.optionsList}>
-                                        {user?.id === 8 && (
+                                        {user?.id === currentUser.id && (
                                             <>
                                                 <li>
                                                     <Button
@@ -267,6 +295,11 @@ function CommentItem({
                                                 </li>
                                                 <li>
                                                     <Button
+                                                        onClick={() =>
+                                                            handleDeleteComment(
+                                                                id
+                                                            )
+                                                        }
                                                         className={
                                                             styles.option
                                                         }
@@ -292,17 +325,19 @@ function CommentItem({
                         onCancel={handleCloseComment}
                         onEdit={handleEditComment}
                         type={typeEdit}
-                        content={typeEdit === "editComment" ? content : ""}
+                        content={
+                            typeEdit === "editComment" ? comment.content : ""
+                        }
                         onSubmit={handleReupComment}
                         id={id}
                     />
                 )}
             </div>
 
-            {replies.length > 0 &&
+            {comment?.replies?.length > 0 &&
                 (isOpenReplies ? (
                     <div className={styles.replies}>
-                        {replies.map((reply) => {
+                        {comment?.replies.map((reply) => {
                             return (
                                 <CommentItem
                                     key={reply.id}
@@ -315,21 +350,15 @@ function CommentItem({
                                                 : reply.id
                                         )
                                     }
-                                    username={reply.user.username}
-                                    avatar={reply.user.avatar}
-                                    fullname={reply.user.fullname}
-                                    replies={reply.replies}
-                                    content={reply.content}
-                                    reactionCount={reply.reactionCount}
-                                    initialActed={reply.initialActed}
-                                    userReaction={reply.userReaction}
-                                    createdAt={reply.createdAt}
+                                    comment={reply}
                                     type="replies"
                                     openTippyId={openTippyId}
                                     setOpenTippyId={setOpenTippyId}
                                     handleEditComment={handleEditComment}
                                     handleReupComment={handleReupComment}
+                                    handleDeleteComment={handleDeleteComment}
                                     user={reply.user}
+                                    currentUser={currentUser}
                                 />
                             );
                         })}
@@ -340,7 +369,7 @@ function CommentItem({
                             onClick={toggleReplies}
                             className={styles.viewMore}
                         >
-                            Xem {replies.length} câu trả lời
+                            Xem {comment?.replies.length} câu trả lời
                         </Button>
                     </div>
                 ))}
@@ -348,4 +377,4 @@ function CommentItem({
     );
 }
 
-export default CommentItem;
+export default React.forwardRef(CommentItem);

@@ -36,7 +36,7 @@ function Main({ type = "" }) {
                         data.refresh_token || ""
                     );
 
-                    window.top.location.reload();
+                    window.top.location.href = "/";
                 } catch (error) {
                     console.log("lỗi khi gọi api", error);
                 }

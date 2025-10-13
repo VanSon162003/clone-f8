@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 import styles from "./AuthenticationApp.module.scss";
 import Header from "./components/Header";
 import Main from "./components/Main";

@@ -1,12 +1,14 @@
 import React from "react";
 import styles from "./Header.module.scss";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import logo from "@/assets/imgs/logo-f8.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import Button from "@/components/Button";
 
 function Header({ swapAccessType, back = false }) {
+    const navigator = useNavigate();
     return (
         <header className={styles.wrapper}>
             <Link to={"/"} target="_top">
@@ -24,12 +26,16 @@ function Header({ swapAccessType, back = false }) {
                 sử dụng chung sẽ bị khóa.
             </p>
 
-            {back && (
-                <Link to={"/authenticationApp"} className={styles.back}>
+            {
+                <Button
+                    onClick={() => navigator(-1)}
+                    to={"/authenticationApp"}
+                    className={styles.back}
+                >
                     <FontAwesomeIcon icon={faChevronLeft} />
                     {"Quay lại"}
-                </Link>
-            )}
+                </Button>
+            }
         </header>
     );
 }

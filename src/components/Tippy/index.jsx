@@ -51,7 +51,7 @@ function Tippy({ user = {}, type = "", className, ref, onEdit, onRemove }) {
         }
 
         dispatch(logoutCurrentUser());
-        // logout();
+        logout();
 
         localStorage.removeItem("token");
         localStorage.removeItem("refresh_token");

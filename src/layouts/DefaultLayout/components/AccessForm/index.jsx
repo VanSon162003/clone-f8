@@ -41,7 +41,7 @@ function AccessForm({ setIsAccess, isAccess = false }) {
 
                 <iframe
                     className={styles.iframe}
-                    src="./AuthenticationApp"
+                    src="/AuthenticationApp"
                 ></iframe>
             </div>
         </div>

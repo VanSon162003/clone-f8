@@ -18,6 +18,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Avatar from "../Avatar";
 import formatNumberVN from "@/utils/formatNumberVN";
+import { useRedirectIfRegistered } from "@/hook/useRedirectIfRegistered";
 
 function CourseItem({ item = {}, courseType, courseEnrolled = false }) {
     const formatCurrencyVND = (value) => {
@@ -25,12 +26,15 @@ function CourseItem({ item = {}, courseType, courseEnrolled = false }) {
         return new Intl.NumberFormat("vi-VN").format(number) + "đ";
     };
 
-    const path =
-        courseType === "video"
-            ? item.video_id
-            : courseType === "pro" || courseType === "free"
-            ? `/courses/${item.slug}`
-            : `/blog/${item.slug}`;
+    const check = useRedirectIfRegistered(item);
+
+    const path = check
+        ? `/learning/${item.slug}`
+        : courseType === "video"
+        ? item.video_id
+        : courseType === "pro" || courseType === "free"
+        ? `/courses/${item.slug}`
+        : `/blog/${item.slug}`;
 
     return (
         <div

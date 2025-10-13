@@ -14,108 +14,11 @@ import Button from "@/components/Button";
 import Model from "@/components/Model";
 import ScrollLock from "@/components/ScrollLock";
 import { useNavigate, useParams } from "react-router-dom";
-import { useGetBySlugQuery } from "@/services/coursesService";
-
-// const mockData = {
-//     data: {
-//         course: {
-//             id: 12,
-//             title: "Lập Trình JavaScript Nâng Cao",
-//             certificate_name: "JavaScript Advanced",
-//             slug: "javascript-nang-cao",
-//             description:
-//                 "Hiểu sâu hơn về cách Javascript hoạt động, tìm hiểu về IIFE, closure, reference types, this keyword, bind, call, apply, prototype, ...",
-//             image_url: "https://files.fullstack.edu.vn/f8-prod/courses/12.png",
-//             duration: 31276,
-//             is_pro: false,
-//             level: {
-//                 id: 2,
-//                 title: "Trình độ trung bình",
-//                 level: 2,
-
-//                 created_at: null,
-
-//                 updated_at: null,
-//             },
-//             will_learns: [
-//                 {
-//                     id: 68,
-//                     content:
-//                         "Được học kiến thức miễn phí với nội dung chất lượng hơn mất phí",
-//                 },
-//                 {
-//                     id: 69,
-//                     content:
-//                         "Các kiến thức nâng cao của Javascript giúp code trở nên tối ưu hơn",
-//                 },
-//                 {
-//                     id: 70,
-//                     content:
-//                         "Hiểu được cách tư duy nâng cao của các lập trình viên có kinh nghiệm",
-//                 },
-//             ],
-//             requirements: [
-//                 {
-//                     id: 62,
-//                     content:
-//                         "Hoàn thành khóa học Javascript cơ bản tại F8 hoặc đã nắm chắc Javascript cơ bản",
-//                 },
-//                 {
-//                     id: 63,
-//                     content: "Tư duy mở để dễ dàng tiếp nhận các tư tưởng mới",
-//                 },
-//             ],
-//             tracks: [
-//                 {
-//                     id: 74,
-//                     title: "IIFE, Scope, Closure",
-//                     position: 1,
-//                     track_steps: [
-//                         {
-//                             id: 1,
-//                             step: {
-//                                 title: "Giới thiệu",
-//                                 position: 1,
-//                                 duration: 108,
-//                             },
-//                         },
-//                         {
-//                             id: 2,
-//                             step: {
-//                                 title: "IIFE là gì?",
-//                                 position: 2,
-//                                 duration: 1437,
-//                             },
-//                         },
-//                     ],
-//                 },
-//                 {
-//                     id: 188,
-//                     title: "Hoisting, Strict Mode, Data Types",
-//                     position: 2,
-//                     track_steps: [
-//                         {
-//                             id: 3,
-//                             step: {
-//                                 title: "Hoisting là gì?",
-//                                 position: 3,
-//                                 duration: 658,
-//                             },
-//                         },
-//                         {
-//                             id: 4,
-//                             step: {
-//                                 title: "Strict mode?",
-//                                 position: 4,
-//                                 duration: 845,
-//                             },
-//                         },
-//                     ],
-//                 },
-//             ],
-//         },
-//     },
-// };
+import {
+    useGetBySlugQuery,
+    useRegisterCourseMutation,
+} from "@/services/coursesService";
+import { useSelector } from "react-redux";
 
 function CourseDetail() {
     const [course, setCourse] = useState({});
@@ -126,11 +29,18 @@ function CourseDetail() {
     const navigator = useNavigate();
     const { slug } = useParams();
 
-    const { data, isSuccess } = useGetBySlugQuery(slug, {
-        refetchOnMountOrArgChange: true,
-    });
+    console.log(slug);
 
-    console.log(course);
+    const { data, isSuccess } = useGetBySlugQuery(
+        { slug },
+        {
+            refetchOnMountOrArgChange: true,
+        }
+    );
+
+    const currentUser = useSelector((state) => state.auth.currentUser);
+
+    const [registerCourse] = useRegisterCourseMutation();
 
     useEffect(() => {
         if (data?.data && isSuccess) {
@@ -184,10 +94,19 @@ function CourseDetail() {
         setOpenIntroduce(false);
     };
 
-    const handleRegisterLesson = () => {
-        // fetch dữ liệu cập nhật is_register với slug
+    const handleRegisterLesson = async () => {
+        if (!currentUser) {
+            return navigator("/authenticationApp");
+        }
 
-        navigator(`/learning/${slug}`);
+        try {
+            await registerCourse({
+                course_id: course.id,
+            }).unwrap();
+            navigator(`/learning/${slug}`);
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return (

@@ -9,12 +9,15 @@ function ReactionButton({
     reactions = [],
     handleCountActedIds = () => {},
     userReaction = null,
+    commentId,
 }) {
-    const [selected, setSelected] = useState(userReaction);
+    const [selected, setSelected] = useState(null);
 
     useEffect(() => {
-        setSelected(userReaction);
-    }, [userReaction]);
+        if (userReaction && !selected) {
+            setSelected(userReaction);
+        }
+    }, [userReaction, selected]);
 
     const handleReact = (reaction) => {
         const wasSelected = selected && selected.id === reaction.id;
@@ -41,38 +44,30 @@ function ReactionButton({
         }
 
         const newSelected = wasSelected ? null : reaction;
+
+        const check = wasSelected
+            ? { id: reaction.id, action: "remove" }
+            : reaction;
+
         setSelected(newSelected);
-        onReact?.(newSelected);
+        onReact?.(commentId, check);
     };
 
     const toggleReact = () => {
-        const defaultReaction = { id: 1, icon: "👍", label: "Thích" };
-        const wasSelected = selected && selected.id === defaultReaction.id;
-
-        if (selected && !wasSelected) {
+        // New behavior:
+        // - If user has a reaction selected, clicking the label removes it
+        // - If no reaction is selected, do nothing (avoid implicit default like)
+        if (selected) {
             handleCountActedIds({
                 react: selected,
                 isReact: false,
-                isChange: true,
-            });
-
-            handleCountActedIds({
-                react: defaultReaction,
-                isReact: true,
-                isChange: true,
-                previousReact: selected,
-            });
-        } else {
-            handleCountActedIds({
-                react: defaultReaction,
-                isReact: !wasSelected,
                 isChange: false,
             });
-        }
 
-        const newSelected = wasSelected ? null : defaultReaction;
-        setSelected(newSelected);
-        onReact?.(newSelected);
+            const check = { id: selected.id, action: "remove" };
+            setSelected(null);
+            onReact?.(commentId, check);
+        }
     };
 
     const getReactionColor = (reactionId) => {
@@ -92,21 +87,22 @@ function ReactionButton({
             className={styles.reaction}
             content={
                 <div className={styles.reactionContainer}>
-                    {reactions.map((r) => (
-                        <span
-                            key={r.id}
-                            className={`${styles.react} ${
-                                selected && selected.id === r.id
-                                    ? styles.selected
-                                    : ""
-                            }`}
-                            data-label={r.label}
-                            onClick={() => handleReact(r)}
-                            title={r.label}
-                        >
-                            {r.icon}
-                        </span>
-                    ))}
+                    {reactions.map((r) => {
+                        const check =
+                            selected?.id === r.id ? styles.selected : "";
+
+                        return (
+                            <span
+                                key={r.id}
+                                className={`${styles.react} ${check}`}
+                                data-label={r.label}
+                                onClick={() => handleReact(r)}
+                                title={r.label}
+                            >
+                                {r.icon}
+                            </span>
+                        );
+                    })}
                 </div>
             }
             placement="top"

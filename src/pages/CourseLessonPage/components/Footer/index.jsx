@@ -9,10 +9,18 @@ import styles from "./Footer.module.scss";
 import Button from "@/components/Button";
 import { useState } from "react";
 
-function Footer({ onPrev, onNext, disabledNext, toggleSideBar, openSideBar }) {
+function Footer({
+    onPrev,
+    onNext,
+    disabledNext,
+    toggleSideBar,
+    openSideBar,
+    track = {},
+}) {
     const handleOpenSideBar = () => {
         toggleSideBar();
     };
+
     return (
         <div className={styles.wrapper}>
             <div className={styles.btnGroup}>
@@ -49,9 +57,7 @@ function Footer({ onPrev, onNext, disabledNext, toggleSideBar, openSideBar }) {
             </div>
 
             <div className={styles.toggleWrap}>
-                <h3 className={styles.trackTitle}>
-                    4. Các bài thực hành cần nhiều 🧠
-                </h3>
+                <h3 className={styles.trackTitle}>{track?.title}</h3>
                 <button
                     onClick={handleOpenSideBar}
                     className={styles.toggleBtn}

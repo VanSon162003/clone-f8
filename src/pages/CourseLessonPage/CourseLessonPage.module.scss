@@ -266,6 +266,12 @@
                     background: #f0512333;
                 }
 
+                &.lock {
+                    opacity: 0.6;
+                    pointer-events: none;
+                    background-color: #e7e7e7;
+                }
+
                 .info {
                     flex: 1;
                     margin: 0 0 0 28px;
@@ -310,7 +316,7 @@
                         font-size: 1.4rem;
                         margin-top: 1px;
 
-                        &.lock {
+                        &.faLock {
                             color: #0009;
                         }
                     }

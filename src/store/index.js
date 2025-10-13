@@ -9,6 +9,7 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 import headerReducer from "@/features/auth/headerSlice";
 import { coursesApi } from "@/services/coursesService";
 import { postsApi } from "@/services/postsService";
+import { commentsApi } from "@/services/commentsService";
 
 const rootConfig = {
     key: "auth",
@@ -21,14 +22,16 @@ const rootReducer = combineReducers({
 
     [coursesApi.reducerPath]: coursesApi.reducer,
     [postsApi.reducerPath]: postsApi.reducer,
+    [commentsApi.reducerPath]: commentsApi.reducer,
 });
 
 export const store = configureStore({
     reducer: persistReducer(rootConfig, rootReducer),
     middleware: (getDefault) => [
-        ...getDefault({ serializableCheck: false }),
+        ...getDefault({ serializableCheck: false, immutableCheck: false }),
         coursesApi.middleware,
         postsApi.middleware,
+        commentsApi.middleware,
     ],
 });
 
