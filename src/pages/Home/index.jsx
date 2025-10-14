@@ -25,6 +25,8 @@ function Home() {
     const videoData = useGetAllCoursesVideoQuery(undefined, {
         refetchOnMountOrArgChange: true,
     });
+    
+    console.log(responseData);
 
     useEffect(() => {
         const data = responseData?.data || [];

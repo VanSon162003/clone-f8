@@ -1,7 +1,8 @@
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useMemo } from "react";
 
 import styles from "./LearningItem.module.scss";
-import useApi from "@/hook/useApi";
+import { useGetLearningPathBySlugQuery } from "@/services/learningPathsService";
 import LearningCourseItem from "./components/LearningCourseItem";
 
 import Banner from "@/components/Banner";
@@ -9,12 +10,58 @@ import LearningCourseSection from "./components/LearningCourseSection";
 
 function LearningItem() {
     const params = useParams();
-    console.log(params);
 
-    const frontend = useApi("/frontend");
-    const backend = useApi("/backend");
+    const slug = params.nameCourse;
+    const { data: lpRes, isSuccess, isLoading, error } = useGetLearningPathBySlugQuery(slug, { refetchOnMountOrArgChange: true });
+    const lp = lpRes?.data;
+    const courses = useMemo(() => lp?.courses || [], [lp]);
 
-    console.log(backend);
+    // Loading state
+    if (isLoading) {
+        return (
+            <div className={styles.parent}>
+                <div className="container-fluid">
+                    <div className={styles.container}>
+                        <div className={styles.top}>
+                            <h1 className={styles.heading}>Đang tải...</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Error state
+    if (error) {
+        return (
+            <div className={styles.parent}>
+                <div className="container-fluid">
+                    <div className={styles.container}>
+                        <div className={styles.top}>
+                            <h1 className={styles.heading}>Có lỗi xảy ra</h1>
+                            <p>Không thể tải dữ liệu learning path. Vui lòng thử lại sau.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // No data state
+    if (!isSuccess || !lp || !courses.length) {
+        return (
+            <div className={styles.parent}>
+                <div className="container-fluid">
+                    <div className={styles.container}>
+                        <div className={styles.top}>
+                            <h1 className={styles.heading}>Không có dữ liệu</h1>
+                            <p>Learning path không tồn tại hoặc chưa có khóa học nào.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.parent}>
@@ -23,34 +70,62 @@ function LearningItem() {
                     <div className={styles.top}>
                         <h1 className={styles.heading}>Lộ trình học</h1>
                         <div className={`${styles.desc} ${styles.warp}`}>
-                            <p>
-                                Hầu hết các websites hoặc ứng dụng di động đều
-                                có 2 phần là Front-end và Back-end. Front-end là
-                                phần giao diện người dùng nhìn thấy và có thể
-                                tương tác, đó chính là các ứng dụng mobile hay
-                                những website bạn đã từng sử dụng. Vì vậy, nhiệm
-                                vụ của lập trình viên Front-end là xây dựng các
-                                giao diện đẹp, dễ sử dụng và tối ưu trải nghiệm
-                                người dùng.
-                            </p>
+                            {params.nameCourse === "front-end-development" ? (
+                                <>
+                                    <p>
+                                        Hầu hết các websites hoặc ứng dụng di động đều
+                                        có 2 phần là Front-end và Back-end. Front-end là
+                                        phần giao diện người dùng nhìn thấy và có thể
+                                        tương tác, đó chính là các ứng dụng mobile hay
+                                        những website bạn đã từng sử dụng. Vì vậy, nhiệm
+                                        vụ của lập trình viên Front-end là xây dựng các
+                                        giao diện đẹp, dễ sử dụng và tối ưu trải nghiệm
+                                        người dùng.
+                                    </p>
 
-                            <p>
-                                Tại Việt Nam,{" "}
-                                <strong>
-                                    {" "}
-                                    <a href="https://bit.ly/3p40c2D">
-                                        lương trung bình{" "}
-                                    </a>
-                                </strong>
-                                cho lập trình viên front-end vào khoảng{" "}
-                                <strong>16.000.000đ</strong>/ tháng.
-                            </p>
+                                    <p>
+                                        Tại Việt Nam,{" "}
+                                        <strong>
+                                            {" "}
+                                            <a href="https://bit.ly/3p40c2D">
+                                                lương trung bình{" "}
+                                            </a>
+                                        </strong>
+                                        cho lập trình viên front-end vào khoảng{" "}
+                                        <strong>16.000.000đ</strong>/ tháng.
+                                    </p>
 
-                            <p>
-                                Dưới đây là các khóa học F8 đã tạo ra dành cho
-                                bất cứ ai theo đuổi sự nghiệp trở thành một lập
-                                trình viên Front-end.
-                            </p>
+                                    <p>
+                                        Dưới đây là các khóa học F8 đã tạo ra dành cho
+                                        bất cứ ai theo đuổi sự nghiệp trở thành một lập
+                                        trình viên Front-end.
+                                    </p>
+                                </>
+                            ) : (
+                                <>
+                                    <p>
+                                        Back-end là phần xử lý logic nghiệp vụ, cơ sở dữ liệu, 
+                                        API và các chức năng mà người dùng không nhìn thấy được. 
+                                        Lập trình viên Back-end chịu trách nhiệm xây dựng server, 
+                                        database và các API để hỗ trợ cho Front-end.
+                                    </p>
+
+                                    <p>
+                                        Tại Việt Nam,{" "}
+                                        <strong>
+                                            lương trung bình
+                                        </strong>
+                                        cho lập trình viên back-end vào khoảng{" "}
+                                        <strong>18.000.000đ</strong>/ tháng.
+                                    </p>
+
+                                    <p>
+                                        Dưới đây là các khóa học F8 đã tạo ra dành cho
+                                        bất cứ ai theo đuổi sự nghiệp trở thành một lập
+                                        trình viên Back-end.
+                                    </p>
+                                </>
+                            )}
 
                             <blockquote>
                                 <p>
@@ -65,86 +140,26 @@ function LearningItem() {
                         <section className={styles.row}>
                             <section className={`${styles.col} ${styles.col8}`}>
                                 <LearningCourseSection
-                                    header={"1. Tìm hiểu về ngành IT"}
+                                    header={params.nameCourse === "front-end-development" 
+                                        ? "Các khóa học Front-end Development" 
+                                        : "Các khóa học Back-end Development"}
                                     desc={
-                                        "Để theo ngành IT - Phần mềm cần rèn luyện những kỹ năng nào? Bạn đã có sẵn tố chất phù hợp với ngành chưa? Cùng thăm quan các công ty IT và tìm hiểu về văn hóa, tác phong làm việc của ngành này nhé các bạn."
+                                        params.nameCourse === "front-end-development"
+                                            ? "Các khóa học từ cơ bản đến nâng cao để trở thành một lập trình viên Front-end chuyên nghiệp. Từ HTML, CSS, JavaScript đến các framework hiện đại như React, Vue.js."
+                                            : "Các khóa học từ cơ bản đến nâng cao để trở thành một lập trình viên Back-end chuyên nghiệp. Từ Node.js, Python, PHP đến các framework và database."
                                     }
                                 >
-                                    <LearningCourseItem
-                                        courseItem={frontend[0]}
-                                    />
-                                </LearningCourseSection>
-
-                                <LearningCourseSection
-                                    header={"2. HTML và CSS"}
-                                    desc={`Để học web Front-end chúng ta luôn bắt đầu với ngôn ngữ HTML và CSS, đây là 2 ngôn ngữ có mặt trong mọi website trên internet. Trong khóa học này F8 sẽ chia sẻ từ những kiến thức cơ bản nhất. Sau khóa học này bạn sẽ tự làm được 2 giao diện websites là The Band và Shopee.
-
-`}
-                                >
-                                    <LearningCourseItem
-                                        courseItem={frontend[1]}
-                                    />
-
-                                    {params.nameCourse ===
-                                    "front-end-development" ? (
-                                        <LearningCourseItem
-                                            courseItem={frontend[2]}
-                                        />
+                                    {courses.length > 0 ? (
+                                        courses.map((c) => (
+                                            <div key={c.id}>
+                                                <LearningCourseItem courseItem={c} />
+                                            </div>
+                                        ))
                                     ) : (
-                                        ""
+                                        <p>Không có khóa học nào trong learning path này.</p>
                                     )}
                                 </LearningCourseSection>
 
-                                <LearningCourseSection
-                                    header={"3. JavaScript"}
-                                    desc={`Với HTML, CSS bạn mới chỉ xây dựng được các websites tĩnh, chỉ bao gồm phần giao diện và gần như chưa có xử lý tương tác gì. Để thêm nhiều chức năng phong phú và tăng tính tương tác cho website bạn cần học Javascript.
-
-`}
-                                >
-                                    <LearningCourseItem
-                                        courseItem={frontend[3]}
-                                    />
-
-                                    <LearningCourseItem
-                                        courseItem={frontend[4]}
-                                    />
-                                </LearningCourseSection>
-
-                                <LearningCourseSection
-                                    header={"4. Sử dụng Ubuntu/Linux"}
-                                    desc={
-                                        "Cách làm việc với hệ điều hành Ubuntu/Linux qua Windows Terminal & WSL. Khi đi làm, nhiều trường hợp bạn cần nắm vững các dòng lệnh cơ bản của Ubuntu/Linux."
-                                    }
-                                >
-                                    <LearningCourseItem
-                                        courseItem={frontend[5]}
-                                    />
-                                </LearningCourseSection>
-
-                                {params.nameCourse ===
-                                "front-end-development" ? (
-                                    <LearningCourseSection
-                                        header={"5. Libraries and Frameworks"}
-                                        desc={
-                                            "Một websites hay ứng dụng hiện đại rất phức tạp, chỉ sử dụng HTML, CSS, Javascript theo cách code thuần (tự code từ đầu tới cuối) sẽ rất khó khăn. Vì vậy các Libraries, Frameworks ra đời nhằm đơn giản hóa, tiết kiệm chi phí và thời gian để hoàn thành một sản phẩm website hoặc ứng dụng mobile."
-                                        }
-                                    >
-                                        <LearningCourseItem
-                                            courseItem={frontend[6]}
-                                        />
-                                    </LearningCourseSection>
-                                ) : (
-                                    <LearningCourseSection
-                                        header={"5. Libraries and Frameworks"}
-                                        desc={
-                                            "Một ứng dụng Back-end hiện đại có thể rất phức tạp, việc sử dụng code thuần (tự tay code từ đầu) không phải là một lựa chọn tốt. Vì vậy các Libraries và Frameworks ra đời nhằm đơn giản hóa, tiết kiệm thời gian và tiền bạc để nhanh chóng tạo ra được sản phẩm cuối cùng."
-                                        }
-                                    >
-                                        <LearningCourseItem
-                                            courseItem={backend[5]}
-                                        />
-                                    </LearningCourseSection>
-                                )}
                             </section>
 
                             <section className={`${styles.col} ${styles.col4}`}>

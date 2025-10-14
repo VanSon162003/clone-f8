@@ -26,6 +26,30 @@ export const coursesApi = createApi({
                 body: data,
             }),
         }),
+
+        // Progress endpoints
+        getCourseProgress: builder.query({
+            query: ({ courseId }) => `/courses/${courseId}/progress`,
+        }),
+        updateCourseProgress: builder.mutation({
+            query: ({ courseId, lessonId }) => ({
+                url: `/courses/${courseId}/progress`,
+                method: "POST",
+                body: { lesson_id: lessonId },
+            }),
+        }),
+
+        // User Lesson Progress endpoints
+        getUserLessonProgress: builder.query({
+            query: ({ courseId }) => `/courses/${courseId}/user-lessons`,
+        }),
+        updateUserLessonProgress: builder.mutation({
+            query: ({ lessonId, watchDuration, lastPosition, completed }) => ({
+                url: `/courses/user-lesson-progress`,
+                method: "POST",
+                body: { lessonId, watchDuration, lastPosition, completed },
+            }),
+        }),
     }),
 });
 
@@ -34,4 +58,8 @@ export const {
     useGetBySlugQuery,
     useGetAllCoursesVideoQuery,
     useRegisterCourseMutation,
+    useGetCourseProgressQuery,
+    useUpdateCourseProgressMutation,
+    useGetUserLessonProgressQuery,
+    useUpdateUserLessonProgressMutation,
 } = coursesApi;

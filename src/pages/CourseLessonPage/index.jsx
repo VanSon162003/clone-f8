@@ -20,10 +20,15 @@ import {
 import { useEffect, useRef, useState } from "react";
 import CommentSidebar from "@/components/CommentSidebar";
 import { useParams } from "react-router-dom";
-import { useGetBySlugQuery } from "@/services/coursesService";
+import { 
+    useGetBySlugQuery, 
+    useGetUserLessonProgressQuery,
+    useUpdateUserLessonProgressMutation 
+} from "@/services/coursesService";
 import useQuery from "@/hook/useQuery";
 
 import DOMPurify from "dompurify";
+import VideoPlayer from "@/components/VideoPlayer";
 
 function CourseLessonPage() {
     const { param } = useQuery();
@@ -37,6 +42,8 @@ function CourseLessonPage() {
     const [lesson, setLesson] = useState({});
     const [idTrack, setIdTrack] = useState(() => +param.get("track-id"));
     const [idLesson, setIdLesson] = useState(() => +param.get("lesson-id"));
+
+    const [isWatch, setIsWatch] = useState(false);
 
     // reload track mỗi khi chạm đáy 10 phần tử
     const [hasMore, setHasMore] = useState(true);
@@ -53,6 +60,17 @@ function CourseLessonPage() {
             refetchOnMountOrArgChange: true,
         }
     );
+
+    // Lấy user lesson progress
+    const { data: userLessonData, isSuccess: isUserLessonSuccess } = useGetUserLessonProgressQuery(
+        { courseId: course?.id },
+        {
+            skip: !course?.id,
+            refetchOnMountOrArgChange: true,
+        }
+    );
+
+    const [updateUserLessonProgress] = useUpdateUserLessonProgressMutation();
 
     // lấy ra các tracks (chương bài học)
     useEffect(() => {
@@ -132,6 +150,45 @@ function CourseLessonPage() {
         }
     }, [data, isSuccess]);
 
+    // Merge user lesson progress với course data
+    useEffect(() => {
+        if (userLessonData?.data && isUserLessonSuccess && course?.id) {
+            const userLessons = userLessonData.data.tracks?.flatMap(track => 
+                track.lessons?.map(lesson => ({
+                    lessonId: lesson.id,
+                    userLesson: lesson.userLessons?.[0] || null
+                }))
+            ) || [];
+
+            // Cập nhật tracks với user lesson progress
+            setTracks(prevTracks => 
+                prevTracks.map(track => ({
+                    ...track,
+                    lessons: track.lessons.map(lesson => {
+                        const userLessonInfo = userLessons.find(ul => ul.lessonId === lesson.id);
+                        return {
+                            ...lesson,
+                            userLesson: userLessonInfo?.userLesson || null
+                        };
+                    })
+                }))
+            );
+        }
+    }, [userLessonData, isUserLessonSuccess, course?.id]);
+
+    // Tự động mở bài tiếp theo khi lesson hiện tại được completed
+    useEffect(() => {
+        if (isCurrentLessonCompleted()) {
+            const next = findNextLesson();
+            if (next) {
+                // Mở track của bài tiếp theo
+                if (!trackLessons.includes(next.track.id)) {
+                    setTrackLessons(prev => [...prev, next.track.id]);
+                }
+            }
+        }
+    }, [tracks, idLesson]); // Re-run khi tracks hoặc idLesson thay đổi
+
     const toggleSideBar = () => {
         setOpenSideBar(!openSideBar);
     };
@@ -157,7 +214,7 @@ function CourseLessonPage() {
         const year = date.getFullYear();
 
         return `tháng ${month} năm ${year}`;
-    }
+    } 
 
     const handleCancelCommentSideBar = () => {
         setOpenCommentSideBar(false);
@@ -175,12 +232,137 @@ function CourseLessonPage() {
         });
     };
 
+    const getYouTubeEmbedUrl = (url) => {
+        if (!url) return null;
+
+        try {
+            const parsedUrl = new URL(url);
+            let videoId = null;
+
+            if (
+                parsedUrl.hostname.includes("youtube.com") &&
+                parsedUrl.searchParams.get("v")
+            ) {
+                videoId = parsedUrl.searchParams.get("v");
+            } else if (parsedUrl.hostname === "youtu.be") {
+                videoId = parsedUrl.pathname.slice(1);
+            } else if (parsedUrl.pathname.startsWith("/embed/")) {
+                videoId = parsedUrl.pathname.split("/embed/")[1];
+            } else if (parsedUrl.pathname.startsWith("/shorts/")) {
+                videoId = parsedUrl.pathname.split("/shorts/")[1];
+            }
+
+            return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+        } catch (error) {
+            console.error("Invalid URL:", error);
+            return null;
+        }
+    };
+
+    const handleWatchVideo = () => {
+        setIsWatch(true);
+    };
+
+    // Hàm để tìm lesson tiếp theo
+    const findNextLesson = () => {
+        const allLessons = tracks.flatMap(track => track.lessons);
+        const currentIndex = allLessons.findIndex(lesson => lesson.id === idLesson);
+        
+        if (currentIndex < allLessons.length - 1) {
+            const nextLesson = allLessons[currentIndex + 1];
+            const nextTrack = tracks.find(track => 
+                track.lessons.some(lesson => lesson.id === nextLesson.id)
+            );
+            
+            return { lesson: nextLesson, track: nextTrack };
+        }
+        return null;
+    };
+
+    // Hàm để tìm lesson trước đó
+    const findPrevLesson = () => {
+        const allLessons = tracks.flatMap(track => track.lessons);
+        const currentIndex = allLessons.findIndex(lesson => lesson.id === idLesson);
+        
+        if (currentIndex > 0) {
+            const prevLesson = allLessons[currentIndex - 1];
+            const prevTrack = tracks.find(track => 
+                track.lessons.some(lesson => lesson.id === prevLesson.id)
+            );
+            
+            return { lesson: prevLesson, track: prevTrack };
+        }
+        return null;
+    };
+
+    // Xử lý khi nhấn nút bài tiếp theo
+    const handleNextLesson = () => {
+        const next = findNextLesson();
+        if (next) {
+            setIdLesson(next.lesson.id);
+            setIdTrack(next.track.id);
+            setTrackStepActive(next.lesson.id);
+            
+            // Mở track nếu chưa mở
+            if (!trackLessons.includes(next.track.id)) {
+                setTrackLessons(prev => [...prev, next.track.id]);
+            }
+        }
+    };
+
+    // Xử lý khi nhấn nút bài trước
+    const handlePrevLesson = () => {
+        const prev = findPrevLesson();
+        if (prev) {
+            setIdLesson(prev.lesson.id);
+            setIdTrack(prev.track.id);
+            setTrackStepActive(prev.lesson.id);
+            
+            // Mở track nếu chưa mở
+            if (!trackLessons.includes(prev.track.id)) {
+                setTrackLessons(prevTracks => [...prevTracks, prev.track.id]);
+            }
+        }
+    };
+
+    // Kiểm tra xem lesson hiện tại có completed không
+    const isCurrentLessonCompleted = () => {
+        const currentLesson = tracks
+            .flatMap(track => track.lessons)
+            .find(lesson => lesson.id === idLesson);
+        return currentLesson?.userLesson?.completed || false;
+    };
+
+    // Kiểm tra xem có thể nhấn nút bài tiếp theo không
+    const canGoToNext = () => {
+        return isCurrentLessonCompleted();
+    };
+
+    // Kiểm tra xem có thể nhấn nút bài trước không
+    const canGoToPrev = () => {
+        const prev = findPrevLesson();
+        return prev?.lesson?.userLesson?.completed || false;
+    };
+
+    // Kiểm tra xem lesson có thể được click không
+    const canClickLesson = (lessonId) => {
+        const allLessons = tracks.flatMap(track => track.lessons);
+        const currentIndex = allLessons.findIndex(lesson => lesson.id === lessonId);
+        
+        // Lesson đầu tiên luôn có thể click
+        if (currentIndex === 0) return true;
+        
+        // Kiểm tra lesson trước đó có completed không
+        const prevLesson = allLessons[currentIndex - 1];
+        return prevLesson?.userLesson?.completed || false;
+    };
+
     return (
         <>
             <section
                 className={`${styles.indexModule_grid} ${styles.indexModule_fullWidth}`}
             >
-                <Header />
+                <Header courseId={course?.id} title={course?.title} />
                 {openSideBar && (
                     <div className={styles.sidebar}>
                         <div id="learn-playlist" className={styles.container}>
@@ -203,10 +385,7 @@ function CourseLessonPage() {
                                     const countLessonCompleted =
                                         track?.lessons?.reduce(
                                             (acc, lesson) => {
-                                                if (
-                                                    lesson?.users?.[0]
-                                                        ?.UserLesson.completed
-                                                ) {
+                                                if (lesson?.userLesson?.completed) {
                                                     return acc + 1;
                                                 } else return acc;
                                             },
@@ -286,9 +465,7 @@ function CourseLessonPage() {
                                                                     : faCircleQuestion;
 
                                                             const lessonCompleted =
-                                                                lesson?.users[0]
-                                                                    ?.UserLesson
-                                                                    ?.completed;
+                                                                lesson?.userLesson?.completed;
                                                             return (
                                                                 <>
                                                                     <div
@@ -301,14 +478,20 @@ function CourseLessonPage() {
                                                                         } 
                                                                         
                                                                         ${
-                                                                            !lessonCompleted &&
+                                                                            (!lessonCompleted &&
                                                                             lessonCompleted !==
-                                                                                false &&
+                                                                                false) || !canClickLesson(lesson.id) &&
                                                                             styles.lock
                                                                         }`}
                                                                         onClick={(
                                                                             e
                                                                         ) => {
+                                                                            // Chỉ cho phép click nếu lesson có thể được click
+                                                                            if (!canClickLesson(lesson.id)) {
+                                                                                e.preventDefault();
+                                                                                return;
+                                                                            }
+                                                                            
                                                                             handleTrackStepActive(
                                                                                 e,
                                                                                 lesson.id
@@ -369,10 +552,7 @@ function CourseLessonPage() {
                                                                             }
                                                                         >
                                                                             {/* falock */}
-                                                                            {lesson
-                                                                                ?.users
-                                                                                .length ===
-                                                                            0 ? (
+                                                                            {!lesson?.userLesson || !canClickLesson(lesson.id) ? (
                                                                                 <FontAwesomeIcon
                                                                                     className={`${styles.stateIcon} ${styles.faLock}`}
                                                                                     icon={
@@ -410,64 +590,91 @@ function CourseLessonPage() {
                         !openSideBar && styles.fulWidth
                     }`}
                 >
-                    <div
-                        className={`${styles.wrapperInner}  noselect ${styles.fulWidth}`}
-                    >
-                        <div data-tour="learning-center">
-                            <div className={styles.videoWrapper}>
-                                <div
-                                    className={styles.player}
-                                    style={{ width: "100%", height: "100%" }}
-                                >
+                    {!isWatch ? (
+                        <div
+                            className={`${styles.wrapperInner}  noselect ${styles.fulWidth}`}
+                            onClick={handleWatchVideo}
+                        >
+                            <div data-tour="learning-center">
+                                <div className={styles.videoWrapper}>
                                     <div
-                                        className={styles.reactPlayer__preview}
-                                        tabIndex={0}
+                                        className={styles.player}
                                         style={{
                                             width: "100%",
                                             height: "100%",
-                                            backgroundSize: "cover",
-                                            backgroundPosition: "center center",
-                                            cursor: "pointer",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            backgroundImage: `url(${lesson?.thumbnail})`,
                                         }}
                                     >
                                         <div
                                             className={
-                                                styles.reactPlayer__shadow
+                                                styles.reactPlayer__preview
                                             }
+                                            tabIndex={0}
                                             style={{
-                                                background:
-                                                    "radial-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0) 60%)",
-                                                borderRadius: "64px",
-                                                width: "64px",
-                                                height: "64px",
+                                                width: "100%",
+                                                height: "100%",
+                                                backgroundSize: "cover",
+                                                backgroundPosition:
+                                                    "center center",
+                                                cursor: "pointer",
                                                 display: "flex",
                                                 alignItems: "center",
                                                 justifyContent: "center",
+                                                backgroundImage: `url(${lesson?.thumbnail})`,
                                             }}
                                         >
                                             <div
                                                 className={
-                                                    styles.reactPlayer__playIcon
+                                                    styles.reactPlayer__shadow
                                                 }
                                                 style={{
-                                                    borderStyle: "solid",
-                                                    borderWidth:
-                                                        "16px 0px 16px 26px",
-                                                    borderColor:
-                                                        "transparent transparent transparent white",
-                                                    marginLeft: "7px",
+                                                    background:
+                                                        "radial-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0) 60%)",
+                                                    borderRadius: "64px",
+                                                    width: "64px",
+                                                    height: "64px",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "center",
                                                 }}
-                                            ></div>
+                                            >
+                                                <div
+                                                    className={
+                                                        styles.reactPlayer__playIcon
+                                                    }
+                                                    style={{
+                                                        borderStyle: "solid",
+                                                        borderWidth:
+                                                            "16px 0px 16px 26px",
+                                                        borderColor:
+                                                            "transparent transparent transparent white",
+                                                        marginLeft: "7px",
+                                                    }}
+                                                ></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    ) : (
+                        // <iframe
+                        //     width="100%"
+                        //     height="550"
+                        //     src={`${getYouTubeEmbedUrl(
+                        //         lesson.video_url
+                        //     )}?autoplay=1&mute=1`}
+                        //     title="YouTube video player"
+                        //     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                        //     referrerPolicy="strict-origin-when-cross-origin"
+                        //     allowFullScreen
+                        // ></iframe>
+
+                        <VideoPlayer 
+                            filename={"Day9.mp4"} 
+                            lessonId={lesson?.id}
+                            onProgressUpdate={updateUserLessonProgress}
+                        />
+                    )}
 
                     <div
                         className={`${styles.content} ${
@@ -561,6 +768,10 @@ function CourseLessonPage() {
                     openSideBar={openSideBar}
                     toggleSideBar={toggleSideBar}
                     track={tracks.find((track) => track.id === lessonByTrackId)}
+                    onPrev={handlePrevLesson}
+                    onNext={handleNextLesson}
+                    disabledNext={!canGoToNext()}
+                    disabledPrev={!canGoToPrev()}
                 />
             </section>
 

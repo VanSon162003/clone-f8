@@ -13,6 +13,7 @@ function Footer({
     onPrev,
     onNext,
     disabledNext,
+    disabledPrev,
     toggleSideBar,
     openSideBar,
     track = {},
@@ -27,7 +28,10 @@ function Footer({
                 <Button
                     type="button"
                     onClick={onPrev}
-                    className={`${styles.btn} ${styles.rounded}`}
+                    className={`${styles.btn} ${styles.rounded} ${
+                        disabledPrev ? styles.disabled : ""
+                    }`}
+                    disabled={disabledPrev}
                 >
                     <span className={styles.inner}>
                         <FontAwesomeIcon
@@ -44,7 +48,7 @@ function Footer({
                     className={`${styles.btn} ${styles.primary} ${
                         styles.rounded
                     } ${disabledNext ? styles.disabled : ""}`}
-                    disabled // theem logic owr daay
+                    disabled={disabledNext}
                 >
                     <span className={styles.inner}>
                         <span className={styles.title}>BÀI TIẾP THEO</span>

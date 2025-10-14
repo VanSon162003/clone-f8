@@ -10,6 +10,7 @@ import headerReducer from "@/features/auth/headerSlice";
 import { coursesApi } from "@/services/coursesService";
 import { postsApi } from "@/services/postsService";
 import { commentsApi } from "@/services/commentsService";
+import { learningPathsApi } from "@/services/learningPathsService";
 
 const rootConfig = {
     key: "auth",
@@ -23,6 +24,7 @@ const rootReducer = combineReducers({
     [coursesApi.reducerPath]: coursesApi.reducer,
     [postsApi.reducerPath]: postsApi.reducer,
     [commentsApi.reducerPath]: commentsApi.reducer,
+    [learningPathsApi.reducerPath]: learningPathsApi.reducer,
 });
 
 export const store = configureStore({
@@ -32,6 +34,7 @@ export const store = configureStore({
         coursesApi.middleware,
         postsApi.middleware,
         commentsApi.middleware,
+        learningPathsApi.middleware,
     ],
 });
 

@@ -27,10 +27,6 @@
 
     overflow-y: overlay;
 
-    &:hover .reactPlayer__shadow {
-        scale: 1.2;
-    }
-
     &.fulWidth {
         width: 100%;
     }
@@ -58,8 +54,14 @@
     background-color: #000;
     padding: 0 8.5%;
 
+    cursor: pointer;
+
     &.fulWidth {
         padding: 0 16%;
+    }
+
+    &:hover .reactPlayer__shadow {
+        scale: 1.2;
     }
 }
 

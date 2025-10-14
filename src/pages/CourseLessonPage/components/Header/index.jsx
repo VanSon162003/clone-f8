@@ -6,129 +6,39 @@ import {
     faFile,
 } from "@fortawesome/free-solid-svg-icons";
 import Button from "@/components/Button";
-import { useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useGetCourseProgressQuery } from "@/services/coursesService";
+// no route params here; courseId will be passed via props
 
-const mockData = {
-    data: {
-        completed: [
-            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-            20, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
-            19, 20, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
-            18, 19, 20, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
-            17, 18, 19, 20,
-        ], // Thêm 10 bài đã hoàn thành
-        remaining: [],
-        has_paid: false,
-        title: "lập trình js cơ bản",
-        tracks: [
-            {
-                id: 117,
-                course_id: 1,
-                title: "Hoàn thành khóa học",
-                is_free: false,
-                position: 20,
-                track_steps_count: 2,
-                track_steps: [
-                    {
-                        id: 2827,
-                        track_id: 117,
-                        step_type: "App\\Common\\Models\\Lesson",
-                        step_id: 687,
-                        position: 205,
-                        is_bookmarked: 0,
-                        hash: "cMzcwOTY0ZWItMWM5My00MjQzLWI4NjUtNTBmYmI2MDc0NTU4I",
-                        is_published: false,
-                        step: {
-                            id: 687,
-                            title: "đói quá",
-                            duration: 720,
-                        },
-                        resources: [],
-                    },
-                    {
-                        id: 3147,
-                        track_id: 117,
-                        step_type: "App\\Common\\Models\\Lesson",
-                        step_id: 698,
-                        position: 206,
-                        is_bookmarked: 0,
-                        hash: "EY2E3ZTU5OTAtNWIxMy00ZGM2LWI2MzYtYjczMjhjZmVmNzAwA",
-                        is_published: false,
-                        step: {
-                            id: 698,
-                            title: "quá đói",
-                            duration: 60,
-                        },
-                        resources: [],
-                    },
-                ],
-                duration: 780,
-            },
-            {
-                id: 117,
-                course_id: 1,
-                title: "học cái gì",
-                is_free: false,
-                position: 20,
-                track_steps_count: 2,
-                track_steps: [
-                    {
-                        id: 2827,
-                        track_id: 117,
-                        step_type: "App\\Common\\Models\\Lesson",
-                        step_id: 687,
-                        position: 205,
-                        is_bookmarked: 0,
-                        hash: "cMzcwOTY0ZWItMWM5My00MjQzLWI4NjUtNTBmYmI2MDc0NTU4I",
-                        is_published: false,
-                        step: {
-                            id: 687,
-                            title: "quá ok nha",
-                            duration: 720,
-                        },
-                        resources: [],
-                    },
-                    {
-                        id: 3147,
-                        track_id: 117,
-                        step_type: "App\\Common\\Models\\Lesson",
-                        step_id: 698,
-                        position: 206,
-                        is_bookmarked: 0,
-                        hash: "EY2E3ZTU5OTAtNWIxMy00ZGM2LWI2MzYtYjczMjhjZmVmNzAwA",
-                        is_published: false,
-                        step: {
-                            id: 698,
-                            title: "học đi",
-                            duration: 60,
-                        },
-                        resources: [],
-                    },
-                ],
-                duration: 780,
-            },
-        ],
-        user_progress: [],
-        is_registered: true,
-        track_steps_count: 205,
-    },
-};
+// const mockData = null;
 
-function Header() {
-    const [course, setCourse] = useState(mockData.data);
+function Header({ courseId, title }) {
+    const [course, setCourse] = useState({ title: title || "" });
+    const { data: progressDataApi } = useGetCourseProgressQuery(
+        { courseId },
+        { skip: !courseId }
+    );
+
+    useEffect(() => {
+        if (progressDataApi?.data) {
+            setCourse(progressDataApi.data);
+        }
+    }, [progressDataApi]);
 
     // Tính toán progress dựa trên completed và total lessons
     const progressData = useMemo(() => {
-        const completed = course.completed?.length || 0;
-        const total = course.track_steps_count || 0;
-        const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+        if (course) {
+            const userProgress = course?.userProgress?.[0];
 
-        return {
-            completed,
-            total,
-            percent,
-        };
-    }, [course.completed, course.track_steps_count]);
+            const totalCompleted =
+                JSON.parse(userProgress?.learned_lessons || null)?.length || 0;
+
+            const completed = userProgress?.is_completed;
+            const total = course?.totalLessonByCourse || 0;
+            const percent = userProgress?.progress || 0;
+            return { completed, total, percent, totalCompleted };
+        }
+    }, [course]);
 
     return (
         <div className={styles.wrapper}>
@@ -140,7 +50,9 @@ function Header() {
                 <img src="/src/assets/imgs/logo-f8.png" alt="f8" />
             </Button>
 
-            <div className={styles.courseName}>{course.title}</div>
+            <div className={styles.courseName}>
+                {title || course.title || ""}
+            </div>
             <div className={styles.actions}>
                 <div className={styles.progressBar}>
                     <div
@@ -176,7 +88,7 @@ function Header() {
                     <p className={styles.completedMsg}>
                         <strong>
                             <span className={styles.num}>
-                                {progressData.completed}
+                                {progressData.totalCompleted}
                             </span>
                             /
                             <span className={styles.num}>
