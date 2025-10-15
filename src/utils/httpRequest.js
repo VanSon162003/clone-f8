@@ -1,7 +1,11 @@
 import axios from "axios";
 
+// Fallback base URL when VITE_BASE_URL is not defined (local dev)
+const rawBase = import.meta.env.VITE_BASE_URL || "http://localhost:3001/api/v1";
+const DEFAULT_BASE = rawBase.replace(/\/+$/, ""); // remove trailing slash
+
 const httpRequest = axios.create({
-    baseURL: import.meta.env.VITE_BASE_URL,
+    baseURL: DEFAULT_BASE,
     // headers: {
     //     Authorization: `Bearer ${localStorage.getItem("token")}`,
     // },
@@ -28,12 +32,10 @@ httpRequest.interceptors.response.use(
             if (!isRefreshing) {
                 isRefreshing = true;
                 try {
-                    const res = await axios.post(
-                        `${import.meta.env.VITE_BASE_URL}auth/refresh-token`,
-                        {
-                            refresh_token: refreshToken,
-                        }
-                    );
+                    const refreshUrl = `${DEFAULT_BASE}/auth/refresh-token`;
+                    const res = await axios.post(refreshUrl, {
+                        refresh_token: refreshToken,
+                    });
 
                     const data = res.data.data;
 

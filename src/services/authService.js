@@ -17,7 +17,19 @@ export const logoutUser = async () => {
 };
 
 export const getProfile = async (username) => {
-    const res = await httpRequest.get(`/users/${username}`);
+    const res = await httpRequest.get(`/auth/${username}`);
+    return res;
+};
+
+export const followUser = async (username) => {
+    // API endpoint: POST /auth/:username/follow
+    const res = await httpRequest.post(`/auth/${username}/follow`);
+    return res;
+};
+
+export const unfollowUser = async (username) => {
+    // API endpoint: DELETE /auth/:username/follow
+    const res = await httpRequest.del(`/auth/${username}/follow`);
     return res;
 };
 
@@ -111,4 +123,6 @@ export default {
     resendEmail,
     forgotPassword,
     loginWithAuth0,
+    followUser,
+    unfollowUser,
 };
