@@ -1,0 +1,241 @@
+.wrapper {
+  margin-bottom: 2rem;
+  transition: all 0.3s ease;
+}
+.wrapper:hover {
+  transform: translateY(-4px);
+}
+
+.inner {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border: 1px solid #e1e5e9;
+  border-radius: 12px;
+  background: #fff;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+.inner:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-color: #3498db;
+}
+
+.thumb {
+  flex-shrink: 0;
+  width: 200px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.thumb img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+  transition: transform 0.3s ease;
+}
+.thumb:hover img {
+  transform: scale(1.05);
+}
+
+.info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.subTitle {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.4;
+  transition: color 0.3s ease;
+}
+.subTitle:hover {
+  color: #3498db;
+}
+
+.price {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+  padding: 0.5rem 0;
+}
+
+.oldPrice {
+  font-size: 0.9rem;
+  color: #999;
+  text-decoration: line-through;
+  font-weight: 500;
+}
+
+.mainPrice {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #e74c3c;
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.freeTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #27ae60;
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subDesc {
+  font-size: 0.95rem;
+  color: #666;
+  line-height: 1.6;
+  margin: 0.5rem 0;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 0.75rem 0;
+  padding: 0.5rem 0;
+}
+
+.statItem {
+  font-size: 0.85rem;
+  color: #666;
+  background: #f8f9fa;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.progress {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border-radius: 8px;
+  border: 1px solid #e1e5e9;
+}
+
+.progressBar {
+  width: 100%;
+  height: 8px;
+  background: #e1e5e9;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #3498db, #2ecc71);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+  position: relative;
+}
+.progressFill::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+.progressText {
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 600;
+  text-align: center;
+}
+
+.wrapBtn {
+  margin-top: auto;
+  align-self: flex-start;
+  background: linear-gradient(135deg, #3498db, #2980b9) !important;
+  border: none !important;
+  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+  transition: all 0.3s ease;
+}
+.wrapBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+  background: linear-gradient(135deg, #2980b9, #1f5f8b) !important;
+}
+.wrapBtn:active {
+  transform: translateY(0);
+}
+
+.btnInner {
+  font-weight: 700;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 768px) {
+  .wrapper {
+    margin-bottom: 1.5rem;
+  }
+  .inner {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  .thumb {
+    width: 100%;
+    height: 180px;
+  }
+  .subTitle {
+    font-size: 1.2rem;
+  }
+  .mainPrice, .freeTitle {
+    font-size: 1.1rem;
+  }
+  .wrapBtn {
+    width: 100%;
+    text-align: center;
+  }
+}
+@media (max-width: 480px) {
+  .inner {
+    padding: 0.75rem;
+  }
+  .thumb {
+    height: 160px;
+  }
+  .subTitle {
+    font-size: 1.1rem;
+  }
+  .subDesc {
+    font-size: 0.9rem;
+  }
+}/*# sourceMappingURL=LearningCourseItem.module.css.map */

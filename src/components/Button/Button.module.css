@@ -65,7 +65,7 @@ button:hover {
 
 .disabled {
   opacity: 0.5;
-  cursor: not-allowed;
+  cursor: not-allowed !important;
 }
 .disabled:hover {
   opacity: 0.5;

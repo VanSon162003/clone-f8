@@ -1,0 +1,72 @@
+.heading {
+  font-size: 2.4rem;
+  font-weight: 900;
+  line-height: 1.4;
+  color: #242424;
+}
+
+.content {
+  display: flex;
+  margin-top: 24px;
+}
+
+.top {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 32px 0 80px;
+}
+
+.wrapper .tabs {
+  display: flex;
+  list-style: none;
+  margin-top: 16px;
+  margin-bottom: 0;
+  padding-left: 0;
+}
+.wrapper .tabs li + li {
+  margin-left: 24px;
+}
+.wrapper .tabs a {
+  display: block;
+  font-size: 1.6rem;
+  color: var(--desc-color, rgba(0, 0, 0, 0.5411764706));
+  padding-bottom: 14px;
+  font-weight: 500;
+}
+.wrapper .tabs a.active {
+  font-weight: 700;
+  position: relative;
+}
+.wrapper .tabs a.active::after {
+  content: "";
+  display: block;
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  border-bottom: 2px solid var(--black-color, #000);
+}
+.wrapper .tabs a.active, .wrapper .tabs a:hover {
+  color: #000;
+}
+.wrapper .divider {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.postLists {
+  display: flex;
+  flex-direction: column;
+  margin-top: 24px;
+  gap: 16px;
+}
+
+.noResult {
+  font-size: 1.4rem;
+  margin-top: 32px;
+  line-height: 1.6;
+}
+.noResult a {
+  color: #029e74;
+  font-weight: 600;
+}/*# sourceMappingURL=MyPost.module.css.map */

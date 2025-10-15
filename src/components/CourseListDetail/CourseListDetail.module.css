@@ -1,0 +1,62 @@
+.courseItem {
+  display: flex;
+  align-items: center;
+  margin: 0 8px;
+  padding: 8px 12px;
+  transition: background-color 0.3s;
+  border-radius: 10px;
+}
+
+.courseThumb {
+  width: 120px;
+  min-height: 67px;
+  display: block;
+  border-radius: 8px;
+  background-color: #ebebeb;
+  text-align: center;
+  line-height: 67px;
+}
+.courseThumb::after {
+  content: "NO IMAGE";
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.courseInfo {
+  flex: 1;
+  margin-left: 12px;
+}
+
+.courseTitle {
+  font-size: 1.4rem;
+  margin: 6px 0 0;
+}
+.courseTitle a {
+  color: #333;
+}
+
+.lastCompeted {
+  font-size: 1.2rem;
+  margin: 4px 0 0;
+  color: #666;
+}
+
+.wrap {
+  position: relative;
+  height: 8px;
+  background-color: #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.wrap::after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--random-with);
+  background-color: #f05123;
+  transition: width ease 1s;
+}/*# sourceMappingURL=CourseListDetail.module.css.map */

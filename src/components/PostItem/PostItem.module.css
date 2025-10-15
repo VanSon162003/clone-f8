@@ -1,0 +1,52 @@
+.wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border-radius: 16px;
+  border: 2px solid #e8e8e8;
+}
+.wrapper h3 {
+  margin-top: 0;
+  padding-right: 24px;
+}
+.wrapper h3 a {
+  display: block;
+  color: #333;
+  font-size: 1.9rem;
+  line-height: 1.6;
+}
+.wrapper .author {
+  display: flex;
+  font-size: 1.4rem;
+  color: rgba(0, 0, 0, 0.5411764706);
+}
+.wrapper .author a {
+  color: #029e74;
+}
+.wrapper .author .dot {
+  padding: 0 6px;
+}
+.wrapper .more {
+  margin-left: 4px;
+  font-size: 1.6rem;
+  padding: 4px 8px;
+  position: absolute;
+  top: 8px;
+  right: 16px;
+  color: #666;
+}
+.wrapper .more:hover {
+  cursor: pointer;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+}
+.wrapper .more svg {
+  display: inline-block;
+  height: 1em;
+  overflow: visible;
+  vertical-align: -0.125em;
+  fill: currentColor;
+}/*# sourceMappingURL=PostItem.module.css.map */

@@ -1,0 +1,68 @@
+.avatar {
+  font-size: var(--font-size, 0.32rem);
+  background: transparent;
+  border-radius: 50%;
+}
+.avatar img {
+  width: 9em;
+  height: 9em;
+  -o-object-fit: cover;
+     object-fit: cover;
+  border-radius: 50%;
+}
+.avatar.pro {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.7em;
+  position: relative;
+  background: linear-gradient(180deg, #ffd900, #b45264 93.68%);
+}
+
+.crown {
+  position: absolute;
+  width: 3.2em !important;
+  height: 3.2em !important;
+  top: -0.2em;
+  right: -2em;
+}
+
+.useName {
+  color: #292929;
+  font-weight: 600;
+}
+
+.iconLike {
+  font-size: 1.2rem;
+  color: #1b74e4;
+  margin-left: 6px;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  font-size: 1.4rem;
+  margin-left: 16px;
+}
+
+.time {
+  color: #757575;
+  margin: 0;
+}
+.time .dot {
+  padding: 0 4px;
+  color: #757575;
+  font-weight: 500;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+}
+
+.flexCenter {
+  display: flex;
+  justify-content: center;
+}/*# sourceMappingURL=Avatar.module.css.map */

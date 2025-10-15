@@ -1,0 +1,113 @@
+.wrapper {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  background-color: #f0f0f0;
+  box-shadow: rgba(0, 0, 0, 0.1019607843) 0 -2px 3px;
+}
+
+.btnGroup {
+  display: flex;
+  gap: 16px;
+}
+
+button.btn {
+  display: inline-block;
+  min-width: 148px;
+  height: 32px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.8;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  background-color: #5ebbff;
+  background: linear-gradient(rgba(94, 187, 255, 0.5019607843) 40%, rgba(161, 116, 255, 0.5019607843));
+  transition: opacity 0.2s;
+  outline: none;
+  border: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+       user-select: none;
+  padding: 0;
+  cursor: pointer;
+}
+button.btn.rounded {
+  border-radius: 99px;
+}
+button.btn .inner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  height: 100%;
+  padding: 4px 16px;
+  border-radius: inherit;
+  border: 1px solid transparent;
+  background-color: #fff;
+  background-clip: padding-box;
+}
+button.btn .icon {
+  color: #5ebbff;
+}
+button.btn .title {
+  color: transparent;
+  background: linear-gradient(to bottom right, #5ebbff, #a174ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+button.btn.primary .inner {
+  border: none;
+  background-color: #0093fc;
+}
+button.btn.primary .title {
+  background-image: none;
+  background-color: #fff;
+}
+button.btn.primary .icon {
+  color: #fff;
+}
+
+.toggleWrap {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 30%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  cursor: pointer;
+}
+
+.trackTitle {
+  font-size: 1.4rem;
+  overflow: hidden;
+  word-wrap: break-word;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.toggleBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-size: 1.6rem;
+  background-color: #fff;
+  margin: 0 8px;
+  cursor: pointer;
+}/*# sourceMappingURL=Footer.module.css.map */

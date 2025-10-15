@@ -25,6 +25,7 @@ import { timeAgo } from "@/utils/timeAgo";
 import CourseList from "@/components/CourseList";
 import authService from "@/services/authService";
 import useCurrentUser from "@/hook/useCurrentUser";
+import ActivityHeatmap from "@/components/ActivityHeatmap";
 function Profile() {
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -107,15 +108,16 @@ function Profile() {
                                     </span>
                                     <span className={styles.value}>
                                         <strong>
-                                            {profile?.enrolledCourses?.length ||
-                                                0}
+                                            {profile?.follower_count || 0}
                                         </strong>{" "}
-                                        khóa học đã đăng ký{" "}
-                                        <span className={styles.dot}>·</span>{" "}
+                                        người theo dõi
+                                        <span className={styles.dot}>
+                                            ·
+                                        </span>{" "}
                                         <strong>
-                                            {profile?.activities?.length || 0}
+                                            {profile?.following_count || 0}
                                         </strong>{" "}
-                                        hoạt động gần đây
+                                        đang theo dõi
                                     </span>
                                 </div>
                                 <div className={styles.joinedAt}>
@@ -263,48 +265,48 @@ function Profile() {
                             <div className={styles.wrapper}>
                                 <div className={styles.activities}>
                                     <h3>Hoạt động gần đây</h3>
-                                    {profile.activities?.length > 0 ? (
-                                        <div className={styles.activityList}>
-                                            {profile.activities.map(
-                                                (activity) => (
-                                                    <div
-                                                        key={activity.id}
-                                                        className={
-                                                            styles.activityItem
-                                                        }
-                                                    >
-                                                        <div
-                                                            className={
-                                                                styles.activityType
-                                                            }
-                                                        >
-                                                            {
-                                                                activity.activity_type
-                                                            }
-                                                        </div>
-                                                        <div
-                                                            className={
-                                                                styles.activityContent
-                                                            }
-                                                        >
-                                                            {activity.content}
-                                                        </div>
-                                                        <div
-                                                            className={
-                                                                styles.activityTime
-                                                            }
-                                                        >
-                                                            {timeAgo(
-                                                                activity.createdAt
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                )
-                                            )}
-                                        </div>
-                                    ) : (
-                                        <div>Chưa có hoạt động nào</div>
-                                    )}
+                                    <ActivityHeatmap
+                                        data={
+                                            Array.isArray(profile?.activities)
+                                                ? profile.activities.reduce(
+                                                      (acc, act) => {
+                                                          const date =
+                                                              act.activity_date
+                                                                  ? act.activity_date.split(
+                                                                        "T"
+                                                                    )[0]
+                                                                  : (
+                                                                        act.createdAt ||
+                                                                        ""
+                                                                    ).split(
+                                                                        "T"
+                                                                    )[0];
+                                                          if (!date) return acc;
+                                                          const found =
+                                                              acc.find(
+                                                                  (item) =>
+                                                                      item.date ===
+                                                                      date
+                                                              );
+                                                          if (found) {
+                                                              found.count +=
+                                                                  act.activity_count ||
+                                                                  1;
+                                                          } else {
+                                                              acc.push({
+                                                                  date,
+                                                                  count:
+                                                                      act.activity_count ||
+                                                                      1,
+                                                              });
+                                                          }
+                                                          return acc;
+                                                      },
+                                                      []
+                                                  )
+                                                : []
+                                        }
+                                    />
                                 </div>
 
                                 <div className={styles.tabHeading}>

@@ -1,0 +1,90 @@
+.wrapper + .wrapper {
+  margin-top: 48px;
+}
+
+.title {
+  color: #242424;
+  font-size: 2.4rem;
+  font-weight: 900;
+}
+
+.desc {
+  margin-top: 16px;
+  font-size: 1.4rem;
+  line-height: 1.6;
+}
+
+.wrap {
+  padding: 16px;
+  border-radius: 16px;
+  border: 2px solid #e8e8e8;
+  margin: 16px 0;
+}
+
+.inner {
+  display: flex;
+}
+
+.thumb {
+  position: relative;
+  max-width: 255px;
+}
+.thumb img {
+  width: 100%;
+  border-radius: 16px;
+}
+
+.info {
+  flex: 1;
+  margin-left: 24px;
+}
+
+.subTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.price {
+  margin-top: 12px;
+}
+
+.subDesc {
+  margin: 12px 0;
+  font-size: 1.4rem;
+  line-height: 1.4;
+  overflow: hidden;
+  word-wrap: break-word;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.freeTitle {
+  color: #f05123;
+  display: block;
+  font-size: 1.6rem;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+.oldPrice {
+  font-size: 1.4rem;
+  margin-right: 8px;
+  text-decoration: line-through;
+}
+
+.mainPrice {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #f05123;
+}
+
+.wrapBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.wrapBtn:hover {
+  opacity: 0.8;
+}/*# sourceMappingURL=LearningCourseSection.module.css.map */

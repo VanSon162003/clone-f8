@@ -1,0 +1,196 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+  padding: 8px;
+  border-radius: 8px;
+}
+.wrapper.replyMode {
+  padding-left: 16px;
+  margin-left: 8px;
+}
+
+.replies {
+  margin-left: 8px;
+  border-left: 1px solid var(--comment-border-color, #dae4f0);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.user,
+.info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.useName {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--comment-interactive-color, #0093fc);
+  font-size: 1.2rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.createdAt {
+  color: var(--comment-placeholder-color, #808b9a);
+  font-size: 1.2rem;
+  line-height: 1.4;
+}
+
+.body {
+  font-size: 1.4rem;
+  word-break: break-word;
+}
+.body .wrap p {
+  white-space: pre-line;
+}
+.body .wrap img {
+  max-width: 100%;
+  max-height: 420px;
+  padding: 4px;
+  box-shadow: 0 0 0 1px var(--comment-image-border-color, rgba(0, 0, 0, 0.05));
+  border-radius: 12px;
+  vertical-align: bottom;
+  cursor: zoom-in;
+}
+.body .wrap a {
+  display: inline-block;
+  margin: 16px 0;
+  color: #0093fc;
+  font-size: 1.6rem;
+  font-weight: normal;
+  font-family: inherit;
+}
+.body .wrap a:hover {
+  text-decoration: underline;
+}
+.body .wrap blockquote {
+  padding-left: 16px;
+  border-left: 2px solid var(--comment-blockquote-border-color, #00aaaa);
+  color: var(--comment-title-color, #4e586b);
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+.body .wrap code {
+  padding: 1px 3px;
+  border-radius: 3px;
+  color: var(--prism-inline-code-color);
+  background-color: var(--prism-inline-code-bg, #c9fffc);
+  white-space: pre-wrap;
+  word-break: keep-all;
+  font-size: 1.6rem;
+}
+
+.reactionBar .inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 36px;
+}
+.reactionBar .inner .left,
+.reactionBar .inner .right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.reactionBar .inner .right {
+  position: relative;
+}
+.reactionBar .inner .right .reactionBtn {
+  color: var(--comment-title-color, #4e586b);
+  font-size: 1.2rem;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 5px;
+  cursor: pointer;
+}
+.reactionBar .inner .right .reactionBtn span {
+  margin-left: 5px;
+}
+.reactionBar .inner .right .reactionBtn .inner {
+  display: flex;
+  gap: 0;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+}
+.reactionBar .inner .right .reactionBtn .inner div {
+  margin-top: -10px;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  display: flex;
+  border-radius: 50%;
+  box-shadow: transparent 0px 0px 0px 2px;
+  position: relative;
+  z-index: 1;
+}
+.reactionBar .inner .interaction {
+  color: var(--comment-interactive-color, #0093fd);
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.8;
+  transition: color 0.2s;
+}
+.reactionBar .inner .interaction:hover {
+  opacity: 0.9;
+}
+.reactionBar .inner .moreBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 5px;
+  cursor: pointer;
+}
+
+.tippy {
+  z-index: 9999;
+  position: absolute;
+  inset: 30px 0px auto auto;
+  margin: 0px;
+}
+.tippy .optionsList {
+  display: flex;
+  flex-direction: column;
+  min-width: 220px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--comment-option-box-shadow, 0px 8px 16px 0px rgba(35, 115, 159, 0.16));
+}
+.tippy .option {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  height: 38px;
+  padding: 8px 16px;
+  background-color: var(--comment-option-bg, #eef4fc);
+  white-space: nowrap;
+  font-size: 1.6rem;
+}
+.tippy .option:hover {
+  filter: brightness(0.95);
+  opacity: 1;
+}
+
+.viewMore {
+  padding: 8px;
+  color: var(--comment-title-color, #4e586b);
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+.viewMore:hover {
+  opacity: 1;
+  text-decoration: underline;
+}/*# sourceMappingURL=CommentItem.module.css.map */

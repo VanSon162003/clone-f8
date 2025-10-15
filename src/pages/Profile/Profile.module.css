@@ -1,0 +1,152 @@
+.aside {
+  line-height: 1.4;
+}
+
+.flexCenter {
+  display: flex;
+  justify-content: center;
+}
+
+.socialLinks {
+  margin: 1rem 0;
+  padding: 0;
+  list-style: none;
+}
+.socialLinks li {
+  margin: 0.5rem 0;
+}
+.socialLinks li a {
+  display: flex;
+  align-items: center;
+  color: #666;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.socialLinks li a:hover {
+  color: #1a73e8;
+}
+.socialLinks li a svg {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+}
+.socialLinks li a span {
+  font-size: 14px;
+}
+
+.name {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  font-size: 2.4rem;
+  font-weight: 700;
+}
+
+.username {
+  margin-top: 2px;
+  font-size: 1.8rem;
+  opacity: 0.7;
+}
+
+.starsWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 20px;
+  font-size: 1.4rem;
+}
+
+.stats {
+  display: flex;
+}
+
+.leftIcon {
+  flex-shrink: 0;
+  width: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+  color: #7c858b;
+}
+
+.value {
+  word-break: break-word;
+}
+
+.dot,
+.joinedAt {
+  margin: 0 4px;
+}
+
+.socialLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.socialLinks a {
+  display: flex;
+  align-items: center;
+  color: #0056d6;
+}
+
+.wrapper {
+  width: 100%;
+  padding-left: 50px;
+}
+
+.tabHeading {
+  margin-top: 40px;
+  display: flex;
+  gap: 24px;
+  width: 100%;
+  border-bottom: 1px solid #e0e0e0;
+}
+.tabHeading .tab {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  margin-bottom: -1px;
+  font-size: 1.4rem;
+  font-weight: 600;
+  opacity: 0.7;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.tabHeading .tab.active {
+  opacity: 1;
+  text-shadow: 0 0 0.1px currentColor;
+  border-bottom: 3px solid #1b74e4;
+}
+
+.content {
+  margin-top: 24px;
+}
+
+.followBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+  padding: 10px 16px;
+  border-radius: 9999px;
+  border: 1px solid rgba(22, 24, 35, 0.12);
+  background-color: transparent;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #000;
+  transition: background-color 0.2s ease-in-out;
+}
+.followBtn.following {
+  background-color: rgba(22, 24, 35, 0.0509803922);
+}
+
+.activities {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}/*# sourceMappingURL=Profile.module.css.map */

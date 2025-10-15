@@ -1,0 +1,32 @@
+.wrapper h3 {
+  color: #757575;
+  font-size: 1.4rem;
+  font-weight: 500;
+  line-height: 1.8;
+  text-transform: uppercase;
+}
+
+.topPic {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding-left: 0;
+  font-size: 1.4rem;
+}
+.topPic a {
+  color: #333;
+  font-weight: 500;
+  line-height: 1.8;
+  background-color: #f2f2f2;
+  border-radius: 30px;
+  padding: 6px 16px;
+  display: block;
+  margin: 0 8px 8px 0;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+       user-select: none;
+}
+
+.mt {
+  margin-top: 48px;
+}/*# sourceMappingURL=Topics.module.css.map */

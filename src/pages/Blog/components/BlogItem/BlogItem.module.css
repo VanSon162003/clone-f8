@@ -1,0 +1,142 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  border-radius: 16px;
+  border: 2px solid #e8e8e8;
+}
+
+.wrapper + .wrapper {
+  margin-top: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.author {
+  display: flex;
+  align-items: center;
+}
+.author a {
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.actions {
+  font-size: 1.6rem;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+       user-select: none;
+  color: #757575;
+  display: flex;
+  margin-right: -8px;
+}
+
+.options {
+  cursor: pointer;
+  padding: 4px 8px;
+}
+.options:hover {
+  color: #292929;
+}
+
+.toggle {
+  color: #757575;
+}
+.toggle:hover {
+  color: #292929;
+}
+
+.author {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.author span {
+  font-size: 1.2rem;
+  color: #292929;
+  font-weight: 600;
+}
+
+.optionsBtn {
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.toggleBtn {
+  color: #757575;
+}
+.toggleBtn:hover {
+  color: #292929;
+}
+.toggleBtn svg.active {
+  color: #f05123;
+}
+
+.body {
+  display: flex;
+  align-items: center;
+}
+
+.info {
+  flex: 1;
+  padding-right: 32px;
+  font-size: 1.4rem;
+}
+
+.thumbnail {
+  flex-shrink: 0;
+}
+.thumbnail img {
+  width: 200px;
+  max-height: 120px;
+  border-radius: 15px;
+  display: block;
+  line-height: 1.8;
+  font-size: 1.4rem;
+  color: #757575;
+  background: #ebebeb;
+  overflow: hidden;
+  text-align: center;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+
+.title {
+  color: #292929;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.6;
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+.desc {
+  margin-top: 4px;
+  font-size: 1.5rem;
+  line-height: 1.6;
+  color: #505050;
+}
+
+.metaInfo {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+}
+.metaInfo .tag {
+  padding: 4px 10px;
+  border-radius: 100px;
+  background-color: #f2f2f2;
+  color: #333;
+  line-height: 2rem;
+  margin-right: 12px;
+  font-weight: 500;
+}
+
+.dot {
+  margin: 0 8px;
+}/*# sourceMappingURL=BlogItem.module.css.map */

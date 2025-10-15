@@ -1,0 +1,98 @@
+:global(.tippy-content) {
+  padding: 0;
+}
+
+.reaction {
+  display: flex;
+  gap: 7px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 9999px;
+  translate: 25px;
+  padding: 0 !important;
+}
+
+.reactionContainer {
+  display: flex;
+  gap: 5px;
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 9999px;
+}
+
+.interaction {
+  color: var(--comment-interactive-color, #0093fd);
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.8;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.interaction:hover {
+  opacity: 0.9;
+}
+.interaction.reacted {
+  font-weight: 700;
+}
+.interaction.reacted .reactionIcon {
+  animation: bounceIn 0.3s ease;
+}
+
+.reactionIcon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.react {
+  font-size: 30px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+.react:hover {
+  transform: scale(1.2);
+  background: rgba(0, 0, 0, 0.05);
+}
+.react.selected {
+  transform: scale(1.3);
+  background: var(--react-color, rgba(199, 196, 196, 0.5));
+}
+.react::before {
+  content: attr(data-label);
+  position: absolute;
+  bottom: 120%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #000;
+  color: #fff;
+  padding: 2px 6px;
+  font-size: 12px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.react:hover::before {
+  opacity: 1;
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}/*# sourceMappingURL=ReactionButton.module.css.map */

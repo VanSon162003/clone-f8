@@ -152,3 +152,9 @@
         background-color: #1618230d;
     }
 }
+
+.activities {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}

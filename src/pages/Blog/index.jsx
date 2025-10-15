@@ -14,12 +14,21 @@ function Blog() {
     );
     const [search, setSearch] = useState("");
 
-    const { data: postsData, isLoading, error } = useGetAllPostsQuery({
-        page: currentPage,
-        limit: 10,
-        status: "published",
-        search: search
-    });
+    const {
+        data: postsData,
+        isLoading,
+        error,
+    } = useGetAllPostsQuery(
+        {
+            page: currentPage,
+            limit: 10,
+            status: "published",
+            search: search,
+        },
+        {
+            refetchOnMountOrArgChange: true,
+        }
+    );
 
     const posts = postsData?.data?.posts || [];
     const pagination = postsData?.data?.pagination || {};
@@ -47,33 +56,44 @@ function Blog() {
                             ) : (
                                 <>
                                     <BlogItem posts={posts} />
-                                    
+
                                     {/* Pagination */}
                                     {pagination.totalPages > 1 && (
                                         <div className={styles.pagination}>
                                             <button
                                                 onClick={() => {
-                                                    const newPage = currentPage - 1;
+                                                    const newPage =
+                                                        currentPage - 1;
                                                     setCurrentPage(newPage);
-                                                    setSearchParams({ page: newPage });
+                                                    setSearchParams({
+                                                        page: newPage,
+                                                    });
                                                 }}
-                                                disabled={!pagination.hasPrevPage}
+                                                disabled={
+                                                    !pagination.hasPrevPage
+                                                }
                                                 className={styles.paginationBtn}
                                             >
                                                 Trước
                                             </button>
-                                            
+
                                             <span className={styles.pageInfo}>
-                                                Trang {pagination.currentPage} / {pagination.totalPages}
+                                                Trang {pagination.currentPage} /{" "}
+                                                {pagination.totalPages}
                                             </span>
-                                            
+
                                             <button
                                                 onClick={() => {
-                                                    const newPage = currentPage + 1;
+                                                    const newPage =
+                                                        currentPage + 1;
                                                     setCurrentPage(newPage);
-                                                    setSearchParams({ page: newPage });
+                                                    setSearchParams({
+                                                        page: newPage,
+                                                    });
                                                 }}
-                                                disabled={!pagination.hasNextPage}
+                                                disabled={
+                                                    !pagination.hasNextPage
+                                                }
                                                 className={styles.paginationBtn}
                                             >
                                                 Sau

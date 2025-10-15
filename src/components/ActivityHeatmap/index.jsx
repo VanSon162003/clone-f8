@@ -1,32 +1,29 @@
-import React from "react";
+import { useMemo } from "react";
 import CalendarHeatmap from "react-calendar-heatmap";
 import "react-calendar-heatmap/dist/styles.css";
 import styles from "./ActivityHeatmap.module.scss";
 
-const ActivityHeatmap = () => {
-    // Generate simple mock data for 12 months
-    const generateData = () => {
-        const data = [];
-        const startDate = new Date();
-        startDate.setFullYear(startDate.getFullYear() - 1);
+const ActivityHeatmap = ({ data = [] }) => {
+    const formattedData = useMemo(() => {
+        const countsByDate = {};
+        data.forEach((item) => {
+            let rawDate = item?.date || item?.createdAt;
+            if (!rawDate) return;
+            let dateObj = new Date(rawDate);
+            if (isNaN(dateObj.getTime())) return;
+            const date = dateObj.toISOString().split("T")[0];
+            countsByDate[date] = (countsByDate[date] || 0) + (item.count || 1);
+        });
+        const arr = Object.entries(countsByDate).map(([date, count]) => ({
+            date,
+            count,
+        }));
+        console.log("[ActivityHeatmap] data input:", data);
+        console.log("[ActivityHeatmap] formattedData:", arr);
+        return arr;
+    }, [data]);
 
-        for (let i = 0; i < 365; i++) {
-            const date = new Date(startDate);
-            date.setDate(startDate.getDate() + i);
-
-            // Simple random activity
-            if (Math.random() > 0.4) {
-                data.push({
-                    date: date.toISOString().split("T")[0],
-                    count: Math.floor(Math.random() * 4) + 1,
-                });
-            }
-        }
-        return data;
-    };
-
-    const activities = generateData();
-    const totalActivities = activities.reduce(
+    const totalActivities = formattedData.reduce(
         (sum, item) => sum + item.count,
         0
     );
@@ -41,15 +38,26 @@ const ActivityHeatmap = () => {
 
             <div className={styles.heatmap}>
                 <CalendarHeatmap
-                    startDate={new Date("2024-01-01")}
-                    endDate={new Date("2024-12-31")}
-                    values={activities}
+                    startDate={new Date(`${new Date().getFullYear()}-01-01`)}
+                    endDate={new Date(`${new Date().getFullYear()}-12-31`)}
+                    values={formattedData}
                     classForValue={(value) => {
-                        if (!value) return "color-empty";
-                        return `color-scale-${Math.min(value.count, 4)}`;
+                        if (
+                            !value ||
+                            !value.date ||
+                            !value.count ||
+                            value.count <= 0
+                        )
+                            return "color-empty";
+                        let level = 1;
+                        if (value.count >= 4) level = 4;
+                        else if (value.count === 3) level = 3;
+                        else if (value.count === 2) level = 2;
+                        else if (value.count === 1) level = 1;
+                        return `color-scale-${level}`;
                     }}
                     showWeekdayLabels
-                    weekdayLabels={["T2", "", "T4", "", "T6", "", ""]}
+                    weekdayLabels={["", "Mon", "", "Wed", "", "Fri", ""]}
                 />
 
                 <div className={styles.legend}>
