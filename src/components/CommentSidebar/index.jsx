@@ -344,13 +344,14 @@ function CommentSidebar({
                                 <div className={styles.content}>
                                     <div className={styles.header}>
                                         <h2 className={styles.title}>
-                                            {
-                                                comments.reduce(
-                                                    (total, c) =>
-                                                        total + 1 + (c.replies?.length || 0),
-                                                    0
-                                                )
-                                            } bình luận
+                                            {comments.reduce(
+                                                (total, c) =>
+                                                    total +
+                                                    1 +
+                                                    (c.replies?.length || 0),
+                                                0
+                                            )}{" "}
+                                            bình luận
                                         </h2>
                                         {comments.length > 0 && (
                                             <span

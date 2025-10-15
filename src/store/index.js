@@ -10,6 +10,8 @@ import headerReducer from "@/features/auth/headerSlice";
 import { coursesApi } from "@/services/coursesService";
 import { postsApi } from "@/services/postsService";
 import { commentsApi } from "@/services/commentsService";
+import { likesApi } from "@/services/likesService";
+import { bookmarksApi } from "@/services/bookmarksService";
 import { learningPathsApi } from "@/services/learningPathsService";
 
 const rootConfig = {
@@ -24,6 +26,8 @@ const rootReducer = combineReducers({
     [coursesApi.reducerPath]: coursesApi.reducer,
     [postsApi.reducerPath]: postsApi.reducer,
     [commentsApi.reducerPath]: commentsApi.reducer,
+    [likesApi.reducerPath]: likesApi.reducer,
+    [bookmarksApi.reducerPath]: bookmarksApi.reducer,
     [learningPathsApi.reducerPath]: learningPathsApi.reducer,
 });
 
@@ -34,6 +38,8 @@ export const store = configureStore({
         coursesApi.middleware,
         postsApi.middleware,
         commentsApi.middleware,
+        likesApi.middleware,
+        bookmarksApi.middleware,
         learningPathsApi.middleware,
     ],
 });

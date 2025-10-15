@@ -9,6 +9,7 @@ import Register from "@/layouts/DefaultLayout/components/AuthenticationApp/page/
 import AboutUs from "@/pages/AboutUs";
 import Blog from "@/pages/Blog";
 import BlogDetail from "@/pages/BlogDetail";
+import BlogTag from "@/pages/BlogTag";
 import ContactUs from "@/pages/ContactUs";
 import Home from "@/pages/Home";
 import Learning from "@/pages/Learning";
@@ -59,6 +60,11 @@ const routes = [
     {
         path: config.routes.blogDetail,
         component: BlogDetail,
+    },
+
+    {
+        path: config.routes.blogTag,
+        component: BlogTag,
     },
 
     {

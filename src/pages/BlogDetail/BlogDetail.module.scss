@@ -79,6 +79,35 @@
     line-height: var(--line-height, 2);
     font-size: var(--font-size, 1.8rem);
 
+    .metaInfo {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 24px;
+        font-size: 1.4rem;
+        color: #666;
+
+        .dot {
+            color: #999;
+        }
+    }
+
+    .thumbnail {
+        margin: 24px 0;
+        text-align: center;
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    .content {
+        margin-top: 24px;
+    }
+
     p,
     ul,
     ol,

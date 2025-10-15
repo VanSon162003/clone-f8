@@ -34,3 +34,38 @@
     gap: 16px;
     margin: 32px 0 80px;
 }
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 32px;
+    padding: 20px 0;
+}
+
+.paginationBtn {
+    padding: 8px 16px;
+    border: 1px solid #e1e5e9;
+    background: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+        background: #f8f9fa;
+        border-color: #3498db;
+    }
+
+    &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+.pageInfo {
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}

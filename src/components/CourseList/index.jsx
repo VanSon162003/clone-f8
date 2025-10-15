@@ -3,6 +3,8 @@ import React from "react";
 import CourseItem from "../CourseItem";
 
 function CourseList({ courseType, courseList = [], courseEnrolled = false }) {
+    console.log(courseList);
+    
     return (
         <div
             className={`${

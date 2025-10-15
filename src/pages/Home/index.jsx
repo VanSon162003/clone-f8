@@ -36,14 +36,14 @@ function Home() {
             setCourseFree(data.filter((course) => !course.is_pro));
         }
 
-        if (popularPosts.isSuccess) {
-            setCourseArticle(popularPosts.data.data);
+        if (popularPosts.isSuccess && popularPosts.data?.data?.posts) {
+            setCourseArticle(popularPosts.data.data.posts);
         }
 
         if (videoData.isSuccess) {
             setCourseVideo(videoData.data.data);
         }
-    }, [responseData, videoData, isSuccess]);
+    }, [responseData, videoData, popularPosts, isSuccess]);
 
     return (
         <div className={styles.parent}>

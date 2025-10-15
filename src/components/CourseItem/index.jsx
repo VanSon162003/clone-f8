@@ -145,17 +145,17 @@ function CourseItem({ item = {}, courseType, courseEnrolled = false }) {
                             </div>
                         </div>
                     ) : courseType === "article" ? (
-                        <Link to={item.pathAuthor} className={styles.author}>
+                        <Link to={`/@${item.author?.username || 'unknown'}`} className={styles.author}>
                             <Avatar
-                                avatar={item.user.avatar}
+                                avatar={item.author?.avatar || "/src/assets/imgs/user.jpg"}
                                 authorPro={item.authorPro}
                                 pro={pro}
-                                authorName={item.user.full_name}
+                                authorName={item.author?.full_name || 'Unknown Author'}
                                 admin={item.admin}
                             />
 
                             <span>·</span>
-                            {`${item.reading_time} phút đọc`}
+                            <span>{item.views_count || 0} lượt xem</span>
                         </Link>
                     ) : (
                         <div className={styles.status}>

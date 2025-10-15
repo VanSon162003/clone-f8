@@ -1,24 +1,20 @@
 import { useState } from "react";
 import Banner from "@/components/Banner";
-import { useSearchParams } from "react-router-dom";
-import BlogItem from "./components/BlogItem";
-import { useGetAllPostsQuery } from "@/services/postsService";
+import { useParams } from "react-router-dom";
+import BlogItem from "../Blog/components/BlogItem";
+import { useGetPostsByTagQuery } from "@/services/postsService";
 
-import styles from "./Blog.module.scss";
+import styles from "../Blog/Blog.module.scss";
 import ParentCard from "@/components/ParentCard";
 
-function Blog() {
-    const [searchParams, setSearchParams] = useSearchParams();
-    const [currentPage, setCurrentPage] = useState(
-        () => parseInt(searchParams.get("page")) || 1
-    );
-    const [search, setSearch] = useState("");
+function BlogTag() {
+    const { tagName } = useParams();
+    const [currentPage, setCurrentPage] = useState(1);
 
-    const { data: postsData, isLoading, error } = useGetAllPostsQuery({
+    const { data: postsData, isLoading, error } = useGetPostsByTagQuery({
+        tagName: tagName,
         page: currentPage,
-        limit: 10,
-        status: "published",
-        search: search
+        limit: 10
     });
 
     const posts = postsData?.data?.posts || [];
@@ -27,10 +23,10 @@ function Blog() {
     return (
         <ParentCard>
             <div className={styles.top}>
-                <h1 className={styles.heading}>Bài viết nổi bật</h1>
+                <h1 className={styles.heading}>Bài viết với tag: {tagName}</h1>
                 <div className={`${styles.desc} ${styles.warp}`}>
                     <p>
-                        Tổng hợp các bài viết chia sẻ về kinh nghiệm tự học lập
+                        Tổng hợp các bài viết với tag "{tagName}" về kinh nghiệm tự học lập
                         trình online và các kỹ thuật lập trình web.
                     </p>
                 </div>
@@ -52,11 +48,7 @@ function Blog() {
                                     {pagination.totalPages > 1 && (
                                         <div className={styles.pagination}>
                                             <button
-                                                onClick={() => {
-                                                    const newPage = currentPage - 1;
-                                                    setCurrentPage(newPage);
-                                                    setSearchParams({ page: newPage });
-                                                }}
+                                                onClick={() => setCurrentPage(currentPage - 1)}
                                                 disabled={!pagination.hasPrevPage}
                                                 className={styles.paginationBtn}
                                             >
@@ -68,11 +60,7 @@ function Blog() {
                                             </span>
                                             
                                             <button
-                                                onClick={() => {
-                                                    const newPage = currentPage + 1;
-                                                    setCurrentPage(newPage);
-                                                    setSearchParams({ page: newPage });
-                                                }}
+                                                onClick={() => setCurrentPage(currentPage + 1)}
                                                 disabled={!pagination.hasNextPage}
                                                 className={styles.paginationBtn}
                                             >
@@ -93,4 +81,4 @@ function Blog() {
     );
 }
 
-export default Blog;
+export default BlogTag;

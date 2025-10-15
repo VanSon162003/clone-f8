@@ -5,8 +5,12 @@ import { faBookmark, faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import styles from "./Actions.module.scss";
 import Tippy from "../Tippy";
 
-function Actions() {
-    const [isBookmark, setIsBookmark] = useState(false);
+function Actions({ 
+    onBookmark, 
+    isBookmarked = false, 
+    onShare, 
+    showShare = false 
+}) {
     const [isOptions, setIsOptions] = useState(false);
 
     const childOptions = useRef(null);
@@ -44,7 +48,9 @@ function Actions() {
     }, []);
 
     const handleBookmark = () => {
-        setIsBookmark((prev) => !prev);
+        if (onBookmark) {
+            onBookmark();
+        }
     };
 
     const handleOption = () => {
@@ -58,8 +64,8 @@ function Actions() {
                 className={`${styles.toggleBtn} ${styles.optionsBtn}`}
             >
                 <FontAwesomeIcon
-                    className={`${isBookmark && styles.active}`}
-                    icon={isBookmark ? faBookmark : faBookmarkRegular}
+                    className={`${isBookmarked && styles.active}`}
+                    icon={isBookmarked ? faBookmark : faBookmarkRegular}
                 />
             </div>
 
@@ -71,7 +77,7 @@ function Actions() {
                 <FontAwesomeIcon icon={faEllipsis} />
             </div>
 
-            {isOptions && <Tippy className="option-area" type="options" />}
+            {isOptions && <Tippy className="option-area" type="options" onShare={onShare} />}
         </div>
     );
 }

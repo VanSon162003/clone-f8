@@ -5,6 +5,7 @@ const config = {
         productDetail: "/products/:id",
         blog: "/blog",
         blogDetail: "/blog/:slug",
+        blogTag: "/blog/tag/:tagName",
         learning: "/learning-paths",
         learningItem: "/learning-paths/:nameCourse",
         notFound: "*",

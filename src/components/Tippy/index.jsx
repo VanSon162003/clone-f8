@@ -14,7 +14,7 @@ import { faEnvelope, faFlag, faLink } from "@fortawesome/free-solid-svg-icons";
 import Button from "../Button";
 import { useAuth0 } from "@auth0/auth0-react";
 
-function Tippy({ user = {}, type = "", className, ref, onEdit, onRemove }) {
+function Tippy({ user = {}, type = "", className, ref, onEdit, onRemove, onShare }) {
     const { logout } = useAuth0();
     const dispatch = useDispatch();
 
@@ -165,21 +165,9 @@ function Tippy({ user = {}, type = "", className, ref, onEdit, onRemove }) {
                     </>
                 ) : type === "options" ? (
                     <>
-                        <li>
-                            <FontAwesomeIcon icon={faFacebook} />
-                            <span>Chia sẻ lên Facebook</span>
-                        </li>
-                        <li>
-                            <FontAwesomeIcon icon={faTwitter} />
-                            <span>Chia sẻ lên Twitter</span>
-                        </li>
-                        <li>
-                            <FontAwesomeIcon icon={faEnvelope} />
-                            <span>Chia sẻ lên Email</span>
-                        </li>
-                        <li>
+                        <li onClick={onShare}>
                             <FontAwesomeIcon icon={faLink} />
-                            <span>Sao chép liên kết</span>
+                            <span>Chia sẻ bài viết</span>
                         </li>
                         <li>
                             <FontAwesomeIcon icon={faFlag} />
