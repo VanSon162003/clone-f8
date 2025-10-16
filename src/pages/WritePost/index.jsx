@@ -8,6 +8,10 @@ import Model from "@/components/Model";
 import ScrollLock from "@/components/ScrollLock";
 import UploadImg from "@/components/UploadImg";
 import Button from "@/components/Button";
+import {
+    useCreatePostMutation,
+    useUpdatePostMutation,
+} from "@/services/postsService";
 
 function WritePost() {
     const [formEdit, setFormEdit] = useState({
@@ -16,9 +20,14 @@ function WritePost() {
         metaTitle: "",
         metaContent: "",
         thumbnail: "",
-        tags: ["ok"],
-        publish: "now",
+        tags: [],
+        visibility: "public",
+        status: "published",
+        published_at: null,
     });
+    const [thumbnailFile, setThumbnailFile] = useState(null);
+    const [createPost] = useCreatePostMutation();
+    const [updatePost] = useUpdatePostMutation();
 
     const [searchParams] = useSearchParams();
     const [openModelEdit, setOpenModelEdit] = useState(false);
@@ -93,20 +102,6 @@ function WritePost() {
         }
 
         setOpenModelEdit(true);
-    };
-
-    const handleSaveDraft = () => {
-        if (!validateAll()) {
-            return;
-        }
-
-        // fetch api ở đây
-
-        toast.success("Lưu bản nháp thành công!");
-
-        setTimeout(() => {
-            navigate("/");
-        }, 3000);
     };
 
     const handleCancelModel = () => {
@@ -190,6 +185,73 @@ function WritePost() {
         };
     };
 
+    // Xử lý xuất bản hoặc lên lịch xuất bản
+    const handlePublishPost = async () => {
+        const formData = new FormData();
+        formData.append("title", formEdit.title);
+        formData.append("content", formEdit.content);
+        formData.append("metaTitle", formEdit.metaTitle);
+        formData.append("metaContent", formEdit.metaContent);
+
+        if (thumbnailFile) formData.append("thumbnail", thumbnailFile);
+        if (formEdit.tags.length > 0)
+            formData.append("tags", JSON.stringify(formEdit.tags));
+        if (formEdit.visibility === "schedule") {
+            formData.append("published_at", `${new Date()}`);
+            formData.append("status", "schedule");
+            formData.append("visibility", "schedule");
+        } else {
+            formData.append("status", "published");
+            formData.append("published_at", null);
+            formData.append("visibility", "published");
+        }
+        try {
+            if (id) {
+                await updatePost({ id, ...formData }).unwrap();
+            } else {
+                await createPost(formData).unwrap();
+            }
+            toast.success("Xuất bản thành công!");
+            setTimeout(() => {
+                navigate("/me/posts");
+            }, 1500);
+        } catch (err) {
+            toast.error("Lỗi khi xuất bản bài viết", err);
+        }
+    };
+
+    const handleSaveDraft = async () => {
+        if (!validateAll()) {
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("title", formEdit.title);
+        formData.append("content", formEdit.content);
+        formData.append("metaTitle", formEdit.metaTitle);
+        formData.append("metaContent", formEdit.metaContent);
+
+        if (thumbnailFile) formData.append("thumbnail", thumbnailFile);
+
+        formData.append("published_at", null);
+        formData.append("status", "draft");
+        formData.append("visibility", "draft");
+
+        try {
+            if (id) {
+                await updatePost({ id, ...formData }).unwrap();
+            } else {
+                await createPost(formData).unwrap();
+            }
+            toast.success("Lưu nháp thành công!");
+            setTimeout(() => {
+                navigate("/me/posts");
+            }, 1500);
+        } catch (err) {
+            toast.error("Lỗi khi lưu nháp bài viết", err);
+        }
+    };
+
     return (
         <>
             <ParentCard>
@@ -238,7 +300,7 @@ function WritePost() {
                         <div className={styles.formGroup}>
                             <label className={styles.label}>Ảnh đại diện</label>
                             <div className={styles.wrap}>
-                                <UploadImg />
+                                <UploadImg onFileChange={setThumbnailFile} />
                             </div>
                         </div>
 
@@ -361,16 +423,17 @@ function WritePost() {
                                 <label className={styles.radioOption}>
                                     <input
                                         type="radio"
-                                        name="publishType"
-                                        value="now"
+                                        name="visibility"
+                                        value="public"
                                         checked={
-                                            formEdit.publish === "now" && true
+                                            formEdit.visibility === "public" &&
+                                            true
                                         }
                                         onChange={() => {
                                             setFormEdit((prev) => {
                                                 return {
                                                     ...prev,
-                                                    publish: "now",
+                                                    visibility: "public",
                                                 };
                                             });
                                         }}
@@ -381,26 +444,26 @@ function WritePost() {
                                 <label className={styles.radioOption}>
                                     <input
                                         type="radio"
-                                        name="publishType"
+                                        name="visibility"
                                         value="schedule"
                                         onChange={() => {
                                             setFormEdit((prev) => {
                                                 return {
                                                     ...prev,
-                                                    publish: "schedule",
+                                                    visibility: "schedule",
                                                 };
                                             });
                                         }}
                                         checked={
-                                            formEdit.publish === "schedule" &&
-                                            true
+                                            formEdit.visibility ===
+                                                "schedule" && true
                                         }
                                     />
                                     <span>Lên lịch xuất bản</span>
                                 </label>
                             </div>
 
-                            {formEdit.publish === "schedule" && (
+                            {formEdit.visibility === "schedule" && (
                                 <div className={styles.scheduleInputs}>
                                     <div className={styles.dateTimeRow}>
                                         <div className={styles.dateInput}>
@@ -451,11 +514,12 @@ function WritePost() {
                             </Button>
                             <Button
                                 className={`${styles.wrap} ${styles.primary}`}
+                                onClick={handlePublishPost}
                             >
                                 <div className={styles.inner}>
                                     <div className={styles.title}>
                                         {" "}
-                                        {formEdit.publish === "now"
+                                        {formEdit.visibility === "public"
                                             ? "XUẤT BẢN NGAY"
                                             : "LÊN LỊCH XUẤT BẢN"}
                                     </div>

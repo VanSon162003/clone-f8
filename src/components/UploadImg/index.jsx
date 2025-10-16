@@ -1,9 +1,10 @@
 import { useState, useRef } from "react";
+import PropTypes from "prop-types";
 import styles from "./UploadImg.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 
-export default function UploadImg() {
+function UploadImg({ onFileChange }) {
     const [preview, setPreview] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
     const inputRef = useRef(null);
@@ -16,6 +17,7 @@ export default function UploadImg() {
         if (file && file.type.startsWith("image/")) {
             const url = URL.createObjectURL(file);
             setPreview(url);
+            if (onFileChange) onFileChange(file);
         }
     };
 
@@ -33,6 +35,7 @@ export default function UploadImg() {
         if (file && file.type.startsWith("image/")) {
             const url = URL.createObjectURL(file);
             setPreview(url);
+            if (onFileChange) onFileChange(file);
         }
     };
 
@@ -42,6 +45,7 @@ export default function UploadImg() {
         if (inputRef.current) {
             inputRef.current.value = ""; // reset input
         }
+        if (onFileChange) onFileChange(null);
     };
 
     return (
@@ -101,3 +105,9 @@ export default function UploadImg() {
         </div>
     );
 }
+
+UploadImg.propTypes = {
+    onFileChange: PropTypes.func,
+};
+
+export default UploadImg;

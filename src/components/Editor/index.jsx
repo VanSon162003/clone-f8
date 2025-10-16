@@ -42,16 +42,62 @@ const Editor = forwardRef(
         }));
 
         // ----------------- CONFIG -----------------
+        const imageHandler = () => {
+            const input = document.createElement("input");
+            input.setAttribute("type", "file");
+            input.setAttribute("accept", "image/*");
+            input.click();
+
+            input.onchange = async () => {
+                const file = input.files[0];
+
+                if (!file) return;
+
+                try {
+                    const fd = new FormData();
+                    fd.append("file", file);
+
+                    const res = await fetch(
+                        `${import.meta.env.VITE_BASE_URL}uploads/imgs`,
+                        {
+                            method: "POST",
+                            body: fd,
+                            headers: {
+                                Authorization: `Bearer ${localStorage.getItem(
+                                    "accessToken"
+                                )}`,
+                            },
+                        }
+                    );
+
+                    if (!res.ok) throw new Error("Upload failed");
+
+                    const data = await res.json();
+                    const url = data.url || data.path || data.filePath;
+
+                    const quill = quillRef.current.getEditor();
+                    const range = quill.getSelection(true);
+                    quill.insertEmbed(range.index, "image", url);
+                    quill.setSelection(range.index + 1);
+                } catch (err) {
+                    toast.error("Không thể upload ảnh");
+                }
+            };
+        };
+
         const modules = {
-            toolbar:
-                type === "writePost"
-                    ? []
-                    : [
-                          ["bold", "italic"],
-                          ["blockquote", "code", "code-block"],
-                          ["image", "link"],
-                          ["clean"],
-                      ],
+            toolbar: {
+                container: [
+                    ["bold", "italic"],
+                    ["blockquote", "code", "code-block"],
+                    ["image", "link"],
+                    ["clean"],
+                ],
+
+                handlers: {
+                    image: imageHandler,
+                },
+            },
         };
 
         const formats = [
@@ -116,8 +162,13 @@ const Editor = forwardRef(
                 editorRef.current.querySelector("[data-placeholder]");
 
             if (type === "writePost") {
-                toolbar.style.display = "none";
-                quillEl.style.paddingTop = "16px";
+                if (toolbar) {
+                    toolbar.style.display = "none";
+                }
+
+                if (quillEl) {
+                    quillEl.style.paddingTop = "16px";
+                }
             }
 
             if (type === "writePostContent") {
@@ -295,6 +346,13 @@ const Editor = forwardRef(
                     modules={modules}
                     formats={formats}
                     placeholder={placeholder}
+                    style={{
+                        minHeight:
+                            type === "writePostContent" ? "400px" : "auto",
+                        paddingTop: type === "writePost" ? "16px" : undefined,
+                        backgroundColor: "#eef4fc",
+                        border: "1px solid transparent",
+                    }}
                 />
 
                 {error && <div className={styles.errorMessage}>{error}</div>}

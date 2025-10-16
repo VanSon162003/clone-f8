@@ -9,10 +9,8 @@ import Avatar from "@/components/Avatar";
 import Actions from "@/components/Actions";
 import BlogItem from "../Blog/components/BlogItem";
 import Topics from "@/components/Topics";
-import PostCommentSidebar from "@/components/PostCommentSidebar";
 import ShareModal from "@/components/ShareModal";
-import Editor from "@/components/Editor";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
     useGetPostBySlugQuery,
     useGetAllPostsQuery,
@@ -28,24 +26,19 @@ import {
     useCheckUserBookmarkQuery,
 } from "@/services/bookmarksService";
 import { timeAgo } from "@/utils/timeAgo";
+import CommentSidebar from "@/components/CommentSidebar";
+import isHttps from "@/utils/isHttps";
 
 function BlogDetail() {
     const { slug } = useParams();
     const [isOpen, setIsopen] = useState(false);
-    const [newComment, setNewComment] = useState("");
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    const [totalComment, setTotalComment] = useState(0);
 
     // Fetch post data
     const { data: postData, isLoading, error } = useGetPostBySlugQuery(slug);
     // const postData = {};
     const post = postData?.data;
-
-    // // Fetch comments for this post
-    // const { data: commentsData, isLoading: commentsLoading } =
-    //     useGetCommentsByPostQuery({ postId: post?.id }, { skip: !post?.id });
-
-    const commentsData = {};
-    const comments = commentsData?.data?.comments || [];
 
     // Fetch like status and count
     const { data: likeStatus } = useCheckUserLikeQuery(
@@ -66,14 +59,18 @@ function BlogDetail() {
     // Mutations
     const [toggleLike] = useToggleLikeMutation();
     const [toggleBookmark] = useToggleBookmarkMutation();
-    // const [createComment] = useCreateCommentMutation();
 
     // Fetch related posts by same author
-    const { data: relatedPostsData } = useGetAllPostsQuery({
-        page: 1,
-        limit: 3,
-        status: "published",
-    });
+    const { data: relatedPostsData } = useGetAllPostsQuery(
+        {
+            page: 1,
+            limit: 3,
+            status: "published",
+        },
+        {
+            refetchOnMountOrArgChange: true,
+        }
+    );
     const relatedPosts =
         relatedPostsData?.data?.posts?.filter(
             (p) => p.author?.id === post?.author?.id && p.id !== post?.id
@@ -102,24 +99,12 @@ function BlogDetail() {
         }
     };
 
-    const handleSubmitComment = async (e) => {
-        e.preventDefault();
-        if (!newComment.trim() || !post?.id) return;
-
-        try {
-            // await createComment({
-            //     content: newComment.trim(),
-            //     commentable_type: "post",
-            //     commentable_id: post.id,
-            // }).unwrap();
-            setNewComment("");
-        } catch (error) {
-            console.error("Error creating comment:", error);
-        }
-    };
-
     const handleCommentSideBar = () => {
         setIsopen(!isOpen);
+    };
+
+    const getTotalComment = (total) => {
+        setTotalComment((prev) => total || prev);
     };
 
     if (isLoading) {
@@ -182,14 +167,19 @@ function BlogDetail() {
                                     onClick={handleCommentSideBar}
                                 >
                                     <FontAwesomeIcon icon={faComment} />
-                                    <span>{comments.length}</span>
+                                    <span>{totalComment}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div className="col col-6 col-xxl-8 col-lg-12">
                         <article>
-                            <h1 className={styles.heading}>{post.title}</h1>
+                            <h1
+                                className={styles.heading}
+                                dangerouslySetInnerHTML={{
+                                    __html: post.title,
+                                }}
+                            />
                             <div className={styles.header}>
                                 <div className={styles.user}>
                                     <Avatar
@@ -229,8 +219,18 @@ function BlogDetail() {
                                 {post.thumbnail && (
                                     <div className={styles.thumbnail}>
                                         <img
-                                            src={post.thumbnail}
-                                            alt={post.title}
+                                            src={
+                                                isHttps(post.thumbnail)
+                                                    ? post.thumbnail
+                                                    : `${
+                                                          import.meta.env
+                                                              .VITE_BASE_URL
+                                                      }${post.thumbnail}`
+                                            }
+                                            alt={post.title.replace(
+                                                /<[^>]+>/g,
+                                                ""
+                                            )}
                                         />
                                     </div>
                                 )}
@@ -268,7 +268,7 @@ function BlogDetail() {
                                     onClick={handleCommentSideBar}
                                 >
                                     <FontAwesomeIcon icon={faComment} />
-                                    <span>{comments.length}</span>
+                                    <span>{totalComment}</span>
                                 </div>
                             </div>
 
@@ -292,11 +292,12 @@ function BlogDetail() {
                                     <ul className={styles.list}>
                                         {relatedPosts.map((relatedPost) => (
                                             <li key={relatedPost.id}>
-                                                <a
-                                                    href={`/blog/${relatedPost.slug}`}
-                                                >
-                                                    {relatedPost.title}
-                                                </a>
+                                                <Link
+                                                    to={`/blog/${relatedPost.slug}`}
+                                                    dangerouslySetInnerHTML={{
+                                                        __html: relatedPost.title,
+                                                    }}
+                                                />
                                             </li>
                                         ))}
                                     </ul>
@@ -317,13 +318,11 @@ function BlogDetail() {
                 </div>
             </ParentCard>
 
-            <PostCommentSidebar
+            <CommentSidebar
                 open={isOpen}
-                comments={comments}
-                // isLoading={commentsLoading}
-                onSubmitComment={handleSubmitComment}
-                newComment={newComment}
-                setNewComment={setNewComment}
+                commentableId={post.id}
+                commentableType={"post"}
+                getTotalComment={getTotalComment}
             />
 
             <ShareModal

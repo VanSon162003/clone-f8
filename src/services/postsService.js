@@ -8,13 +8,18 @@ export const postsApi = createApi({
     endpoints: (builder) => ({
         // Get all posts with pagination and filters
         getAllPosts: builder.query({
-            query: ({ page = 1, limit = 10, status = "published", search = "" } = {}) => {
+            query: ({
+                page = 1,
+                limit = 10,
+                status = "published",
+                search = "",
+            } = {}) => {
                 const params = new URLSearchParams();
                 if (page) params.append("page", page);
                 if (limit) params.append("limit", limit);
                 if (status) params.append("status", status);
                 if (search) params.append("search", search);
-                
+
                 return `/posts?${params.toString()}`;
             },
             providesTags: ["Post"],
@@ -27,7 +32,7 @@ export const postsApi = createApi({
                 params.append("page", 1);
                 params.append("limit", limit);
                 params.append("status", "published");
-                
+
                 return `/posts?${params.toString()}`;
             },
             providesTags: ["Post"],
@@ -51,7 +56,7 @@ export const postsApi = createApi({
                 const params = new URLSearchParams();
                 if (page) params.append("page", page);
                 if (limit) params.append("limit", limit);
-                
+
                 return `/posts/tag/${tagName}?${params.toString()}`;
             },
             providesTags: ["Post"],
@@ -59,21 +64,42 @@ export const postsApi = createApi({
 
         // Create post
         createPost: builder.mutation({
-            query: (postData) => ({
-                url: "/posts",
-                method: "POST",
-                body: postData,
-            }),
+            query: (postData) => {
+                // Nếu có file, gửi bằng FormData
+                if (postData instanceof FormData) {
+                    return {
+                        url: "/posts",
+                        method: "POST",
+                        body: postData,
+                        formData: true,
+                    };
+                }
+                return {
+                    url: "/posts",
+                    method: "POST",
+                    body: postData,
+                };
+            },
             invalidatesTags: ["Post"],
         }),
 
         // Update post
         updatePost: builder.mutation({
-            query: ({ id, ...postData }) => ({
-                url: `/posts/${id}`,
-                method: "PUT",
-                body: postData,
-            }),
+            query: ({ id, ...postData }) => {
+                if (postData instanceof FormData) {
+                    return {
+                        url: `/posts/${id}`,
+                        method: "PUT",
+                        body: postData,
+                        formData: true,
+                    };
+                }
+                return {
+                    url: `/posts/${id}`,
+                    method: "PUT",
+                    body: postData,
+                };
+            },
             invalidatesTags: (result, error, { id }) => [{ type: "Post", id }],
         }),
 

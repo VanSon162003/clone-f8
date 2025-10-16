@@ -27,6 +27,7 @@ function Blog() {
         },
         {
             refetchOnMountOrArgChange: true,
+            refetchOnFocus: true,
         }
     );
 

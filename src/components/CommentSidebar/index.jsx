@@ -19,6 +19,7 @@ function CommentSidebar({
     onCancel = () => {},
     commentableType,
     commentableId,
+    getTotalComment = () => {},
 }) {
     const [isOpen, setIsOpen] = useState(open);
     const [isOpenCommentEditor, setIsOpenCommentEditor] = useState(false);
@@ -45,7 +46,6 @@ function CommentSidebar({
     );
 
     const { data, isFetching } = useGetAllByTypeQuery(queryArgs, {
-        skip: !commentableId,
         refetchOnMountOrArgChange: true,
         refetchOnFocus: true,
         keepUnusedDataFor: 0,
@@ -81,6 +81,8 @@ function CommentSidebar({
                 return [...prev, ...newOnes];
             });
             if (data.data.length < limit) setHasMore(false);
+
+            getTotalComment(data.data.length);
         }
     }, [data]);
 

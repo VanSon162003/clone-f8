@@ -10,6 +10,7 @@ import {
 } from "@/services/bookmarksService";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import isHttps from "@/utils/isHttps";
 
 function BlogItem({ posts = [] }) {
     const [toggleBookmark] = useToggleBookmarkMutation();
@@ -80,14 +81,31 @@ function BlogItem({ posts = [] }) {
                 <div className={styles.body}>
                     <div className={styles.info}>
                         <Link to={`/blog/${post.slug}`}>
-                            <h2 className={styles.title}>{post.title}</h2>
+                            {/* <h2 className={styles.title}>{post.title}</h2> */}
+                            <h2
+                                className={styles.title}
+                                dangerouslySetInnerHTML={{
+                                    __html: post.title,
+                                }}
+                            />
                         </Link>
-                        <p className={styles.desc}>
+                        {/* <p className={styles.desc}>
                             {post.description ||
                                 (post.content
                                     ? post.content.substring(0, 200) + "..."
                                     : "")}
-                        </p>
+                        </p> */}
+
+                        <p
+                            className={styles.desc}
+                            dangerouslySetInnerHTML={{
+                                __html:
+                                    post.description ||
+                                    (post.content
+                                        ? post.content.substring(0, 200)
+                                        : ""),
+                            }}
+                        />
                         <div className={styles.metaInfo}>
                             {tags.map((tag, i) => (
                                 <Link
@@ -107,7 +125,16 @@ function BlogItem({ posts = [] }) {
                     {post.thumbnail && (
                         <div className={`${styles.thumbnail} d-xl-none`}>
                             <Link to={`/blog/${post.slug}`}>
-                                <img src={post.thumbnail} alt={post.title} />
+                                <img
+                                    src={
+                                        isHttps(post.thumbnail)
+                                            ? post.thumbnail
+                                            : `${
+                                                  import.meta.env.VITE_BASE_URL
+                                              }${post.thumbnail}`
+                                    }
+                                    alt={post.title.replace(/<[^>]+>/g, "")}
+                                />
                             </Link>
                         </div>
                     )}
