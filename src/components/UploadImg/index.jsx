@@ -4,8 +4,8 @@ import styles from "./UploadImg.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faImage } from "@fortawesome/free-solid-svg-icons";
 
-function UploadImg({ onFileChange }) {
-    const [preview, setPreview] = useState(null);
+function UploadImg({ onFileChange, thumbnail = "" }) {
+    const [preview, setPreview] = useState(thumbnail);
     const [isDragging, setIsDragging] = useState(false);
     const inputRef = useRef(null);
 
@@ -86,7 +86,13 @@ function UploadImg({ onFileChange }) {
                         {preview && (
                             <div className={styles.previewWrapper}>
                                 <img
-                                    src={preview}
+                                    src={
+                                        preview.startsWith("blob")
+                                            ? preview
+                                            : `${
+                                                  import.meta.env.VITE_BASE_URL
+                                              }${preview}`
+                                    }
                                     alt="preview"
                                     className={styles.preview}
                                 />

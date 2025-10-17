@@ -31,6 +31,10 @@ const Editor = forwardRef(
         const quillRef = useRef(null);
         const editorRef = useRef(null);
 
+        useEffect(() => {
+            setValue(content);
+        }, [content]);
+
         // Expose focus method to parent
         useImperativeHandle(ref, () => ({
             focus: () => {
@@ -231,6 +235,10 @@ const Editor = forwardRef(
 
         // ----------------- HANDLERS -----------------
         const handleValueChange = (content) => {
+            const textOnly = content.replace(/<[^>]*>/g, "").trim();
+
+            if (!textOnly) return;
+
             setValue(content);
 
             // Gọi callback để parent component nhận được giá trị mới
@@ -238,7 +246,6 @@ const Editor = forwardRef(
                 onContentChange(content);
             }
 
-            const textOnly = content.replace(/<[^>]*>/g, "").trim();
             const quill = editorRef.current?.querySelector(".quill");
             if (!quill) return;
 

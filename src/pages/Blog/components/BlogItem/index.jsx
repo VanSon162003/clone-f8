@@ -8,7 +8,6 @@ import {
     useGetUserBookmarksQuery,
     useToggleBookmarkMutation,
 } from "@/services/bookmarksService";
-import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import isHttps from "@/utils/isHttps";
 
@@ -81,7 +80,6 @@ function BlogItem({ posts = [] }) {
                 <div className={styles.body}>
                     <div className={styles.info}>
                         <Link to={`/blog/${post.slug}`}>
-                            {/* <h2 className={styles.title}>{post.title}</h2> */}
                             <h2
                                 className={styles.title}
                                 dangerouslySetInnerHTML={{
@@ -89,12 +87,6 @@ function BlogItem({ posts = [] }) {
                                 }}
                             />
                         </Link>
-                        {/* <p className={styles.desc}>
-                            {post.description ||
-                                (post.content
-                                    ? post.content.substring(0, 200) + "..."
-                                    : "")}
-                        </p> */}
 
                         <p
                             className={styles.desc}

@@ -10,6 +10,7 @@ import UploadImg from "@/components/UploadImg";
 import Button from "@/components/Button";
 import {
     useCreatePostMutation,
+    useGetPostByIdQuery,
     useUpdatePostMutation,
 } from "@/services/postsService";
 
@@ -21,7 +22,7 @@ function WritePost() {
         metaContent: "",
         thumbnail: "",
         tags: [],
-        visibility: "public",
+        visibility: "published",
         status: "published",
         published_at: null,
     });
@@ -38,13 +39,36 @@ function WritePost() {
 
     const navigate = useNavigate();
 
+    const [post, setPost] = useState(null);
+
     const id = searchParams.get("id"); // lấy ra id cần edit
+
+    const { data } = useGetPostByIdQuery(id, {
+        refetchOnFocus: true,
+        refetchOnMountOrArgChange: true,
+    });
 
     useEffect(() => {
         if (id) {
-            // fetch duwx lieeuj
+            setPost(data?.data);
         }
-    }, [id]);
+    }, [id, data]);
+
+    useEffect(() => {
+        if (post) {
+            setFormEdit(() => ({
+                title: post?.title || "",
+                content: post?.content || "",
+                metaTitle: post?.meta_title || "",
+                metaContent: post?.meta_description || "",
+                thumbnail: post?.thumbnail || "",
+                tags: post?.tags || [],
+                visibility: post?.visibility || "published",
+                status: post?.status || "published",
+                published_at: post?.published_at || null,
+            }));
+        }
+    }, [post]);
 
     const isContentEmpty = (value) => {
         if (!value) return true;
@@ -52,9 +76,8 @@ function WritePost() {
     };
 
     const getPlainText = (htmlString = "") => {
-        if (!htmlString) return 0;
-
-        return htmlString.replace(/<[^>]*>/g, "").trim() || " ";
+        if (!htmlString) return "";
+        return htmlString.replace(/<[^>]*>/g, "");
     };
 
     const validateField = (value, type) => {
@@ -109,26 +132,26 @@ function WritePost() {
     };
 
     const handleChangeModelEdit = (type, value) => {
-        let plainText = getPlainText(value);
-
         if (type === "metaTitle") {
-            if (plainText.length > 100) {
-                plainText = plainText.slice(0, 100);
+            let newValue = value;
+            if (newValue.length > 100) {
+                newValue = newValue.slice(0, 100);
             }
             setFormEdit((prev) => ({
                 ...prev,
-                metaTitle: plainText,
+                metaTitle: newValue,
             }));
             return;
         }
 
         if (type === "metaContent") {
-            if (plainText.length > 160) {
-                plainText = plainText.slice(0, 160);
+            let newValue = value;
+            if (newValue.length > 160) {
+                newValue = newValue.slice(0, 160);
             }
             setFormEdit((prev) => ({
                 ...prev,
-                metaContent: plainText,
+                metaContent: newValue,
             }));
             return;
         }
@@ -144,7 +167,7 @@ function WritePost() {
 
         const newTag = e.target.querySelector("input").value.trim();
 
-        const exitTag = formEdit.tags.find((tag) => tag === newTag);
+        const exitTag = formEdit.tags.find((tag) => tag.name === newTag);
 
         if (exitTag) return seErrorModel("Bạn đã thêm thẻ này");
         if (formEdit.tags.length >= 5) return;
@@ -152,7 +175,12 @@ function WritePost() {
         setFormEdit((prev) => {
             return {
                 ...prev,
-                tags: [...prev.tags, newTag],
+                tags: [
+                    ...prev.tags,
+                    {
+                        name: newTag,
+                    },
+                ],
             };
         });
 
@@ -187,6 +215,8 @@ function WritePost() {
 
     // Xử lý xuất bản hoặc lên lịch xuất bản
     const handlePublishPost = async () => {
+        console.log(formEdit);
+
         const formData = new FormData();
         formData.append("title", formEdit.title);
         formData.append("content", formEdit.content);
@@ -205,18 +235,23 @@ function WritePost() {
             formData.append("published_at", null);
             formData.append("visibility", "published");
         }
+
         try {
             if (id) {
-                await updatePost({ id, ...formData }).unwrap();
+                await updatePost({ id, formData }).unwrap();
             } else {
                 await createPost(formData).unwrap();
             }
-            toast.success("Xuất bản thành công!");
+            toast.success(
+                id
+                    ? "Cập nhật bài viết thành công!"
+                    : "Tạo bài viết thành công!"
+            );
             setTimeout(() => {
                 navigate("/me/posts");
             }, 1500);
         } catch (err) {
-            toast.error("Lỗi khi xuất bản bài viết", err);
+            console.log(err);
         }
     };
 
@@ -239,7 +274,7 @@ function WritePost() {
 
         try {
             if (id) {
-                await updatePost({ id, ...formData }).unwrap();
+                await updatePost({ id, formData }).unwrap();
             } else {
                 await createPost(formData).unwrap();
             }
@@ -300,7 +335,10 @@ function WritePost() {
                         <div className={styles.formGroup}>
                             <label className={styles.label}>Ảnh đại diện</label>
                             <div className={styles.wrap}>
-                                <UploadImg onFileChange={setThumbnailFile} />
+                                <UploadImg
+                                    thumbnail={formEdit.thumbnail || null}
+                                    onFileChange={setThumbnailFile}
+                                />
                             </div>
                         </div>
 
@@ -386,7 +424,7 @@ function WritePost() {
                                 {formEdit.tags.map((tag, i) => {
                                     return (
                                         <div key={i} className={styles.tag}>
-                                            {tag}
+                                            {tag.name}
                                             <Button
                                                 className={styles.removeTag}
                                                 onClick={() =>
@@ -414,87 +452,93 @@ function WritePost() {
                             </label>
                         </div>
 
-                        <div className={styles.formGroup}>
-                            <label className={styles.label}>
-                                Thời gian xuất bản
-                            </label>
-
-                            <div className={styles.publishOptions}>
-                                <label className={styles.radioOption}>
-                                    <input
-                                        type="radio"
-                                        name="visibility"
-                                        value="public"
-                                        checked={
-                                            formEdit.visibility === "public" &&
-                                            true
-                                        }
-                                        onChange={() => {
-                                            setFormEdit((prev) => {
-                                                return {
-                                                    ...prev,
-                                                    visibility: "public",
-                                                };
-                                            });
-                                        }}
-                                    />
-                                    <span>Xuất bản ngay</span>
+                        {!id && (
+                            <div className={styles.formGroup}>
+                                <label className={styles.label}>
+                                    Thời gian xuất bản
                                 </label>
 
-                                <label className={styles.radioOption}>
-                                    <input
-                                        type="radio"
-                                        name="visibility"
-                                        value="schedule"
-                                        onChange={() => {
-                                            setFormEdit((prev) => {
-                                                return {
-                                                    ...prev,
-                                                    visibility: "schedule",
-                                                };
-                                            });
-                                        }}
-                                        checked={
-                                            formEdit.visibility ===
-                                                "schedule" && true
-                                        }
-                                    />
-                                    <span>Lên lịch xuất bản</span>
-                                </label>
-                            </div>
+                                <div className={styles.publishOptions}>
+                                    <label className={styles.radioOption}>
+                                        <input
+                                            type="radio"
+                                            name="visibility"
+                                            value="published"
+                                            checked={
+                                                formEdit.visibility ===
+                                                    "published" && true
+                                            }
+                                            onChange={() => {
+                                                setFormEdit((prev) => {
+                                                    return {
+                                                        ...prev,
+                                                        visibility: "published",
+                                                    };
+                                                });
+                                            }}
+                                        />
+                                        <span>Xuất bản ngay</span>
+                                    </label>
 
-                            {formEdit.visibility === "schedule" && (
-                                <div className={styles.scheduleInputs}>
-                                    <div className={styles.dateTimeRow}>
-                                        <div className={styles.dateInput}>
-                                            <label className={styles.subLabel}>
-                                                Ngày
-                                            </label>
-                                            <input
-                                                type="date"
-                                                min="2025-10-01"
-                                                className={styles.input}
-                                                defaultValue={
-                                                    getDateAndTime().today
-                                                }
-                                            />
-                                        </div>
-                                        <div className={styles.timeInput}>
-                                            <label className={styles.subLabel}>
-                                                Giờ
-                                            </label>
-                                            <input
-                                                type="time"
-                                                className={styles.input}
-                                                defaultValue={
-                                                    getDateAndTime().time
-                                                }
-                                            />
+                                    <label className={styles.radioOption}>
+                                        <input
+                                            type="radio"
+                                            name="visibility"
+                                            value="schedule"
+                                            onChange={() => {
+                                                setFormEdit((prev) => {
+                                                    return {
+                                                        ...prev,
+                                                        visibility: "schedule",
+                                                    };
+                                                });
+                                            }}
+                                            checked={
+                                                formEdit.visibility ===
+                                                    "schedule" && true
+                                            }
+                                        />
+                                        <span>Lên lịch xuất bản</span>
+                                    </label>
+                                </div>
+
+                                {formEdit.visibility === "schedule" && (
+                                    <div className={styles.scheduleInputs}>
+                                        <div className={styles.dateTimeRow}>
+                                            <div className={styles.dateInput}>
+                                                <label
+                                                    className={styles.subLabel}
+                                                >
+                                                    Ngày
+                                                </label>
+                                                <input
+                                                    type="date"
+                                                    min="2025-10-01"
+                                                    className={styles.input}
+                                                    defaultValue={
+                                                        getDateAndTime().today
+                                                    }
+                                                />
+                                            </div>
+                                            <div className={styles.timeInput}>
+                                                <label
+                                                    className={styles.subLabel}
+                                                >
+                                                    Giờ
+                                                </label>
+                                                <input
+                                                    type="time"
+                                                    className={styles.input}
+                                                    defaultValue={
+                                                        getDateAndTime().time
+                                                    }
+                                                />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            )}
-                        </div>
+                                )}
+                            </div>
+                        )}
 
                         <div className={styles.note}>
                             <strong>Lưu ý: </strong>
@@ -519,7 +563,10 @@ function WritePost() {
                                 <div className={styles.inner}>
                                     <div className={styles.title}>
                                         {" "}
-                                        {formEdit.visibility === "public"
+                                        {id
+                                            ? "Sửa bài viết"
+                                            : formEdit.visibility ===
+                                              "published"
                                             ? "XUẤT BẢN NGAY"
                                             : "LÊN LỊCH XUẤT BẢN"}
                                     </div>

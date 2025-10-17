@@ -44,7 +44,7 @@ function PostItem({
 
     return (
         <div className={styles.wrapper}>
-            <h3 title={post?.title}>
+            <h3 title={post.title.replace(/<[^>]+>/g, "")}>
                 <Button
                     to={
                         type === "myBookmark"
@@ -54,7 +54,11 @@ function PostItem({
                             : `/post/edit?id=${post?.id}`
                     }
                 >
-                    <span>{post?.title}</span>
+                    <span
+                        dangerouslySetInnerHTML={{
+                            __html: post.title,
+                        }}
+                    />
                 </Button>
             </h3>
 
@@ -68,7 +72,7 @@ function PostItem({
                             : `/post/edit?id=${post?.id}`
                     }
                 >
-                    Chỉnh sửa {timeAgo(post.createdAt)}
+                    Chỉnh sửa {timeAgo(post.created_at)}
                 </Button>
 
                 <div className={styles.dot}>·</div>

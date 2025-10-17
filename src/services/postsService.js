@@ -25,6 +25,16 @@ export const postsApi = createApi({
             providesTags: ["Post"],
         }),
 
+        getPostsMe: builder.query({
+            query: ({ page = 1, limit = 10 } = {}) => {
+                const params = new URLSearchParams();
+                if (page) params.append("page", page);
+                if (limit) params.append("limit", limit);
+
+                return `/posts/me?${params.toString()}`;
+            },
+        }),
+
         // Get popular posts (for home page)
         getPopularPosts: builder.query({
             query: ({ limit = 6 } = {}) => {
@@ -85,21 +95,12 @@ export const postsApi = createApi({
 
         // Update post
         updatePost: builder.mutation({
-            query: ({ id, ...postData }) => {
-                if (postData instanceof FormData) {
-                    return {
-                        url: `/posts/${id}`,
-                        method: "PUT",
-                        body: postData,
-                        formData: true,
-                    };
-                }
-                return {
-                    url: `/posts/${id}`,
-                    method: "PUT",
-                    body: postData,
-                };
-            },
+            query: ({ id, formData }) => ({
+                url: `/posts/${id}`,
+                method: "PUT",
+                body: formData,
+                formData: true,
+            }),
             invalidatesTags: (result, error, { id }) => [{ type: "Post", id }],
         }),
 
@@ -116,6 +117,7 @@ export const postsApi = createApi({
 
 export const {
     useGetAllPostsQuery,
+    useGetPostsMeQuery,
     useGetPopularPostsQuery,
     useGetPostByIdQuery,
     useGetPostBySlugQuery,
