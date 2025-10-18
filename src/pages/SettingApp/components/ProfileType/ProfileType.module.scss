@@ -23,16 +23,37 @@
 
 .content {
     border-radius: 10px;
-    background: #fff;
     overflow: hidden;
-}
 
-.content {
-    border-radius: 10px;
-    background: #fff;
-    overflow: hidden;
+    .profile {
+        border-radius: 8px;
+
+        background: #fff;
+    }
 }
 
 .updateBtn {
     font-size: 1.7rem;
+}
+
+.socialSection {
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: 8px;
+    .social {
+        margin-top: 16px;
+        background: #fff;
+        border-radius: 8px;
+    }
+}
+
+.socialTitle {
+    font-size: 1.6rem;
+    margin-bottom: 6px;
+}
+
+.socialDesc {
+    font-size: 1.3rem;
+    color: #666;
+    margin-bottom: 12px;
 }

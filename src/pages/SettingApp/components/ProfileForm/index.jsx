@@ -67,7 +67,9 @@ function ProfileForm({
                     const res = await updateUser(newData);
 
                     if (res) {
-                        toast.success("Cập nhật thành công");
+                        toast.success("Cập nhật thành công", {
+                            autoClose: 3000,
+                        });
                         setShowForm(false);
 
                         setTimeout(() => {
@@ -78,7 +80,7 @@ function ProfileForm({
                         }, 1500);
                     }
                 } catch (error) {
-                    toast.error("Cập nhập thất bại");
+                    toast.error("Cập nhập thất bại", { autoClose: 3000 });
                 }
             })();
         }

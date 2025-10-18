@@ -26,6 +26,7 @@ import CourseList from "@/components/CourseList";
 import authService from "@/services/authService";
 import useCurrentUser from "@/hook/useCurrentUser";
 import ActivityHeatmap from "@/components/ActivityHeatmap";
+import isHttps from "@/utils/isHttps";
 function Profile() {
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -85,8 +86,11 @@ function Profile() {
                         <div className={styles.aside}>
                             <Avatar
                                 avatar={
-                                    profile?.avatar ||
-                                    "/src/assets/imgs/user.jpg"
+                                    isHttps(profile?.avatar)
+                                        ? profile?.avatar
+                                        : `${import.meta.env.VITE_BASE_URL}${
+                                              profile?.avatar
+                                          }` || "/src/assets/imgs/user.jpg"
                                 }
                                 fontSize={"24px"}
                                 flexCenter

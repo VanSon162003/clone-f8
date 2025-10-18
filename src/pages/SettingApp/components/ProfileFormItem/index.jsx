@@ -7,56 +7,48 @@ import Input from "@/layouts/DefaultLayout/components/AuthenticationApp/componen
 import authService from "@/services/authService";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import useDebounce from "@/hook/useDebounce";
 import { useUpdateCurrentUserMutation } from "@/services/ProfileService";
-
-const typeArr = [
-    "username",
-    "age",
-    "gender",
-    "email",
-    "phone",
-    "birthDate",
-    "emailVerifiedAt",
-    "file",
-    "changePassword",
-    "verify",
-];
 
 const storage = {
     username: {
         title: "Cập nhật tên của bạn",
         desc: "Tên sẽ được hiển thị trên trang cá nhân, trong các bình luận và bài viết của bạn.",
     },
-
-    age: {
-        title: "Cập nhật tuổi của bạn",
-        desc: "Tuổi sẽ được hiển thị trên trang cá nhân của bạn.",
+    fullname: {
+        title: "Cập nhật họ và tên của bạn",
+        desc: "Họ và tên sẽ được hiển thị trên trang cá nhân, trong các bình luận và bài viết của bạn.",
+    },
+    about: {
+        title: "Cập nhật giới thiệu của bạn",
+        desc: "Giới thiệu ngắn về bản thân bạn để mọi người biết thêm về bạn.",
     },
 
-    gender: {
-        title: "Cập nhật giới tính của bạn",
-        desc: "Giới tính sẽ được hiển thị trên trang cá nhân của bạn.",
+    website: {
+        title: "Cập nhật trang web cá nhân",
+        desc: "Nhập URL trang web cá nhân hoặc blog của bạn.",
     },
-
-    email: {
-        title: "Cập nhật email của bạn",
-        desc: "Email sẽ được hiển thị trên trang cá nhân, trong các bình luận và bài viết của bạn.",
+    github: {
+        title: "Cập nhật GitHub",
+        desc: "Nhập địa chỉ GitHub của bạn.",
     },
-
-    phone: {
-        title: "Cập nhật số điện thoại của bạn",
-        desc: "Số điện thoại sẽ được hiển thị trên trang cá nhân, trong các bình luận và bài viết của bạn.",
+    linkedin: {
+        title: "Cập nhật LinkedIn",
+        desc: "Nhập địa chỉ LinkedIn của bạn.",
     },
-
-    birthDate: {
-        title: "Cập nhật ngày sinh của bạn",
-        desc: "Ngày sinh sẽ được hiển thị trên trang cá nhân, trong các bình luận và bài viết của bạn.",
+    facebook: {
+        title: "Cập nhật Facebook",
+        desc: "Nhập địa chỉ Facebook cá nhân hoặc trang của bạn.",
     },
-
-    emailVerifiedAt: {
-        title: "Xác minh tài khoản",
-        desc: "Chúng tôi đã gửi mã cho bạn qua email hãy nhập mã vào dưới đây để xác minh tài khoản",
+    youtube: {
+        title: "Cập nhật YouTube",
+        desc: "Nhập kênh YouTube hoặc URL video giới thiệu.",
+    },
+    tiktok: {
+        title: "Cập nhật TikTok",
+        desc: "Nhập địa chỉ TikTok của bạn.",
     },
 
     file: {
@@ -86,6 +78,12 @@ const label = {
     file: "",
     changePassword: "",
     verify: "",
+    website: "Trang web cá nhân",
+    github: "GitHub",
+    linkedin: "LinkedIn",
+    facebook: "Facebook",
+    youtube: "YouTube",
+    tiktok: "TikTok",
 };
 
 function ProfileFormItem({
@@ -94,6 +92,87 @@ function ProfileFormItem({
     setIsRoll = () => {},
     user = {},
 }) {
+    // Map ui field types to actual user object keys (backend)
+    const mapTypeToUserKey = (t) => {
+        const map = {
+            fullname: "full_name",
+            username: "username",
+            about: "about",
+            file: "avatar",
+            // social mappings -> backend column names
+            website: "website_url",
+            github: "github_url",
+            linkedin: "linkedkin_url",
+            facebook: "facebook_url",
+            youtube: "youtube_url",
+            tiktok: "tiktok_url",
+        };
+        return map[t] || t;
+    };
+
+    const userKey = mapTypeToUserKey(type);
+    const initialValue = user && user[userKey] ? user[userKey] : "";
+
+    // define validation schema for social links (optional but must be a valid URL when provided)
+    const socialKeys = [
+        "website",
+        "github",
+        "linkedin",
+        "facebook",
+        "youtube",
+        "tiktok",
+    ];
+
+    // per-social validation: require http/https and check host contains expected domain
+    const socialHosts = {
+        github: ["github.com"],
+        linkedin: ["linkedin.com"],
+        facebook: ["facebook.com"],
+        youtube: ["youtube.com", "youtu.be"],
+        tiktok: ["tiktok.com", "vt.tiktok.com"],
+        // website: allow any host
+        website: [],
+    };
+
+    const makeSocialValidator = (key) =>
+        yup
+            .string()
+            .trim()
+            .test(
+                "is-url-or-empty",
+                "Đường dẫn không hợp lệ. Vui lòng nhập một URL hợp lệ (ví dụ: https://example.com)",
+                (v) => {
+                    if (!v) return true; // allow empty
+                    try {
+                        const url = new URL(v);
+                        if (
+                            !(
+                                url.protocol === "http:" ||
+                                url.protocol === "https:"
+                            )
+                        )
+                            return false;
+                        const hosts = socialHosts[key] || [];
+                        if (hosts.length === 0) return true; // website or unspecified: accept any host
+
+                        const host = url.hostname.toLowerCase();
+                        return hosts.some((h) => host.includes(h));
+                    } catch (e) {
+                        return false;
+                    }
+                }
+            );
+
+    const schemaShape = {
+        username: yup.string().trim(),
+        fullname: yup.string().trim(),
+        about: yup.string().trim(),
+    };
+
+    socialKeys.forEach((k) => (schemaShape[k] = makeSocialValidator(k)));
+
+    const schema = yup.object().shape(schemaShape);
+
     const {
         register,
         handleSubmit,
@@ -102,20 +181,16 @@ function ProfileFormItem({
         setError,
         formState: { errors },
     } = useForm({
+        resolver: yupResolver(schema),
         defaultValues: {
-            [type]:
-                user[type] === "male"
-                    ? "nam"
-                    : user[type] === "female"
-                    ? "nữ"
-                    : user[type],
+            [type]: initialValue,
         },
     });
 
     const [avatar, setAvatar] = useState({});
     const [url, setUrl] = useState("");
 
-    const [updateUser, { isLoading, error }] = useUpdateCurrentUserMutation();
+    const [, { isLoading }] = useUpdateCurrentUserMutation();
 
     useEffect(() => {
         return () => {
@@ -142,16 +217,87 @@ function ProfileFormItem({
 
     const title = storage[type]?.title;
     const desc = storage[type]?.desc;
+    const placeholders = {
+        website: "Nhập đường dẫn trang web của bạn",
+        github: "Nhập đường dẫn trang GitHub của bạn",
+        linkedin: "Nhập đường dẫn trang LinkedIn của bạn",
+        facebook: "Nhập đường dẫn trang Facebook của bạn",
+        youtube: "Nhập đường dẫn kênh YouTube của bạn",
+        tiktok: "Nhập đường dẫn trang TikTok của bạn",
+    };
+
+    const examples = {
+        website: "https://example.com",
+        github: "https://github.com/username",
+        linkedin: "https://www.linkedin.com/in/username",
+        facebook: "https://www.facebook.com/username",
+        youtube: "https://www.youtube.com/channel/CHANNEL_ID",
+        tiktok: "https://www.tiktok.com/@username",
+    };
+
+    const isSocial = [
+        "website",
+        "github",
+        "linkedin",
+        "facebook",
+        "youtube",
+        "tiktok",
+    ].includes(type);
 
     const handleSubmitAvatar = async (e) => {
         e.preventDefault();
         if (!avatar) return;
-        console.log(avatar);
+
+        // validate social fields before sending
+        const ok = await trigger([
+            "website",
+            "github",
+            "linkedin",
+            "facebook",
+            "youtube",
+            "tiktok",
+        ]);
+
+        if (!ok) {
+            toast.error("Vui lòng sửa các lỗi trước khi cập nhật ảnh đại diện");
+            return;
+        }
 
         const formData = new FormData();
         formData.append("image", avatar);
 
         try {
+            const username = watch("username") || user?.username || "";
+            const fullname = watch("fullname") || user?.full_name || "";
+            const about = watch("about") || user?.about || "";
+
+            // append social fields as well so avatar update carries social links
+            const socialKeys = [
+                "website",
+                "github",
+                "linkedin",
+                "facebook",
+                "youtube",
+                "tiktok",
+            ];
+
+            const socialData = {};
+            socialKeys.forEach((k) => {
+                const v = watch(k) || user?.[k] || "";
+                if (v) {
+                    // coerce to string to avoid arrays
+                    socialData[k] = typeof v === "string" ? v : String(v);
+                }
+            });
+
+            if (username) formData.append("username", username);
+            if (fullname) formData.append("full_name", fullname);
+            if (about) formData.append("about", about);
+
+            Object.keys(socialData).forEach((k) => {
+                formData.append(k, socialData[k]);
+            });
+
             const res = await authService.updateUserImg(formData);
 
             if (res) {
@@ -163,73 +309,13 @@ function ProfileFormItem({
                     window.location.reload();
                 }, 1500);
             }
-        } catch (error) {
+        } catch (_err) {
+            console.log(_err);
             toast.error("Cập nhập thất bại");
         }
     };
 
-    const gender = watch("gender");
-
-    const emailValue = useDebounce(watch("email"), 600);
-    const phoneValue = useDebounce(watch("phone"), 600);
     const usernameValue = useDebounce(watch("username"), 600);
-
-    useEffect(() => {
-        if (type === "gender") {
-            (async () => {
-                const ok = await trigger("gender");
-                if (ok) {
-                    const validGender = ["nam", "nu", "nữ"];
-
-                    if (!validGender.includes(gender?.toLowerCase())) {
-                        setError("gender", {
-                            message: "giới tính gồm nam, nữ",
-                        });
-                    }
-                }
-            })();
-        }
-    }, [gender, setError, trigger]);
-
-    useEffect(() => {
-        if (emailValue) {
-            (async () => {
-                const ok = await trigger("email");
-                if (ok) {
-                    const res = await authService.checkEmail(
-                        `${emailValue}&exclude_id=${user?.id}`
-                    );
-                    if (res) {
-                        setError("email", { message: "email đã tồn tại" });
-                    }
-                }
-            })();
-        }
-    }, [emailValue, setError, trigger, user.id]);
-
-    useEffect(() => {
-        if (phoneValue) {
-            (async () => {
-                const ok = await trigger("phone");
-                if (ok) {
-                    if (phoneValue.length !== 10) {
-                        setError("phone", {
-                            message: "Số điện thoại chỉ có 10 số",
-                        });
-                    } else {
-                        const res = await authService.checkPhone(
-                            `${phoneValue}&exclude_id=${user?.id}`
-                        );
-                        if (res) {
-                            setError("phone", {
-                                message: "số điện thoại đã tồn tại",
-                            });
-                        }
-                    }
-                }
-            })();
-        }
-    }, [phoneValue, setError, trigger, user.id]);
 
     useEffect(() => {
         if (usernameValue) {
@@ -250,22 +336,71 @@ function ProfileFormItem({
     }, [usernameValue, setError, trigger, user.id]);
 
     const onSubmit = (data) => {
+        // Build FormData to include file + text fields
         const formData = new FormData();
-        formData.append("image", avatar);
 
-        if (data.gender) {
-            const genderMap = {
-                nam: "male",
-                nu: "female",
-                nữ: "female",
-            };
-
-            data.gender = genderMap[data.gender] || data.gender;
+        // If a new avatar was selected via Input, include it
+        if (avatar && avatar instanceof File) {
+            formData.append("image", avatar);
         }
+
+        // Determine values for username, fullname, about
+        const username =
+            data.username || watch("username") || user?.username || "";
+        const fullname =
+            data.fullname || watch("fullname") || user?.full_name || "";
+        const about = data.about || watch("about") || user?.about || "";
+
+        if (username) formData.append("username", username);
+        if (fullname) formData.append("full_name", fullname);
+        if (about) formData.append("about", about);
+
+        // append social fields: if editing a single social field, send only that field
+        const socialKeys = [
+            "website",
+            "github",
+            "linkedin",
+            "facebook",
+            "youtube",
+            "tiktok",
+        ];
+
+        if (isSocial) {
+            const raw = data[type] || watch(type) || user?.[type] || "";
+            const val =
+                raw !== undefined && raw !== null
+                    ? typeof raw === "string"
+                        ? raw
+                        : String(raw)
+                    : "";
+            if (val) formData.append(type, val);
+        } else {
+            socialKeys.forEach((k) => {
+                const raw = data[k] || watch(k) || user?.[k] || "";
+                const val =
+                    raw !== undefined && raw !== null
+                        ? typeof raw === "string"
+                            ? raw
+                            : String(raw)
+                        : "";
+                if (val) formData.append(k, val);
+            });
+        }
+
+        // Also append any other field that might be present in data (skip social keys to avoid duplicates)
+        Object.keys(data).forEach((key) => {
+            const val = data[key];
+            if (val !== undefined && val !== null) {
+                if (key === "username" || key === "fullname" || key === "about")
+                    return;
+                if (socialKeys.includes(key)) return;
+                formData.append(key, val);
+            }
+        });
 
         (async () => {
             try {
-                const res = await updateUser(data);
+                const res = await authService.updateUserImg(formData);
 
                 if (res) {
                     toast.success("Cập nhật thành công");
@@ -274,14 +409,13 @@ function ProfileFormItem({
                     setTimeout(() => {
                         if (type === "username")
                             window.top.location.replace(
-                                "/setting/p/" + data.username
+                                "/setting/p/" + username
                             );
                         window.location.reload();
                     }, 1500);
                 }
-            } catch (error) {
-                console.log(error);
-
+            } catch (err) {
+                console.log(err);
                 toast.error("Cập nhập thất bại");
             }
         })();
@@ -319,6 +453,7 @@ function ProfileFormItem({
                 <main className={styles.content}>
                     <Input type="review" url={url} />
                     <Button
+                        type="submit"
                         isLoading={isLoading}
                         className={`${styles.wrapperBtn} ${styles.btnPrimary} ${styles.rounded} `}
                     >
@@ -363,17 +498,12 @@ function ProfileFormItem({
                 <main className={styles.content}>
                     <Input
                         user={user}
-                        type={
-                            type === "file"
-                                ? type
-                                : type === "age" || type === "phone"
-                                ? "number"
-                                : type === "birthDate"
-                                ? "date"
-                                : "text"
-                        }
+                        type={type === "file" ? type : "text"}
                         name={type}
+                        defaultValue={initialValue}
                         labelName={label[type]}
+                        placeholder={placeholders[type] || label[type]}
+                        example={examples[type]}
                         setAvatar={setAvatar}
                         setUrl={setUrl}
                         register={register}
@@ -386,7 +516,7 @@ function ProfileFormItem({
                             isLoading={isLoading}
                             className={`${styles.wrapperBtn} ${styles.btnPrimary} ${styles.rounded}  `}
                         >
-                            Cập nhật
+                            {isSocial ? "Lưu lại" : "Cập nhật"}
                         </Button>
                     )}
                 </main>

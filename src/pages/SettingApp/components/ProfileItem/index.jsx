@@ -2,18 +2,23 @@ import styles from "./ProfileItem.module.scss";
 import Button from "@/components/Button";
 import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import userImg from "@/assets/imgs/user.jpg";
+import isHttps from "@/utils/isHttps";
 
 const typeArr = [
     "username",
-    "age",
-    "gender",
-    "email",
-    "phone",
-    "birthDate",
-    "emailVerifiedAt",
+    "fullname",
+    "about",
+
     "file",
     "changePassword",
     "verify",
+    // social types (allow opening form for these types)
+    "website",
+    "github",
+    "linkedin",
+    "facebook",
+    "youtube",
+    "tiktok",
 ];
 
 function ProfileItem({
@@ -24,7 +29,7 @@ function ProfileItem({
     setShowFormItem = () => {},
     setTypeFormItem = () => {},
 }) {
-    const handleClick = (e) => {
+    const handleClick = () => {
         setShowFormItem(true);
 
         typeArr.includes(type) && setTypeFormItem(type);
@@ -41,7 +46,15 @@ function ProfileItem({
                 <h4 className={styles.label}>{label}</h4>
                 {type === "file" ? (
                     <img
-                        src={user?.image ? user?.image : userImg}
+                        src={
+                            user?.avatar
+                                ? isHttps(user?.avatar)
+                                    ? user?.avatar
+                                    : `${import.meta.env.VITE_BASE_URL}${
+                                          user?.avatar
+                                      }`
+                                : userImg
+                        }
                         alt="user"
                         className={styles.img}
                     />

@@ -19,6 +19,7 @@ import {
 import Avatar from "../Avatar";
 import formatNumberVN from "@/utils/formatNumberVN";
 import { useRedirectIfRegistered } from "@/hook/useRedirectIfRegistered";
+import isHttps from "@/utils/isHttps";
 
 function CourseItem({ item = {}, courseType, courseEnrolled = false }) {
     const formatCurrencyVND = (value) => {
@@ -52,11 +53,19 @@ function CourseItem({ item = {}, courseType, courseEnrolled = false }) {
                     className={styles.link}
                     target={courseType === "video" ? "_blank" : "_self"}
                 >
-                    <img
-                        src={item?.thumbnail}
-                        alt={item?.title}
-                        className={styles.thumb}
-                    />
+                    {item?.thumbnail && (
+                        <img
+                            src={
+                                isHttps(item?.thumbnail)
+                                    ? item?.thumbnail
+                                    : `${import.meta.env.VITE_BASE_URL}${
+                                          item?.thumbnail
+                                      }`
+                            }
+                            alt={item?.title.replace(/<[^>]+>/g, "")}
+                            className={styles.thumb}
+                        />
+                    )}
 
                     {courseType === "video" && (
                         <div className={styles.videoInfo}>
@@ -80,7 +89,7 @@ function CourseItem({ item = {}, courseType, courseEnrolled = false }) {
                             to={path}
                             target={courseType === "video" ? "_blank" : "_self"}
                         >
-                            {item.title}
+                            {item.title.replace(/<[^>]+>/g, "")}
                         </Link>
                     </h3>
 
@@ -110,8 +119,28 @@ function CourseItem({ item = {}, courseType, courseEnrolled = false }) {
                                     <>
                                         <div className={styles.avatar}>
                                             <img
-                                                src={item.creator.avatar}
-                                                alt={item.creator.full_name}
+                                                src={
+                                                    item.creator
+                                                        ? isHttps(
+                                                              item.creator
+                                                                  .avatar
+                                                          )
+                                                            ? item.creator
+                                                                  .avatar
+                                                            : `${
+                                                                  import.meta
+                                                                      .env
+                                                                      .VITE_BASE_URL
+                                                              }${
+                                                                  item.creator
+                                                                      .avatar
+                                                              }`
+                                                        : "/src/assets/imgs/user.jpg"
+                                                }
+                                                alt={item.creator.full_name.replace(
+                                                    /<[^>]+>/g,
+                                                    ""
+                                                )}
                                                 title={`người hướng dẫn: ${item.creator.full_name}`}
                                             />
                                         </div>
@@ -145,12 +174,25 @@ function CourseItem({ item = {}, courseType, courseEnrolled = false }) {
                             </div>
                         </div>
                     ) : courseType === "article" ? (
-                        <Link to={`/@${item.author?.username || 'unknown'}`} className={styles.author}>
+                        <Link
+                            to={`/@${item.author?.username || "unknown"}`}
+                            className={styles.author}
+                        >
                             <Avatar
-                                avatar={item.author?.avatar || "/src/assets/imgs/user.jpg"}
+                                avatar={
+                                    item?.author
+                                        ? isHttps(item?.author.avatar)
+                                            ? item?.author.avatar
+                                            : `${
+                                                  import.meta.env.VITE_BASE_URL
+                                              }${item?.author.avatar}`
+                                        : "/src/assets/imgs/user.jpg"
+                                }
                                 authorPro={item.authorPro}
                                 pro={pro}
-                                authorName={item.author?.full_name || 'Unknown Author'}
+                                authorName={
+                                    item.author?.full_name || "Unknown Author"
+                                }
                                 admin={item.admin}
                             />
 

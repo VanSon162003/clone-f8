@@ -84,7 +84,7 @@ const Editor = forwardRef(
                     quill.insertEmbed(range.index, "image", url);
                     quill.setSelection(range.index + 1);
                 } catch (err) {
-                    toast.error("Không thể upload ảnh");
+                    toast.error("Không thể upload ảnh", { autoClose: 3000 });
                 }
             };
         };

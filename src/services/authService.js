@@ -33,13 +33,16 @@ export const unfollowUser = async (username) => {
     return res;
 };
 
-export const updateCurrentUser = async (id, data) => {
-    const res = await httpRequest.put(`/users/${id}`, data);
+export const updateCurrentUser = async (data) => {
+    const res = await httpRequest.put(`/auth/update`, data);
     return res;
 };
 
 export const updateUserImg = async (data) => {
-    const res = await httpRequest.put(`/users/me`, data);
+    // send to new backend endpoint that accepts multipart/form-data
+    const res = await httpRequest.put(`/auth/update`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+    });
 
     return res;
 };

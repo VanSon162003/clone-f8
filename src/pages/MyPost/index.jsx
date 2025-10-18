@@ -5,7 +5,10 @@ import Button from "@/components/Button";
 import { useLocation } from "react-router-dom";
 import PostItem from "@/components/PostItem";
 import { useEffect, useState } from "react";
-import { useGetPostsMeQuery, useDeletePostMutation } from "@/services/postsService";
+import {
+    useGetPostsMeQuery,
+    useDeletePostMutation,
+} from "@/services/postsService";
 import { toast } from "react-toastify";
 
 function MyPost() {
@@ -53,10 +56,10 @@ function MyPost() {
                 ...prev,
                 [name]: prev[name].filter((post) => post.id !== id),
             }));
-            toast.success("Xóa bài viết thành công");
+            toast.success("Xóa bài viết thành công", { autoClose: 3000 });
         } catch (error) {
             console.error(error);
-            toast.error("Xóa bài viết thất bại");
+            toast.error("Xóa bài viết thất bại", { autoClose: 3000 });
         }
     };
     return (

@@ -14,22 +14,10 @@ function ProfileType({ type = "" }) {
 
     const isLoading = useSelector((state) => state.auth.loading);
 
-    const [showForm, setShowForm] = useState(false);
     const [showFormItem, setShowFormItem] = useState(false);
     const [typeFormItem, setTypeFormItem] = useState("");
 
     const [setIsRoll] = useRoll();
-
-    const verify = user?.emailVerifiedAt
-        ? "Tài khoản đã được xác minh"
-        : "Tài khoản chưa xác minh";
-
-    const gender = user?.gender === "male" ? "nam" : "nữ";
-
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString("vi-VN");
-    };
 
     const title =
         type === "user" ? "Thông tin cơ bản" : "Đăng nhập & khôi phục";
@@ -47,84 +35,105 @@ function ProfileType({ type = "" }) {
                         <h2 className={styles.title}>{title}</h2>
                         <p className={styles.desc}>{desc}</p>
                     </div>
-
-                    {type === "user" && (
-                        <button
-                            onClick={() => {
-                                setShowForm(true);
-                            }}
-                            className={styles.updateBtn}
-                        >
-                            sửa
-                        </button>
-                    )}
                 </div>
 
                 {type === "user" ? (
                     <div className={styles.content}>
-                        <ProfileItem
-                            type="username"
-                            label={"Họ và tên"}
-                            value={user?.username}
-                            setShowFormItem={setShowFormItem}
-                            setTypeFormItem={setTypeFormItem}
-                        />
-                        <ProfileItem
-                            type="age"
-                            label={"Tuổi"}
-                            value={user?.age}
-                            setShowFormItem={setShowFormItem}
-                            setTypeFormItem={setTypeFormItem}
-                        />
-                        <ProfileItem
-                            type="gender"
-                            label={"Giới tính"}
-                            value={gender}
-                            setShowFormItem={setShowFormItem}
-                            setTypeFormItem={setTypeFormItem}
-                        />
-                        <ProfileItem
-                            type="email"
-                            label={"Email"}
-                            value={user?.email}
-                            setShowFormItem={setShowFormItem}
-                            setTypeFormItem={setTypeFormItem}
-                        />
-                        <ProfileItem
-                            type="phone"
-                            label={"Số điện thoại"}
-                            value={user?.phone}
-                            setShowFormItem={setShowFormItem}
-                            setTypeFormItem={setTypeFormItem}
-                        />
-                        <ProfileItem
-                            type="birthDate"
-                            label={"Ngày tháng năm sinh"}
-                            value={user?.birthDate}
-                            setShowFormItem={setShowFormItem}
-                            setTypeFormItem={setTypeFormItem}
-                        />
-                        <ProfileItem
-                            type=""
-                            label={"Ngày tạo"}
-                            value={formatDate(user?.createdAt)}
-                            setShowFormItem={setShowFormItem}
-                            setTypeFormItem={setTypeFormItem}
-                        />
-                        <ProfileItem
-                            type="emailVerifiedAt"
-                            label={"Xác minh tài khoản"}
-                            value={verify}
-                            setShowFormItem={setShowFormItem}
-                            setTypeFormItem={setTypeFormItem}
-                        />
-                        <ProfileItem
-                            type="file"
-                            label={"Ảnh đại diện"}
-                            setShowFormItem={setShowFormItem}
-                            setTypeFormItem={setTypeFormItem}
-                            user={user}
-                        />
+                        <div className={styles.profile}>
+                            <ProfileItem
+                                type="fullname"
+                                label={"Họ và tên"}
+                                value={user?.full_name}
+                                setShowFormItem={setShowFormItem}
+                                setTypeFormItem={setTypeFormItem}
+                            />
+
+                            <ProfileItem
+                                type="username"
+                                label={"Tên người dùng"}
+                                value={user?.username}
+                                setShowFormItem={setShowFormItem}
+                                setTypeFormItem={setTypeFormItem}
+                            />
+                            <ProfileItem
+                                type="about"
+                                label={"Giới thiệu"}
+                                value={user?.about || "Chưa có giới thiệu"}
+                                setShowFormItem={setShowFormItem}
+                                setTypeFormItem={setTypeFormItem}
+                            />
+                            <ProfileItem
+                                type="file"
+                                label={"Ảnh đại diện"}
+                                setShowFormItem={setShowFormItem}
+                                setTypeFormItem={setTypeFormItem}
+                                user={user}
+                            />
+                        </div>
+                        {/* Social links section */}
+                        <div className={styles.socialSection}>
+                            <h3 className={styles.title}>
+                                Thông tin mạng xã hội
+                            </h3>
+                            <p className={styles.desc}>
+                                Quản lý liên kết tới các trang mạng xã hội của
+                                bạn.
+                            </p>
+
+                            <div className={styles.social}>
+                                <ProfileItem
+                                    type="website"
+                                    label={"Trang web cá nhân"}
+                                    value={user?.website_url || "Chưa cập nhật"}
+                                    setShowFormItem={setShowFormItem}
+                                    setTypeFormItem={setTypeFormItem}
+                                />
+
+                                <ProfileItem
+                                    type="github"
+                                    label={"GitHub"}
+                                    value={user?.github_url || "Chưa cập nhật"}
+                                    setShowFormItem={setShowFormItem}
+                                    setTypeFormItem={setTypeFormItem}
+                                />
+
+                                <ProfileItem
+                                    type="linkedin"
+                                    label={"LinkedIn"}
+                                    value={
+                                        user?.linkedkin_url || "Chưa cập nhật"
+                                    }
+                                    setShowFormItem={setShowFormItem}
+                                    setTypeFormItem={setTypeFormItem}
+                                />
+
+                                <ProfileItem
+                                    type="facebook"
+                                    label={"Facebook"}
+                                    value={
+                                        user?.facebook_url || "Chưa cập nhật"
+                                    }
+                                    setShowFormItem={setShowFormItem}
+                                    setTypeFormItem={setTypeFormItem}
+                                />
+
+                                <ProfileItem
+                                    type="youtube"
+                                    label={"YouTube"}
+                                    value={user?.youtube_url || "Chưa cập nhật"}
+                                    setShowFormItem={setShowFormItem}
+                                    setTypeFormItem={setTypeFormItem}
+                                />
+
+                                <ProfileItem
+                                    type="tiktok"
+                                    label={"TikTok"}
+                                    value={user?.tiktok_url || "Chưa cập nhật"}
+                                    setShowFormItem={setShowFormItem}
+                                    setTypeFormItem={setTypeFormItem}
+                                />
+                            </div>
+                        </div>
                     </div>
                 ) : (
                     <div className={styles.content}>
@@ -146,14 +155,6 @@ function ProfileType({ type = "" }) {
                     </div>
                 )}
             </section>
-
-            {showForm && (
-                <ProfileForm
-                    setIsRoll={setIsRoll}
-                    user={user}
-                    setShowForm={setShowForm}
-                />
-            )}
 
             {showFormItem && (
                 <ProfileFormItem

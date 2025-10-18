@@ -83,18 +83,24 @@ function WritePost() {
     const validateField = (value, type) => {
         if (isContentEmpty(value)) {
             return type === "title"
-                ? "Tiêu đề không được để trống"
-                : "Nội dung không được để trống";
+                ? { message: "Tiêu đề không được để trống", autoClose: 3000 }
+                : { message: "Nội dung không được để trống", autoClose: 3000 };
         }
 
         const textOnly = value.replace(/<[^>]*>/g, "").trim();
 
         if (type === "title" && textOnly.length < 3) {
-            return "Tiêu đề phải có ít nhất 3 ký tự";
+            return {
+                message: "Tiêu đề phải có ít nhất 3 ký tự",
+                autoClose: 3000,
+            };
         }
 
         if (type === "content" && textOnly.length < 10) {
-            return "Nội dung phải có ít nhất 10 ký tự";
+            return {
+                message: "Nội dung phải có ít nhất 10 ký tự",
+                autoClose: 3000,
+            };
         }
 
         return null;
@@ -105,14 +111,18 @@ function WritePost() {
         const contentError = validateField(formEdit.content, "content");
 
         if (titleError) {
-            toast.error(titleError);
-            titleEditorRef?.current?.showError(titleError);
+            toast.error(titleError.message, {
+                autoClose: titleError.autoClose,
+            });
+            titleEditorRef?.current?.showError(titleError.message);
             return false;
         }
 
         if (contentError) {
-            toast.error(contentError);
-            contentEditorRef?.current?.showError(contentError);
+            toast.error(contentError.message, {
+                autoClose: contentError.autoClose,
+            });
+            contentEditorRef?.current?.showError(contentError.message);
             return false;
         }
 
@@ -245,7 +255,8 @@ function WritePost() {
             toast.success(
                 id
                     ? "Cập nhật bài viết thành công!"
-                    : "Tạo bài viết thành công!"
+                    : "Tạo bài viết thành công!",
+                { autoClose: 3000 }
             );
             setTimeout(() => {
                 navigate("/me/posts");
@@ -278,12 +289,12 @@ function WritePost() {
             } else {
                 await createPost(formData).unwrap();
             }
-            toast.success("Lưu nháp thành công!");
+            toast.success("Lưu nháp thành công!", { autoClose: 3000 });
             setTimeout(() => {
                 navigate("/me/posts");
             }, 1500);
         } catch (err) {
-            toast.error("Lỗi khi lưu nháp bài viết", err);
+            toast.error("Lỗi khi lưu nháp bài viết", { autoClose: 3000 });
         }
     };
 

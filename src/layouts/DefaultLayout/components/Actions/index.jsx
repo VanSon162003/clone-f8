@@ -8,6 +8,7 @@ import userImg from "@/assets/imgs/user.jpg";
 import proIcon from "@/assets/icons/pro-icon.svg";
 import useCurrentUser from "@/hook/useCurrentUser";
 import Tippy from "@/components/Tippy";
+import isHttps from "@/utils/isHttps";
 
 function Actions() {
     const [isAccess, setIsAccess] = useState(false);
@@ -113,7 +114,18 @@ function Actions() {
                     }}
                 >
                     <div className={styles.avatar}>
-                        <img src={user?.avatar || userImg} alt="user" />
+                        <img
+                            src={
+                                user
+                                    ? isHttps(user.avatar)
+                                        ? user.avatar
+                                        : `${import.meta.env.VITE_BASE_URL}${
+                                              user.avatar
+                                          }`
+                                    : userImg
+                            }
+                            alt="user"
+                        />
                         <img className={styles.crown} src={proIcon} alt="" />
                     </div>
                 </div>

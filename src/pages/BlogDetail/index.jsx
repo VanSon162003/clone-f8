@@ -192,8 +192,13 @@ function BlogDetail() {
                                             author.full_name || "Unknown Author"
                                         }
                                         avatar={
-                                            author.avatar ||
-                                            `/src/assets/imgs/user.jpg`
+                                            isHttps(author?.avatar)
+                                                ? author?.avatar
+                                                : `${
+                                                      import.meta.env
+                                                          .VITE_BASE_URL
+                                                  }${author?.avatar}` ||
+                                                  `/src/assets/imgs/user.jpg`
                                         }
                                     />
                                 </div>

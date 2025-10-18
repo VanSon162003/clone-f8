@@ -13,8 +13,17 @@ import { faFacebook, faTwitter } from "@fortawesome/free-brands-svg-icons";
 import { faEnvelope, faFlag, faLink } from "@fortawesome/free-solid-svg-icons";
 import Button from "../Button";
 import { useAuth0 } from "@auth0/auth0-react";
+import isHttps from "@/utils/isHttps";
 
-function Tippy({ user = {}, type = "", className, ref, onEdit, onRemove, onShare }) {
+function Tippy({
+    user = {},
+    type = "",
+    className,
+    ref,
+    onEdit,
+    onRemove,
+    onShare,
+}) {
     const { logout } = useAuth0();
     const dispatch = useDispatch();
 
@@ -82,7 +91,16 @@ function Tippy({ user = {}, type = "", className, ref, onEdit, onRemove, onShare
                             <div className={styles.avaSetting}>
                                 <div className={styles.avatar}>
                                     <img
-                                        src={user ? user.avatar : userImg}
+                                        src={
+                                            user
+                                                ? isHttps(user.avatar)
+                                                    ? user.avatar
+                                                    : `${
+                                                          import.meta.env
+                                                              .VITE_BASE_URL
+                                                      }${user.avatar}`
+                                                : userImg
+                                        }
                                         alt="user"
                                     />
                                     <img

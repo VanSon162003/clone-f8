@@ -3,6 +3,8 @@ import userImg from "@/assets/imgs/user.jpg";
 import styles from "./Input.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import {} from "react";
+import isHttps from "@/utils/isHttps";
 
 function Input({
     labelName = "",
@@ -16,6 +18,7 @@ function Input({
     url = "",
     user = {},
     textArea,
+    example = "",
     ...remain
 }) {
     const handleChangle = (e) => {
@@ -24,6 +27,22 @@ function Input({
 
         setAvatar(file);
         setUrl(urlFile);
+    };
+
+    // prepare register props safely
+    const regProps =
+        register && typeof register === "function" ? register(name) : {};
+    const { ref: regRef, ...regRest } = regProps || {};
+    const safeRef = (el) => {
+        if (!regRef) return;
+        try {
+            if (typeof regRef === "function") regRef(el);
+            else if (regRef && typeof regRef === "object") regRef.current = el;
+        } catch (e) {
+            // swallow errors coming from react-hook-form when control is not available
+            // log for debugging
+            console.error("register.ref error:", e);
+        }
     };
 
     return (
@@ -38,7 +57,18 @@ function Input({
                         onChange={handleChangle}
                     />
                     <label className={styles.labelWrap} htmlFor="avatar">
-                        <img src={user?.image ? user?.image : userImg} alt="" />
+                        <img
+                            src={
+                                user?.avatar
+                                    ? isHttps(user?.avatar)
+                                        ? user?.avatar
+                                        : `${import.meta.env.VITE_BASE_URL}${
+                                              user?.avatar
+                                          }`
+                                    : userImg
+                            }
+                            alt=""
+                        />
                     </label>
 
                     <label className={styles.addNew} htmlFor="avatar">
@@ -62,7 +92,17 @@ function Input({
                             width={250}
                             height={250}
                             style={{ borderRadius: "50%" }}
-                            src={url}
+                            src={
+                                url
+                                    ? url
+                                    : user?.avatar
+                                    ? isHttps(user?.avatar)
+                                        ? user?.avatar
+                                        : `${import.meta.env.VITE_BASE_URL}${
+                                              user?.avatar
+                                          }`
+                                    : userImg
+                            }
                             alt=""
                         />
                     </div>
@@ -81,7 +121,9 @@ function Input({
                                 message[name] ? styles.invalid : ""
                             }`}
                             type={type}
-                            {...register(name)}
+                            {...regRest}
+                            ref={safeRef}
+                            name={name}
                             placeholder={placeholder ? placeholder : labelName}
                             id={name}
                             {...remain}
@@ -94,7 +136,9 @@ function Input({
                         >
                             <input
                                 type={type}
-                                {...register(name)}
+                                {...regRest}
+                                ref={safeRef}
+                                name={name}
                                 placeholder={
                                     placeholder ? placeholder : labelName
                                 }
@@ -131,6 +175,7 @@ function Input({
             {message && (
                 <div className={styles.message}>{message[name]?.message}</div>
             )}
+            {example && <div className={styles.example}>{example}</div>}
         </div>
     );
 }

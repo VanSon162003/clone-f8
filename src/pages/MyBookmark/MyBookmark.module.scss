@@ -80,3 +80,28 @@
         text-decoration: underline;
     }
 }
+
+.pagination {
+    margin-top: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.btnPagination {
+    border: 1px solid #ccc;
+    padding: 12px 24px;
+    border-radius: 8px;
+    color: #242424;
+    font-size: 1.6rem;
+
+    &.disabled {
+        cursor: no-drop;
+        opacity: 0.5;
+    }
+
+    &:not(.disabled):hover {
+        border-color: #3498db;
+    }
+}
