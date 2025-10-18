@@ -43,9 +43,9 @@ export const coursesApi = createApi({
         getUserLessonProgress: builder.query({
             query: ({ courseId }) => `/courses/${courseId}/user-lessons`,
         }),
-        updateUserLessonProgress: builder.mutation({
+        updateUserCourseProgress: builder.mutation({
             query: ({ lessonId, watchDuration, lastPosition, completed }) => ({
-                url: `/courses/user-lesson-progress`,
+                url: `/courses/user-course-progress`,
                 method: "POST",
                 body: { lessonId, watchDuration, lastPosition, completed },
             }),
@@ -61,5 +61,5 @@ export const {
     useGetCourseProgressQuery,
     useUpdateCourseProgressMutation,
     useGetUserLessonProgressQuery,
-    useUpdateUserLessonProgressMutation,
+    useUpdateUserCourseProgressMutation,
 } = coursesApi;

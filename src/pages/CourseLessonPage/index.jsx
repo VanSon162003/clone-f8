@@ -20,10 +20,11 @@ import {
 import { useEffect, useRef, useState } from "react";
 import CommentSidebar from "@/components/CommentSidebar";
 import { useParams } from "react-router-dom";
-import { 
-    useGetBySlugQuery, 
+import {
+    useGetBySlugQuery,
     useGetUserLessonProgressQuery,
-    useUpdateUserLessonProgressMutation 
+    // useUpdateCourseProgressMutation,
+    useUpdateUserCourseProgressMutation,
 } from "@/services/coursesService";
 import useQuery from "@/hook/useQuery";
 
@@ -62,15 +63,16 @@ function CourseLessonPage() {
     );
 
     // Lấy user lesson progress
-    const { data: userLessonData, isSuccess: isUserLessonSuccess } = useGetUserLessonProgressQuery(
-        { courseId: course?.id },
-        {
-            skip: !course?.id,
-            refetchOnMountOrArgChange: true,
-        }
-    );
+    const { data: userLessonData, isSuccess: isUserLessonSuccess } =
+        useGetUserLessonProgressQuery(
+            { courseId: course?.id },
+            {
+                skip: !course?.id,
+                refetchOnMountOrArgChange: true,
+            }
+        );
 
-    const [updateUserLessonProgress] = useUpdateUserLessonProgressMutation();
+    const [updateUserCourseProgress] = useUpdateUserCourseProgressMutation();
 
     // lấy ra các tracks (chương bài học)
     useEffect(() => {
@@ -153,24 +155,27 @@ function CourseLessonPage() {
     // Merge user lesson progress với course data
     useEffect(() => {
         if (userLessonData?.data && isUserLessonSuccess && course?.id) {
-            const userLessons = userLessonData.data.tracks?.flatMap(track => 
-                track.lessons?.map(lesson => ({
-                    lessonId: lesson.id,
-                    userLesson: lesson.userLessons?.[0] || null
-                }))
-            ) || [];
+            const userLessons =
+                userLessonData.data.tracks?.flatMap((track) =>
+                    track.lessons?.map((lesson) => ({
+                        lessonId: lesson.id,
+                        userLesson: lesson.userLessons?.[0] || null,
+                    }))
+                ) || [];
 
             // Cập nhật tracks với user lesson progress
-            setTracks(prevTracks => 
-                prevTracks.map(track => ({
+            setTracks((prevTracks) =>
+                prevTracks.map((track) => ({
                     ...track,
-                    lessons: track.lessons.map(lesson => {
-                        const userLessonInfo = userLessons.find(ul => ul.lessonId === lesson.id);
+                    lessons: track.lessons.map((lesson) => {
+                        const userLessonInfo = userLessons.find(
+                            (ul) => ul.lessonId === lesson.id
+                        );
                         return {
                             ...lesson,
-                            userLesson: userLessonInfo?.userLesson || null
+                            userLesson: userLessonInfo?.userLesson || null,
                         };
-                    })
+                    }),
                 }))
             );
         }
@@ -183,7 +188,7 @@ function CourseLessonPage() {
             if (next) {
                 // Mở track của bài tiếp theo
                 if (!trackLessons.includes(next.track.id)) {
-                    setTrackLessons(prev => [...prev, next.track.id]);
+                    setTrackLessons((prev) => [...prev, next.track.id]);
                 }
             }
         }
@@ -214,7 +219,7 @@ function CourseLessonPage() {
         const year = date.getFullYear();
 
         return `tháng ${month} năm ${year}`;
-    } 
+    }
 
     const handleCancelCommentSideBar = () => {
         setOpenCommentSideBar(false);
@@ -265,15 +270,17 @@ function CourseLessonPage() {
 
     // Hàm để tìm lesson tiếp theo
     const findNextLesson = () => {
-        const allLessons = tracks.flatMap(track => track.lessons);
-        const currentIndex = allLessons.findIndex(lesson => lesson.id === idLesson);
-        
+        const allLessons = tracks.flatMap((track) => track.lessons);
+        const currentIndex = allLessons.findIndex(
+            (lesson) => lesson.id === idLesson
+        );
+
         if (currentIndex < allLessons.length - 1) {
             const nextLesson = allLessons[currentIndex + 1];
-            const nextTrack = tracks.find(track => 
-                track.lessons.some(lesson => lesson.id === nextLesson.id)
+            const nextTrack = tracks.find((track) =>
+                track.lessons.some((lesson) => lesson.id === nextLesson.id)
             );
-            
+
             return { lesson: nextLesson, track: nextTrack };
         }
         return null;
@@ -281,31 +288,75 @@ function CourseLessonPage() {
 
     // Hàm để tìm lesson trước đó
     const findPrevLesson = () => {
-        const allLessons = tracks.flatMap(track => track.lessons);
-        const currentIndex = allLessons.findIndex(lesson => lesson.id === idLesson);
-        
+        const allLessons = tracks.flatMap((track) => track.lessons);
+        const currentIndex = allLessons.findIndex(
+            (lesson) => lesson.id === idLesson
+        );
+
         if (currentIndex > 0) {
             const prevLesson = allLessons[currentIndex - 1];
-            const prevTrack = tracks.find(track => 
-                track.lessons.some(lesson => lesson.id === prevLesson.id)
+            const prevTrack = tracks.find((track) =>
+                track.lessons.some((lesson) => lesson.id === prevLesson.id)
             );
-            
+
             return { lesson: prevLesson, track: prevTrack };
         }
         return null;
     };
 
     // Xử lý khi nhấn nút bài tiếp theo
-    const handleNextLesson = () => {
+    const handleNextLesson = async () => {
         const next = findNextLesson();
+
+        // Attempt to mark current lesson as completed on the server
+        try {
+            const lastPosition = Number(
+                localStorage.getItem(`video_progress_${idLesson}`)
+            );
+            const watchDuration = isNaN(lastPosition) ? 0 : lastPosition;
+
+            // call API to update lesson progress as completed
+            updateUserCourseProgress({
+                lessonId: idLesson,
+                watchDuration,
+                lastPosition: watchDuration,
+                completed: true,
+            })
+                .then(() => {
+                    // Optimistically update local tracks to mark current lesson completed
+                    setTracks((prevTracks) =>
+                        prevTracks.map((track) => ({
+                            ...track,
+                            lessons: track.lessons.map((lesson) =>
+                                lesson.id === idLesson
+                                    ? {
+                                          ...lesson,
+                                          userLesson: {
+                                              ...(lesson.userLesson || {}),
+                                              completed: true,
+                                          },
+                                      }
+                                    : lesson
+                            ),
+                        }))
+                    );
+                })
+                .catch((err) => {
+                    console.debug("Failed to update lesson completion:", err);
+                });
+        } catch (err) {
+            console.debug("Error preparing progress payload:", err);
+        }
+
+        // Navigate to next lesson (unlock/open track if needed)
         if (next) {
             setIdLesson(next.lesson.id);
             setIdTrack(next.track.id);
             setTrackStepActive(next.lesson.id);
-            
+
             // Mở track nếu chưa mở
             if (!trackLessons.includes(next.track.id)) {
-                setTrackLessons(prev => [...prev, next.track.id]);
+                setTrackLessons((prev) => [...prev, next.track.id]);
             }
         }
     };
@@ -317,10 +368,10 @@ function CourseLessonPage() {
             setIdLesson(prev.lesson.id);
             setIdTrack(prev.track.id);
             setTrackStepActive(prev.lesson.id);
-            
+
             // Mở track nếu chưa mở
             if (!trackLessons.includes(prev.track.id)) {
-                setTrackLessons(prevTracks => [...prevTracks, prev.track.id]);
+                setTrackLessons((prevTracks) => [...prevTracks, prev.track.id]);
             }
         }
     };
@@ -328,8 +379,8 @@ function CourseLessonPage() {
     // Kiểm tra xem lesson hiện tại có completed không
     const isCurrentLessonCompleted = () => {
         const currentLesson = tracks
-            .flatMap(track => track.lessons)
-            .find(lesson => lesson.id === idLesson);
+            .flatMap((track) => track.lessons)
+            .find((lesson) => lesson.id === idLesson);
         return currentLesson?.userLesson?.completed || false;
     };
 
@@ -346,12 +397,14 @@ function CourseLessonPage() {
 
     // Kiểm tra xem lesson có thể được click không
     const canClickLesson = (lessonId) => {
-        const allLessons = tracks.flatMap(track => track.lessons);
-        const currentIndex = allLessons.findIndex(lesson => lesson.id === lessonId);
-        
+        const allLessons = tracks.flatMap((track) => track.lessons);
+        const currentIndex = allLessons.findIndex(
+            (lesson) => lesson.id === lessonId
+        );
+
         // Lesson đầu tiên luôn có thể click
         if (currentIndex === 0) return true;
-        
+
         // Kiểm tra lesson trước đó có completed không
         const prevLesson = allLessons[currentIndex - 1];
         return prevLesson?.userLesson?.completed || false;
@@ -385,7 +438,10 @@ function CourseLessonPage() {
                                     const countLessonCompleted =
                                         track?.lessons?.reduce(
                                             (acc, lesson) => {
-                                                if (lesson?.userLesson?.completed) {
+                                                if (
+                                                    lesson?.userLesson
+                                                        ?.completed
+                                                ) {
                                                     return acc + 1;
                                                 } else return acc;
                                             },
@@ -465,7 +521,9 @@ function CourseLessonPage() {
                                                                     : faCircleQuestion;
 
                                                             const lessonCompleted =
-                                                                lesson?.userLesson?.completed;
+                                                                lesson
+                                                                    ?.userLesson
+                                                                    ?.completed;
                                                             return (
                                                                 <>
                                                                     <div
@@ -479,19 +537,26 @@ function CourseLessonPage() {
                                                                         
                                                                         ${
                                                                             (!lessonCompleted &&
-                                                                            lessonCompleted !==
-                                                                                false) || !canClickLesson(lesson.id) &&
-                                                                            styles.lock
+                                                                                lessonCompleted !==
+                                                                                    false) ||
+                                                                            (!canClickLesson(
+                                                                                lesson.id
+                                                                            ) &&
+                                                                                styles.lock)
                                                                         }`}
                                                                         onClick={(
                                                                             e
                                                                         ) => {
                                                                             // Chỉ cho phép click nếu lesson có thể được click
-                                                                            if (!canClickLesson(lesson.id)) {
+                                                                            if (
+                                                                                !canClickLesson(
+                                                                                    lesson.id
+                                                                                )
+                                                                            ) {
                                                                                 e.preventDefault();
                                                                                 return;
                                                                             }
-                                                                            
+
                                                                             handleTrackStepActive(
                                                                                 e,
                                                                                 lesson.id
@@ -552,10 +617,15 @@ function CourseLessonPage() {
                                                                             }
                                                                         >
                                                                             {/* falock */}
-                                                                            {!lesson?.userLesson || !canClickLesson(lesson.id) ? (
+                                                                            {!lesson?.userLesson ||
+                                                                            !canClickLesson(
+                                                                                lesson.id
+                                                                            ) ? (
                                                                                 <FontAwesomeIcon
                                                                                     className={`${styles.stateIcon} ${styles.faLock}`}
                                                                                     icon={
+                                                                                        trackStepActive !==
+                                                                                            lesson.id &&
                                                                                         faLock
                                                                                     }
                                                                                 />
@@ -669,10 +739,12 @@ function CourseLessonPage() {
                         //     allowFullScreen
                         // ></iframe>
 
-                        <VideoPlayer 
-                            filename={"Day9.mp4"} 
-                            lessonId={lesson?.id}
-                            onProgressUpdate={updateUserLessonProgress}
+                        <VideoPlayer
+                            videoUrl={`${
+                                import.meta.env.VITE_BASE_URL
+                            }videos/Day9.mp4`}
+                            videoId={lesson?.id}
+                            onProgressUpdate={updateUserCourseProgress}
                         />
                     )}
 

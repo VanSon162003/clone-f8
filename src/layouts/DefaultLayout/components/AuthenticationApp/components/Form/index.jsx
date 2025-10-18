@@ -72,6 +72,12 @@ function Form({ type = "" }) {
 
     useEffect(() => {
         if (type === "login" && respone && !redirected) {
+            // If backend indicates 2FA is required, do not redirect yet. Show 2FA UI instead.
+            if (respone.require2fa) {
+                // handled elsewhere (twoFaMode state)
+                return;
+            }
+
             if (respone.refresh_token && respone.access_token) {
                 setRedirected(true);
                 localStorage.setItem("token", respone.access_token);
@@ -86,6 +92,39 @@ function Form({ type = "" }) {
             setRedirected(true);
         }
     }, [respone, param, redirected, type]);
+
+    // Local 2FA state
+    const [twoFaMode, setTwoFaMode] = useState(false);
+    const [twoFaToken, setTwoFaToken] = useState("");
+    const [useRecoveryCode, setUseRecoveryCode] = useState(false);
+
+    useEffect(() => {
+        if (type === "login" && respone && respone.require2fa) {
+            setTwoFaMode(true);
+        }
+    }, [respone, type]);
+
+    const handleSubmit2fa = async () => {
+        try {
+            const res = await authService.login2fa(
+                respone.tmpToken,
+                twoFaToken
+            );
+            if (res && res.data && res.data.access_token) {
+                localStorage.setItem("token", res.data.access_token);
+                localStorage.setItem("refresh_token", res.data.refresh_token);
+                window.top.location.href = param.get("continue")
+                    ? `/${param.get("continue")}`
+                    : "/";
+            }
+        } catch (err) {
+            dispatch(
+                setAuthErr(
+                    err?.response?.data?.message || err?.message || "2FA failed"
+                )
+            );
+        }
+    };
 
     return type === "register" ? (
         <form action="" onSubmit={handleSubmit(onSubmit)}>
@@ -131,34 +170,81 @@ function Form({ type = "" }) {
         </form>
     ) : (
         <form action="" onSubmit={handleSubmit(onSubmit)}>
-            <Input
-                labelName={"email"}
-                name={"email"}
-                message={errors}
-                register={register}
-            />
-            <Input
-                labelName={"Mật khẩu"}
-                name={"password"}
-                message={errors}
-                register={register}
-                type="password"
-            />
+            {!twoFaMode ? (
+                <>
+                    <Input
+                        labelName={"email"}
+                        name={"email"}
+                        message={errors}
+                        register={register}
+                    />
+                    <Input
+                        labelName={"Mật khẩu"}
+                        name={"password"}
+                        message={errors}
+                        register={register}
+                        type="password"
+                    />
 
-            {messageErr && (
-                <div className={styles.message}>
-                    {messageErr === "Invalid credentials"
-                        ? "tài khoản hoặc mật khẩu không đúng"
-                        : messageErr}
-                </div>
+                    {messageErr && (
+                        <div className={styles.message}>
+                            {messageErr === "Invalid credentials"
+                                ? "tài khoản hoặc mật khẩu không đúng"
+                                : messageErr}
+                        </div>
+                    )}
+
+                    <Button
+                        isLoading={isLoading}
+                        className={`${styles.wrapperBtn} ${styles.btnPrimary} ${styles.rounded} `}
+                    >
+                        {"đăng nhập"}
+                    </Button>
+                </>
+            ) : (
+                <>
+                    <Input
+                        labelName={
+                            useRecoveryCode
+                                ? "Mã khôi phục"
+                                : "Mã xác thực 2 bước"
+                        }
+                        name={"twoFa"}
+                        message={{}}
+                        register={() => {}}
+                        placeholder={
+                            useRecoveryCode
+                                ? "Nhập mã khôi phục"
+                                : "Nhập mã từ ứng dụng Authenticator"
+                        }
+                        value={twoFaToken}
+                        onChange={(e) => setTwoFaToken(e.target.value)}
+                    />
+
+                    <div className={styles.twoFaToggle}>
+                        <a
+                            href="#"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setUseRecoveryCode((s) => !s);
+                            }}
+                        >
+                            {useRecoveryCode
+                                ? "Sử dụng mã từ ứng dụng"
+                                : "Sử dụng mã khôi phục"}
+                        </a>
+                    </div>
+
+                    <div className={styles.buttons}>
+                        <Button
+                            className={`${styles.wrapperBtn} ${styles.btnPrimary} ${styles.rounded}`}
+                            onClick={handleSubmit2fa}
+                        >
+                            Xác thực
+                        </Button>
+                    </div>
+                </>
             )}
-
-            <Button
-                isLoading={isLoading}
-                className={`${styles.wrapperBtn} ${styles.btnPrimary} ${styles.rounded} `}
-            >
-                {"đăng nhập"}
-            </Button>
         </form>
     );
 }

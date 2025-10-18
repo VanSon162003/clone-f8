@@ -16,7 +16,11 @@ function Header({ courseId, title }) {
     const [course, setCourse] = useState({ title: title || "" });
     const { data: progressDataApi } = useGetCourseProgressQuery(
         { courseId },
-        { skip: !courseId }
+        {
+            skip: !courseId,
+            refetchOnMountOrArgChange: true,
+            refetchOnFocus: true,
+        }
     );
 
     useEffect(() => {
@@ -35,7 +39,9 @@ function Header({ courseId, title }) {
 
             const completed = userProgress?.is_completed;
             const total = course?.totalLessonByCourse || 0;
-            const percent = userProgress?.progress || 0;
+            const percent = userProgress?.progress
+                ? Math.round(userProgress?.progress)
+                : 0;
             return { completed, total, percent, totalCompleted };
         }
     }, [course]);

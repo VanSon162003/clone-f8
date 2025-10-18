@@ -18,6 +18,8 @@ const config = {
         aboutUs: "/about-us",
         contactUs: "/contact-us",
         terms: "/terms",
+        paymentSuccess: "/payment/success",
+        paymentCancel: "/payment/cancel",
         privacy: "/privacy",
         profile: "/profile/:username",
         writePost: "/new-post",

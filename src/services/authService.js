@@ -96,6 +96,34 @@ export const forgotPassword = async (token, password) => {
     return res;
 };
 
+export const changePassword = async (oldPassword, newPassword) => {
+    const res = await httpRequest.put(`/auth/change-password`, {
+        oldPassword,
+        newPassword,
+    });
+    return res;
+};
+
+export const twoFactorSetup = async () => {
+    const res = await httpRequest.get(`/auth/2fa/setup`);
+    return res;
+};
+
+export const twoFactorVerify = async (token, secret) => {
+    const res = await httpRequest.post(`/auth/2fa/verify`, { token, secret });
+    return res;
+};
+
+export const twoFactorDisable = async (token) => {
+    const res = await httpRequest.post(`/auth/2fa/disable`, { token });
+    return res;
+};
+
+export const login2fa = async (tmpToken, token) => {
+    const res = await httpRequest.post(`/auth/login/2fa`, { tmpToken, token });
+    return res;
+};
+
 export const verifyEmail = async (token) => {
     const res = await httpRequest.post(`/auth/verify-email?token=${token}`);
     return res;
@@ -117,6 +145,11 @@ export default {
     getProfile,
     updateCurrentUser,
     updateUserImg,
+    changePassword,
+    twoFactorSetup,
+    twoFactorVerify,
+    twoFactorDisable,
+    login2fa,
     checkEmail,
     checkPhone,
     checkUserName,

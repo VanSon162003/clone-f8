@@ -1,3 +1,4 @@
+import CheckoutButton from "@/components/CheckoutButton";
 import styles from "./Home.module.scss";
 import Section from "@/components/Section";
 import CustomSlideshow from "@/components/SlideShow";
@@ -25,7 +26,7 @@ function Home() {
     const videoData = useGetAllCoursesVideoQuery(undefined, {
         refetchOnMountOrArgChange: true,
     });
-    
+
     console.log(responseData);
 
     useEffect(() => {
@@ -52,6 +53,9 @@ function Home() {
                     <CustomSlideshow />
                 </div>
                 <div className={styles.wrapper}>
+                    <h1>sss</h1>
+                    <CheckoutButton />
+
                     <Section
                         courseType="pro"
                         courseList={coursePro}

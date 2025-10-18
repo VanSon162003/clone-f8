@@ -10,15 +10,11 @@ import {
     faFilm,
     faGaugeHigh,
 } from "@fortawesome/free-solid-svg-icons";
-import Button from "@/components/Button";
 import Model from "@/components/Model";
 import ScrollLock from "@/components/ScrollLock";
-import { useNavigate, useParams } from "react-router-dom";
-import {
-    useGetBySlugQuery,
-    useRegisterCourseMutation,
-} from "@/services/coursesService";
-import { useSelector } from "react-redux";
+import CourseRegistrationButton from "@/components/CourseRegistrationButton";
+import { useParams } from "react-router-dom";
+import { useGetBySlugQuery } from "@/services/coursesService";
 
 function CourseDetail() {
     const [course, setCourse] = useState({});
@@ -26,21 +22,13 @@ function CourseDetail() {
     const [isCollapseAll, setIsCollapseAll] = useState(false);
     const [openIntroduce, setOpenIntroduce] = useState(false);
 
-    const navigator = useNavigate();
     const { slug } = useParams();
-
-    console.log(slug);
-
     const { data, isSuccess } = useGetBySlugQuery(
         { slug },
         {
             refetchOnMountOrArgChange: true,
         }
     );
-
-    const currentUser = useSelector((state) => state.auth.currentUser);
-
-    const [registerCourse] = useRegisterCourseMutation();
 
     useEffect(() => {
         if (data?.data && isSuccess) {
@@ -55,20 +43,25 @@ function CourseDetail() {
         }
     }, [data, isSuccess]);
 
-    function formatDuration(seconds) {
+    const formatDuration = (seconds) => {
         const h = Math.floor(seconds / 3600);
         const m = Math.floor((seconds % 3600) / 60);
         const s = seconds % 60;
         if (h > 0) return `${h} giờ ${m} phút`;
         if (m > 0) return `${m} phút ${s} giây`;
         return `${s} giây`;
-    }
+    };
 
-    function formatDurationBySeconds(seconds) {
+    const formatDurationBySeconds = (seconds) => {
         const m = Math.floor(seconds / 60);
         const s = seconds % 60;
         return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-    }
+    };
+
+    const formatCurrencyVND = (value) => {
+        const number = Math.round(parseFloat(value) / 1000) * 1000;
+        return new Intl.NumberFormat("vi-VN").format(number) + "đ";
+    };
 
     const handleOpenCollapse = (id) => {
         setOpenCollapse((prev) => {
@@ -94,20 +87,7 @@ function CourseDetail() {
         setOpenIntroduce(false);
     };
 
-    const handleRegisterLesson = async () => {
-        if (!currentUser) {
-            return navigator("/authenticationApp");
-        }
-
-        try {
-            await registerCourse({
-                course_id: course.id,
-            }).unwrap();
-            navigator(`/learning/${slug}`);
-        } catch (error) {
-            console.log(error);
-        }
-    };
+    // Removed handleRegisterLesson as it's replaced by CourseRegistrationButton
 
     return (
         <>
@@ -409,20 +389,22 @@ function CourseDetail() {
                                     <p>Xem giới thiệu khoá học</p>
                                 </div>
                                 <h5>
-                                    {course.is_pro ? "Mất phí" : "Miễn phí"}
+                                    {course?.is_pro
+                                        ? `${formatCurrencyVND(course?.price)}`
+                                        : "Miễn phí"}
                                 </h5>
 
-                                <Button
-                                    onClick={handleRegisterLesson}
-                                    className={styles.wrapper}
-                                    rounded
-                                >
-                                    <span className={styles.inner}>
-                                        <span className={styles.title}>
-                                            ĐĂNG KÝ HỌC
-                                        </span>
-                                    </span>
-                                </Button>
+                                <CourseRegistrationButton
+                                    courseId={course.id}
+                                    courseSlug={slug}
+                                    isPro={course.is_pro}
+                                    onError={(error) =>
+                                        console.error(
+                                            "Registration error:",
+                                            error
+                                        )
+                                    }
+                                />
 
                                 <ul className="d-md-none">
                                     <li>

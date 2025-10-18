@@ -6,6 +6,7 @@ import { timeAgo } from "@/utils/timeAgo";
 import ReactionButton from "../ReactionButton";
 import Editor from "../Editor";
 import { useHandleReactionCommentMutation } from "@/services/commentsService";
+import isHttps from "@/utils/isHttps";
 
 function CommentItem(
     {
@@ -186,7 +187,18 @@ function CommentItem(
             >
                 <div className={styles.header}>
                     <a href={`/@${user.username}`} className={styles.user}>
-                        <Avatar fontSize={"4.445px"} avatar={user.avatar} />
+                        <Avatar
+                            fontSize={"4.445px"}
+                            avatar={
+                                user.avatar
+                                    ? isHttps(user.avatar)
+                                        ? user.avatar
+                                        : `${import.meta.env.VITE_BASE_URL}${
+                                              user.avatar
+                                          }`
+                                    : "/src/assets/imgs/user.jpg"
+                            }
+                        />
                         <span className={styles.info}>
                             <span className={styles.useName}>
                                 {user.full_name}

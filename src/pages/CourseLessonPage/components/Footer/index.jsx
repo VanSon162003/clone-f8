@@ -45,10 +45,7 @@ function Footer({
                 <Button
                     type="button"
                     onClick={onNext}
-                    className={`${styles.btn} ${styles.primary} ${
-                        styles.rounded
-                    } ${disabledNext ? styles.disabled : ""}`}
-                    disabled={disabledNext}
+                    className={`${styles.btn} ${styles.primary} ${styles.rounded} `}
                 >
                     <span className={styles.inner}>
                         <span className={styles.title}>BÀI TIẾP THEO</span>

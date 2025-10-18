@@ -13,6 +13,7 @@ import { commentsApi } from "@/services/commentsService";
 import { likesApi } from "@/services/likesService";
 import { bookmarksApi } from "@/services/bookmarksService";
 import { learningPathsApi } from "@/services/learningPathsService";
+import { paymentsService } from "@/services/paymentsService";
 
 const rootConfig = {
     key: "auth",
@@ -29,6 +30,7 @@ const rootReducer = combineReducers({
     [likesApi.reducerPath]: likesApi.reducer,
     [bookmarksApi.reducerPath]: bookmarksApi.reducer,
     [learningPathsApi.reducerPath]: learningPathsApi.reducer,
+    [paymentsService.reducerPath]: paymentsService.reducer,
 });
 
 export const store = configureStore({
@@ -41,6 +43,7 @@ export const store = configureStore({
         likesApi.middleware,
         bookmarksApi.middleware,
         learningPathsApi.middleware,
+        paymentsService.middleware,
     ],
 });
 

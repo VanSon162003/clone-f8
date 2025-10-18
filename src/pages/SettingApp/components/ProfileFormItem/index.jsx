@@ -21,10 +21,6 @@ const storage = {
         title: "Cập nhật họ và tên của bạn",
         desc: "Họ và tên sẽ được hiển thị trên trang cá nhân, trong các bình luận và bài viết của bạn.",
     },
-    about: {
-        title: "Cập nhật giới thiệu của bạn",
-        desc: "Giới thiệu ngắn về bản thân bạn để mọi người biết thêm về bạn.",
-    },
 
     website: {
         title: "Cập nhật trang web cá nhân",
@@ -58,7 +54,7 @@ const storage = {
 
     changePassword: {
         title: "Đổi mật khẩu",
-        desc: "Mật khẩu của bạn phải có tối thiểu 8 ký tự, bao gồm cả chữ số, chữ cái và ký tự đặc biệt (!$@%...).",
+        desc: "Mật khẩu của bạn phải có tối thiểu 8 ký tự, hãy đặt mật khẩu mạnh nhất có thể nhé!!!",
     },
 
     verify: {
@@ -142,7 +138,7 @@ function ProfileFormItem({
                 "is-url-or-empty",
                 "Đường dẫn không hợp lệ. Vui lòng nhập một URL hợp lệ (ví dụ: https://example.com)",
                 (v) => {
-                    if (!v) return true; // allow empty
+                    if (!v) return true;
                     try {
                         const url = new URL(v);
                         if (
@@ -157,17 +153,28 @@ function ProfileFormItem({
 
                         const host = url.hostname.toLowerCase();
                         return hosts.some((h) => host.includes(h));
-                    } catch (e) {
+                    } catch {
                         return false;
                     }
                 }
             );
 
+    // Build schema shape. Avoid using `when` referencing a non-form field (causes Yup internals error).
     const schemaShape = {
         username: yup.string().trim(),
         fullname: yup.string().trim(),
         about: yup.string().trim(),
     };
+
+    if (type === "changePassword") {
+        schemaShape.oldPassword = yup
+            .string()
+            .required("Vui lòng nhập mật khẩu hiện tại");
+        schemaShape.newPassword = yup
+            .string()
+            .required("Vui lòng nhập mật khẩu mới")
+            .min(8, "Mật khẩu mới phải có ít nhất 8 ký tự");
+    }
 
     socialKeys.forEach((k) => (schemaShape[k] = makeSocialValidator(k)));
 
@@ -182,9 +189,12 @@ function ProfileFormItem({
         formState: { errors },
     } = useForm({
         resolver: yupResolver(schema),
-        defaultValues: {
-            [type]: initialValue,
-        },
+        defaultValues: (() => {
+            if (type === "changePassword") {
+                return { oldPassword: "", newPassword: "" };
+            }
+            return { [type]: initialValue };
+        })(),
     });
 
     const [avatar, setAvatar] = useState({});
@@ -314,6 +324,12 @@ function ProfileFormItem({
             toast.error("Cập nhập thất bại");
         }
     };
+
+    // 2FA UI state
+    const [qrData, setQrData] = useState(null);
+    const [tmpSecret, setTmpSecret] = useState(null);
+    const [twoFaToken, setTwoFaToken] = useState("");
+    const [recoveryCodes, setRecoveryCodes] = useState([]);
 
     const usernameValue = useDebounce(watch("username"), 600);
 
@@ -496,22 +512,300 @@ function ProfileFormItem({
                 </header>
 
                 <main className={styles.content}>
-                    <Input
-                        user={user}
-                        type={type === "file" ? type : "text"}
-                        name={type}
-                        defaultValue={initialValue}
-                        labelName={label[type]}
-                        placeholder={placeholders[type] || label[type]}
-                        example={examples[type]}
-                        setAvatar={setAvatar}
-                        setUrl={setUrl}
-                        register={register}
-                        message={errors}
-                    />
-                    {type === "file" ? (
-                        ""
+                    {type === "changePassword" ? (
+                        <>
+                            <Input
+                                user={user}
+                                type="password"
+                                name="oldPassword"
+                                defaultValue={""}
+                                labelName={"Mật khẩu hiện tại"}
+                                placeholder={"Nhập mật khẩu hiện tại"}
+                                register={register}
+                                message={errors}
+                            />
+
+                            <Input
+                                user={user}
+                                type="password"
+                                name="newPassword"
+                                defaultValue={""}
+                                labelName={"Mật khẩu mới"}
+                                placeholder={
+                                    "Nhập mật khẩu mới (ít nhất 8 ký tự)"
+                                }
+                                register={register}
+                                message={errors}
+                            />
+                            <Button
+                                isLoading={isLoading}
+                                className={`${styles.wrapperBtn} ${styles.btnPrimary} ${styles.rounded}  `}
+                                onClick={handleSubmit(async (data) => {
+                                    try {
+                                        const res =
+                                            await authService.changePassword(
+                                                data.oldPassword,
+                                                data.newPassword
+                                            );
+                                        if (res) {
+                                            toast.success(
+                                                "Đổi mật khẩu thành công"
+                                            );
+                                            setShowFormItem(false);
+                                            setIsRoll(false);
+                                            setTimeout(
+                                                () => window.location.reload(),
+                                                1200
+                                            );
+                                        }
+                                    } catch (err) {
+                                        console.error(err);
+                                        const msg =
+                                            err?.response?.data?.message ||
+                                            err?.message ||
+                                            "Đổi mật khẩu thất bại";
+                                        toast.error(msg);
+                                    }
+                                })}
+                            >
+                                Đổi mật khẩu
+                            </Button>
+                        </>
+                    ) : type === "verify" ? (
+                        <>
+                            {user?.two_factor_enabled ? (
+                                <>
+                                    <p>Xác thực 2 bước đang được bật</p>
+                                    <Input
+                                        type="text"
+                                        name="disableToken"
+                                        defaultValue={""}
+                                        labelName={"Mã xác thực"}
+                                        placeholder={"Nhập mã để tắt 2FA"}
+                                        register={() => {}}
+                                        message={{}}
+                                        value={twoFaToken}
+                                        onChange={(e) =>
+                                            setTwoFaToken(e.target.value)
+                                        }
+                                    />
+                                    <Button
+                                        className={`${styles.wrapperBtn} ${styles.btnPrimary} ${styles.rounded}`}
+                                        onClick={async () => {
+                                            try {
+                                                await authService.twoFactorDisable(
+                                                    twoFaToken
+                                                );
+                                                toast.success(
+                                                    "2FA đã được tắt"
+                                                );
+                                                setShowFormItem(false);
+                                            } catch (err) {
+                                                toast.error(
+                                                    err?.response?.data
+                                                        ?.message ||
+                                                        err?.message ||
+                                                        "Tắt 2FA thất bại"
+                                                );
+                                            }
+                                        }}
+                                    >
+                                        Tắt 2FA
+                                    </Button>
+                                </>
+                            ) : (
+                                <>
+                                    {!qrData ? (
+                                        <Button
+                                            className={`${styles.wrapperBtn} ${styles.btnPrimary} ${styles.rounded}`}
+                                            onClick={async () => {
+                                                try {
+                                                    const res =
+                                                        await authService.twoFactorSetup();
+                                                    // res contains { secret, qr }
+                                                    setTmpSecret(res.secret);
+                                                    setQrData(res.qr);
+                                                } catch (err) {
+                                                    toast.error(
+                                                        err?.response?.data
+                                                            ?.message ||
+                                                            err?.message ||
+                                                            "Lấy QR thất bại"
+                                                    );
+                                                }
+                                            }}
+                                        >
+                                            Bật 2FA
+                                        </Button>
+                                    ) : (
+                                        <div>
+                                            <img src={qrData} alt="QR" />
+                                            <Input
+                                                type="text"
+                                                name="twoFaToken"
+                                                defaultValue={""}
+                                                labelName={"Mã xác thực"}
+                                                placeholder={
+                                                    "Nhập mã từ ứng dụng Authenticator"
+                                                }
+                                                register={() => {}}
+                                                message={{}}
+                                                value={twoFaToken}
+                                                onChange={(e) =>
+                                                    setTwoFaToken(
+                                                        e.target.value
+                                                    )
+                                                }
+                                            />
+                                            <Button
+                                                className={`${styles.wrapperBtn} ${styles.btnPrimary} ${styles.rounded}`}
+                                                onClick={async () => {
+                                                    try {
+                                                        const r =
+                                                            await authService.twoFactorVerify(
+                                                                twoFaToken,
+                                                                tmpSecret
+                                                            );
+                                                        toast.success(
+                                                            "2FA đã được bật"
+                                                        );
+                                                        if (
+                                                            r &&
+                                                            r.data &&
+                                                            r.data
+                                                                .recovery_codes
+                                                        ) {
+                                                            setRecoveryCodes(
+                                                                r.data
+                                                                    .recovery_codes ||
+                                                                    []
+                                                            );
+                                                        }
+                                                        // keep the modal open so user can copy/save recovery codes
+                                                    } catch (err) {
+                                                        toast.error(
+                                                            err?.response?.data
+                                                                ?.message ||
+                                                                err?.message ||
+                                                                "Kích hoạt 2FA thất bại"
+                                                        );
+                                                    }
+                                                }}
+                                            >
+                                                Xác nhận
+                                            </Button>
+                                            {recoveryCodes &&
+                                                recoveryCodes.length > 0 && (
+                                                    <div
+                                                        className={
+                                                            styles.recoveryCodes
+                                                        }
+                                                    >
+                                                        <h4>Mã khôi phục</h4>
+                                                        <p>
+                                                            Lưu lại các mã này ở
+                                                            nơi an toàn. Mỗi mã
+                                                            chỉ dùng được một
+                                                            lần.
+                                                        </p>
+                                                        <ul>
+                                                            {recoveryCodes.map(
+                                                                (c, idx) => (
+                                                                    <li
+                                                                        key={
+                                                                            idx
+                                                                        }
+                                                                        className={
+                                                                            styles.codeItem
+                                                                        }
+                                                                    >
+                                                                        {c}
+                                                                    </li>
+                                                                )
+                                                            )}
+                                                        </ul>
+                                                        <div
+                                                            className={
+                                                                styles.recoveryActions
+                                                            }
+                                                        >
+                                                            <Button
+                                                                className={`${styles.wrapperBtn} ${styles.btnSecondary}`}
+                                                                onClick={() => {
+                                                                    navigator.clipboard.writeText(
+                                                                        recoveryCodes.join(
+                                                                            "\n"
+                                                                        )
+                                                                    );
+                                                                    toast.success(
+                                                                        "Đã sao chép mã khôi phục"
+                                                                    );
+                                                                }}
+                                                            >
+                                                                Sao chép
+                                                            </Button>
+                                                            <Button
+                                                                className={`${styles.wrapperBtn} ${styles.btnSecondary}`}
+                                                                onClick={() => {
+                                                                    const blob =
+                                                                        new Blob(
+                                                                            [
+                                                                                recoveryCodes.join(
+                                                                                    "\n"
+                                                                                ),
+                                                                            ],
+                                                                            {
+                                                                                type: "text/plain;charset=utf-8",
+                                                                            }
+                                                                        );
+                                                                    const url =
+                                                                        URL.createObjectURL(
+                                                                            blob
+                                                                        );
+                                                                    const a =
+                                                                        document.createElement(
+                                                                            "a"
+                                                                        );
+                                                                    a.href =
+                                                                        url;
+                                                                    a.download =
+                                                                        "recovery_codes.txt";
+                                                                    document.body.appendChild(
+                                                                        a
+                                                                    );
+                                                                    a.click();
+                                                                    a.remove();
+                                                                    URL.revokeObjectURL(
+                                                                        url
+                                                                    );
+                                                                }}
+                                                            >
+                                                                Tải về
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </>
                     ) : (
+                        <Input
+                            user={user}
+                            type={type === "file" ? type : "text"}
+                            name={type}
+                            defaultValue={initialValue}
+                            labelName={label[type]}
+                            placeholder={placeholders[type] || label[type]}
+                            example={examples[type]}
+                            setAvatar={setAvatar}
+                            setUrl={setUrl}
+                            register={register}
+                            message={errors}
+                        />
+                    )}
+                    {type !== "file" && type !== "changePassword" && (
                         <Button
                             isLoading={isLoading}
                             className={`${styles.wrapperBtn} ${styles.btnPrimary} ${styles.rounded}  `}

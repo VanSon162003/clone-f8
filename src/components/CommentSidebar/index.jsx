@@ -13,6 +13,7 @@ import {
     useGetAllByTypeQuery,
 } from "@/services/commentsService";
 import { useSelector } from "react-redux";
+import isHttps from "@/utils/isHttps";
 
 function CommentSidebar({
     open = false,
@@ -312,7 +313,20 @@ function CommentSidebar({
                                     <div className={styles.user}>
                                         <Avatar
                                             fontSize={"4.445px"}
-                                            avatar={currentUser?.avatar}
+                                            avatar={
+                                                currentUser?.avatar
+                                                    ? isHttps(
+                                                          currentUser?.avatar
+                                                      )
+                                                        ? currentUser?.avatar
+                                                        : `${
+                                                              import.meta.env
+                                                                  .VITE_BASE_URL
+                                                          }${
+                                                              currentUser?.avatar
+                                                          }`
+                                                    : "/src/assets/imgs/user.jpg"
+                                            }
                                         />
                                     </div>
                                     <div

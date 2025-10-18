@@ -137,13 +137,16 @@ function ProfileType({ type = "" }) {
                     </div>
                 ) : (
                     <div className={styles.content}>
-                        <ProfileItem
-                            type="changePassword"
-                            label={"Đổi mật khẩu"}
-                            value={"chưa đổi mật khẩu"}
-                            setShowFormItem={setShowFormItem}
-                            setTypeFormItem={setTypeFormItem}
-                        />
+                        {/* Only show change password for non-social (no auth0_id) users */}
+                        {!user?.auth0_id && (
+                            <ProfileItem
+                                type="changePassword"
+                                label={"Đổi mật khẩu"}
+                                value={"chưa đổi mật khẩu"}
+                                setShowFormItem={setShowFormItem}
+                                setTypeFormItem={setTypeFormItem}
+                            />
+                        )}
                         <ProfileItem
                             type="verify"
                             label={"Xác minh 2 bước"}

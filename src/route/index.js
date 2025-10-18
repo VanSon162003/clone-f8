@@ -29,8 +29,20 @@ import CourseDetail from "@/pages/CourseDetail";
 import CourseLessonPage from "@/pages/CourseLessonPage";
 import VerifyEmail from "@/pages/VerifyEmail";
 import ResendEmail from "@/pages/ResendEmail";
+import PaymentSuccess from "@/pages/PaymentSuccess";
+import PaymentCancel from "@/pages/Payment/Cancel";
 
 const routes = [
+    {
+        path: config.routes.paymentSuccess,
+        component: PaymentSuccess,
+        layout: null,
+    },
+    {
+        path: config.routes.paymentCancel,
+        component: PaymentCancel,
+        layout: null,
+    },
     {
         path: config.routes.home,
         component: Home,

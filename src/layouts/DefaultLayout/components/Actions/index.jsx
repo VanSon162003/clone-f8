@@ -116,13 +116,13 @@ function Actions() {
                     <div className={styles.avatar}>
                         <img
                             src={
-                                user
+                                user.avatar
                                     ? isHttps(user.avatar)
                                         ? user.avatar
                                         : `${import.meta.env.VITE_BASE_URL}${
                                               user.avatar
                                           }`
-                                    : userImg
+                                    : "src/assets/imgs/user.jpg"
                             }
                             alt="user"
                         />
