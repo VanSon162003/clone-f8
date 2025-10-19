@@ -14,6 +14,7 @@ import {
 } from "@/services/commentsService";
 import { useSelector } from "react-redux";
 import isHttps from "@/utils/isHttps";
+import socketClient from "@/utils/websocket";
 
 function CommentSidebar({
     open = false,
@@ -49,7 +50,7 @@ function CommentSidebar({
     const { data, isFetching } = useGetAllByTypeQuery(queryArgs, {
         refetchOnMountOrArgChange: true,
         refetchOnFocus: true,
-        keepUnusedDataFor: 0,
+        refetchOnReconnect: true,
     });
 
     const observer = useRef();
@@ -70,6 +71,33 @@ function CommentSidebar({
     const [createComment] = useCreateCommentMutation();
     const [editComment] = useEditCommentMutation();
     const [deleteComment] = useDeleteCommentMutation();
+
+    // socket comment post
+    useEffect(() => {
+        const chanel = socketClient.subscribe(`comment-post-${commentableId}`);
+
+        chanel.bind("notification-new-comment-post", (data) => {
+            if (currentUser.id === data.UserNotification.id) return;
+            const newComment = {
+                id: data.comment_id,
+                parent_id: null,
+                like_count: 0,
+                content: data.content,
+
+                deleted_at: null,
+                created_at: Date.now(),
+                updated_at: Date.now(),
+                user: data.UserNotification,
+                replies: [],
+                reactions: [],
+            };
+            setComments((prev) => [newComment, ...prev]);
+        });
+
+        return () => {
+            socketClient.unsubscribe(`comment-post-${commentableId}`);
+        };
+    }, [commentableId, currentUser]);
 
     // lấy ra comments
     useEffect(() => {

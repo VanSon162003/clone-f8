@@ -12,7 +12,6 @@ function Blog() {
     const [currentPage, setCurrentPage] = useState(
         () => parseInt(searchParams.get("page")) || 1
     );
-    const [search, setSearch] = useState("");
 
     const {
         data: postsData,
@@ -23,11 +22,11 @@ function Blog() {
             page: currentPage,
             limit: 10,
             status: "published",
-            search: search,
         },
         {
             refetchOnMountOrArgChange: true,
             refetchOnFocus: true,
+            refetchOnReconnect: true,
         }
     );
 

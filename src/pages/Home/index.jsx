@@ -1,4 +1,3 @@
-import CheckoutButton from "@/components/CheckoutButton";
 import styles from "./Home.module.scss";
 import Section from "@/components/Section";
 import CustomSlideshow from "@/components/SlideShow";
@@ -27,8 +26,6 @@ function Home() {
         refetchOnMountOrArgChange: true,
     });
 
-    console.log(responseData);
-
     useEffect(() => {
         const data = responseData?.data || [];
 
@@ -53,9 +50,6 @@ function Home() {
                     <CustomSlideshow />
                 </div>
                 <div className={styles.wrapper}>
-                    <h1>sss</h1>
-                    <CheckoutButton />
-
                     <Section
                         courseType="pro"
                         courseList={coursePro}

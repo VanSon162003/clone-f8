@@ -4,11 +4,14 @@ import styles from "./Actions.module.scss";
 import AccessForm from "../AccessForm";
 import { faBell } from "@fortawesome/free-solid-svg-icons";
 
-import userImg from "@/assets/imgs/user.jpg";
+// import userImg from "@/assets/imgs/user.jpg";
 import proIcon from "@/assets/icons/pro-icon.svg";
 import useCurrentUser from "@/hook/useCurrentUser";
 import Tippy from "@/components/Tippy";
 import isHttps from "@/utils/isHttps";
+import { useSelector } from "react-redux";
+
+import socket from "@/utils/websocket";
 
 function Actions() {
     const [isAccess, setIsAccess] = useState(false);
@@ -16,6 +19,7 @@ function Actions() {
     const [showSetting, setShowSetting] = useState(false);
     const [showNotification, setShowNotification] = useState(false);
     const [showCourseList, setShowCourseList] = useState(false);
+    const [notifications, setNotifications] = useState([]);
 
     const settingRef = useRef(null);
     const showCourseListRef = useRef(null);
@@ -29,6 +33,35 @@ function Actions() {
         setIsAccess(true);
         saveAccessType(type);
     };
+
+    const currentUser = useSelector((state) => state.auth.currentUser);
+
+    useEffect(() => {
+        if (currentUser) {
+            setNotifications(() => {
+                return currentUser.notifications.filter(
+                    (n) => !n.UserNotification.read_at
+                );
+            });
+        }
+    }, [currentUser]);
+
+    useEffect(() => {
+        if (currentUser) {
+            const chanel = socket.subscribe("joinNotificationRoom");
+
+            chanel.bind("notification", (data) => {
+                const userId = data.userId;
+
+                if (currentUser.id === userId)
+                    setNotifications((prev) => [data.notification, ...prev]);
+            });
+
+            return () => {
+                socket.unsubscribe("joinNotificationRoom");
+            };
+        }
+    }, [currentUser]);
 
     // const token = localStorage.getItem("token");
 
@@ -74,6 +107,14 @@ function Actions() {
         setShowSetting(false);
     };
 
+    const handleReadNotifications = (id) => {
+        if (id === "all") {
+            setNotifications([]);
+            return;
+        }
+        setNotifications((prev) => prev.filter((n) => n.id !== id));
+    };
+
     return user ? (
         <div className={styles.actions}>
             <div ref={showNotificationRef}>
@@ -100,7 +141,20 @@ function Actions() {
                         }}
                         icon={faBell}
                     />
-                    {showCourseList && <Tippy user={user} type="course" />}
+                    {notifications.length > 0 && (
+                        <span className={styles.notifyCount}>
+                            {notifications.length ? notifications.length : 0}
+                        </span>
+                    )}
+                    {
+                        <Tippy
+                            user={user}
+                            type="course"
+                            isShow={true}
+                            showNotification={showCourseList}
+                            handleReadNotifications={handleReadNotifications}
+                        />
+                    }
                 </div>
             </div>
 

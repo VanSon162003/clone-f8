@@ -15,6 +15,14 @@
     inset: var(--tippy-inset, 0px 0px auto auto);
     margin: 0px;
     transform: var(--main-transForm);
+
+    &.hidden {
+        display: none;
+    }
+
+    &.active {
+        display: block;
+    }
 }
 
 .avatar {
@@ -24,7 +32,7 @@
     justify-content: center;
     padding: 0.7em;
     position: relative;
-    background: linear-gradient(180deg, #ffd900, #b45264 93.68%);
+    background: linear-gradient(180deg, #010101, #b45264 93.68%);
     border-radius: 50%;
 
     img {
@@ -200,6 +208,100 @@
         &:hover {
             color: #292929;
             background-color: #f0f0f0;
+        }
+    }
+}
+
+.noNotification {
+    text-align: center;
+    padding: 40px 20px;
+
+    font-size: 1.4rem;
+    color: #666;
+
+    img {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 16px;
+    }
+}
+
+.notificationItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 0 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    border-bottom: 1px solid #f1f1f1;
+    text-decoration: none;
+
+    & + & {
+        margin-top: 10px;
+    }
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &.unread {
+        .notificationTitle {
+            font-weight: 600;
+            color: #292929;
+        }
+    }
+
+    .notificationTitle {
+        font-size: 1.5rem;
+        color: #292929;
+        margin-bottom: 6px;
+        line-height: 1.4;
+    }
+
+    .notificationContent {
+        position: relative;
+        font-size: 1.4rem;
+        color: #666;
+        margin-bottom: 8px;
+        line-height: 1.4;
+
+        width: 100%;
+        height: 100%;
+        padding: 16px 10px;
+
+        border-radius: 10px;
+        transition: 0.3s;
+
+        &.active {
+            background-color: #f051231a;
+        }
+
+        &:hover {
+            background-color: #f051231a;
+        }
+
+        &.active::before {
+            content: "";
+            display: block;
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            right: 8px;
+            border-radius: 50%;
+            background-color: #3ea6ff;
+        }
+    }
+
+    .notificationTime {
+        font-size: 1.2rem;
+        color: #999;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        svg {
+            font-size: 1.2rem;
         }
     }
 }

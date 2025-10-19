@@ -56,3 +56,16 @@
         transform: rotate(55deg);
     }
 }
+
+.notifyCount {
+    position: absolute;
+    top: -2px;
+    left: 16px;
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: #fff;
+    background-color: #fa3e3e;
+    padding: 2px 6px 1px;
+    border-radius: 99px;
+    z-index: 1;
+}

@@ -1,19 +1,26 @@
 import { Link } from "react-router-dom";
 import styles from "./Tippy.module.scss";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logoutCurrentUser } from "@/features/auth/authSlice";
 
 import userImg from "@/assets/imgs/user.jpg";
 import proIcon from "@/assets/icons/pro-icon.svg";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import useApi from "@/hook/useApi";
 import CourseListDetail from "../CourseListDetail";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFacebook, faTwitter } from "@fortawesome/free-brands-svg-icons";
-import { faEnvelope, faFlag, faLink } from "@fortawesome/free-solid-svg-icons";
+import {
+    faEnvelope,
+    faFlag,
+    faLink,
+    faClock,
+} from "@fortawesome/free-solid-svg-icons";
 import Button from "../Button";
 import { useAuth0 } from "@auth0/auth0-react";
 import isHttps from "@/utils/isHttps";
+import notificationService from "@/services/notificationService";
+import socketClient from "@/utils/websocket";
 
 function Tippy({
     user = {},
@@ -23,13 +30,71 @@ function Tippy({
     onEdit,
     onRemove,
     onShare,
+    showNotification = false,
+    isShow = false,
+    handleReadNotifications,
 }) {
     const { logout } = useAuth0();
     const dispatch = useDispatch();
 
+    const [notifications, setNotifications] = useState([]);
+    const [hasReadNotifications, setHasReadNotifications] = useState([]);
+
     const token = localStorage.getItem("token");
 
     const tippyInset = type === "options" ? "40px 0px auto auto" : "";
+
+    const timeAgo = (dateString) => {
+        const now = new Date();
+        const date = new Date(dateString);
+        const diffMs = now - date;
+
+        const seconds = Math.floor(diffMs / 1000);
+        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
+        const months = Math.floor(days / 30);
+        const years = Math.floor(days / 365);
+
+        if (seconds < 60) return `${seconds} giây trước`;
+        if (minutes < 60) return `${minutes} phút trước`;
+        if (hours < 24) return `${hours} giờ trước`;
+        if (days < 30) return `${days} ngày trước`;
+        if (months < 12) return `${months} tháng trước`;
+        return `${years} năm trước`;
+    };
+
+    const currentUser = useSelector((state) => state.auth.currentUser);
+
+    useEffect(() => {
+        if (type === "course" && currentUser) {
+            setNotifications(currentUser.notifications || []);
+
+            const readNotis = currentUser.notifications.filter(
+                (noti) => noti.UserNotification.read_at
+            );
+
+            const idsNotis = readNotis.map((noti) => noti.id);
+
+            setHasReadNotifications(idsNotis);
+        }
+    }, [type, currentUser]);
+
+    useEffect(() => {
+        if (!currentUser) return;
+        const chanel = socketClient.subscribe("joinNotificationRoom");
+
+        chanel.bind("notification", (data) => {
+            const userId = data.userId;
+
+            if (currentUser.id === userId)
+                setNotifications((prev) => [data, ...prev]);
+        });
+
+        return () => {
+            socketClient.unsubscribe("joinNotificationRoom");
+        };
+    }, [currentUser]);
 
     const wrap =
         type === "profile"
@@ -68,10 +133,51 @@ function Tippy({
 
     const courses = useApi("/pro");
 
+    const handleReadNoti = async (id) => {
+        try {
+            await notificationService.readNotification({ id });
+
+            setHasReadNotifications((prev) => {
+                if (prev.includes(id)) {
+                    return prev;
+                }
+                return [...prev, id];
+            });
+
+            handleReadNotifications(id);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const handleReadAll = async () => {
+        try {
+            // Lấy tất cả các id thông báo chưa đọc
+            const notiIds = notifications
+                .filter((n) => !hasReadNotifications.includes(n.id))
+                .map((n) => n.id);
+
+            if (notiIds.length === 0) return;
+
+            // Gọi API backend để đánh dấu tất cả đã đọc
+            await notificationService.readNotification({ ids: notiIds });
+
+            // Cập nhật UI: thêm tất cả id đã đọc vào state
+            setHasReadNotifications((prev) => [
+                ...new Set([...prev, ...notiIds]),
+            ]);
+
+            handleReadNotifications("all");
+        } catch (error) {
+            console.error("Lỗi khi đánh dấu đã đọc tất cả:", error);
+        }
+    };
+
     return (
         <div
             ref={ref}
-            className={`${styles.tippy} ${className}`}
+            className={`${styles.tippy} ${className} ${isShow && styles.hidden}
+            ${showNotification ? styles.active : ""}`}
             style={{
                 "--main-transForm": tippyTransform,
                 "--tippy-inset": tippyInset,
@@ -206,11 +312,66 @@ function Tippy({
                     <>
                         <div className={styles.header}>
                             <h6 className={styles.heading}>Thông báo</h6>
-                            <a href="#" className={styles.viewAllBtn}>
+                            <a
+                                onClick={handleReadAll}
+                                href="#"
+                                className={styles.viewAllBtn}
+                            >
                                 Đánh dấu đã đọc
                             </a>
                         </div>
-                        <div className={styles.content}></div>
+                        <div className={styles.content}>
+                            {notifications.length === 0 && (
+                                <div className={styles.noNotification}>
+                                    Không có thông báo mới
+                                </div>
+                            )}
+                            {notifications.map((notification) => {
+                                return (
+                                    <Link
+                                        to={notification?.to}
+                                        key={notification?.id}
+                                        className={`${styles.notificationItem} `}
+                                        onClick={() =>
+                                            handleReadNoti(notification?.id)
+                                        }
+                                    >
+                                        <div
+                                            className={`${
+                                                styles.notificationContent
+                                            } ${
+                                                !hasReadNotifications.includes(
+                                                    notification?.id
+                                                )
+                                                    ? styles.active
+                                                    : ""
+                                            }`}
+                                        >
+                                            <div
+                                                className={
+                                                    styles.notificationTitle
+                                                }
+                                            >
+                                                {notification?.title}
+                                            </div>
+
+                                            <div
+                                                className={
+                                                    styles.notificationTime
+                                                }
+                                            >
+                                                <FontAwesomeIcon
+                                                    icon={faClock}
+                                                />
+                                                {timeAgo(
+                                                    notification?.createdAt
+                                                )}
+                                            </div>
+                                        </div>
+                                    </Link>
+                                );
+                            })}
+                        </div>
                     </>
                 )}
             </ul>

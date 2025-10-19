@@ -71,6 +71,7 @@ function BlogDetail() {
             refetchOnMountOrArgChange: true,
         }
     );
+
     const relatedPosts =
         relatedPostsData?.data?.posts?.filter(
             (p) => p.author?.id === post?.author?.id && p.id !== post?.id
