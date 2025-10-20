@@ -16,14 +16,22 @@ function Home() {
 
     const { data: responseData, isSuccess } = useGetAllCoursesQuery(undefined, {
         refetchOnMountOrArgChange: true,
+        refetchOnFocus: true,
+        refetchOnReconnect: true,
     });
 
     const popularPosts = useGetPopularPostsQuery(undefined, {
         refetchOnMountOrArgChange: true,
+        refetchOnFocus: true,
+        refetchOnReconnect: true,
     });
+
+    console.log(popularPosts);
 
     const videoData = useGetAllCoursesVideoQuery(undefined, {
         refetchOnMountOrArgChange: true,
+        refetchOnFocus: true,
+        refetchOnReconnect: true,
     });
 
     useEffect(() => {
@@ -50,35 +58,45 @@ function Home() {
                     <CustomSlideshow />
                 </div>
                 <div className={styles.wrapper}>
-                    <Section
-                        courseType="pro"
-                        courseList={coursePro}
-                        heading={"Khoá học Pro"}
-                    />
+                    {coursePro?.length > 0 && (
+                        <Section
+                            courseType="pro"
+                            courseList={coursePro}
+                            heading={"Khoá học Pro"}
+                        />
+                    )}
 
-                    <Section
-                        courseType="free"
-                        courseList={courseFree}
-                        heading={"Khoá học Free"}
-                        path={"/learning-paths"}
-                        titleViewAll="Xem lộ trình"
-                    />
+                    {courseFree?.length > 0 && (
+                        <Section
+                            courseType="free"
+                            courseList={courseFree}
+                            heading={"Khoá học Free"}
+                            path={"/learning-paths"}
+                            titleViewAll="Xem lộ trình"
+                        />
+                    )}
 
-                    <Section
-                        courseType="article"
-                        courseList={courseArticle}
-                        heading={"Bài viết nổi bật"}
-                        path={"/blog"}
-                        titleViewAll="Xem tất cả"
-                    />
+                    {courseArticle?.length > 0 && (
+                        <Section
+                            courseType="article"
+                            courseList={courseArticle}
+                            heading={"Bài viết nổi bật"}
+                            path={"/blog"}
+                            titleViewAll="Xem tất cả"
+                        />
+                    )}
 
-                    <Section
-                        courseType="video"
-                        courseList={courseVideo}
-                        heading={"Videos nổi bật"}
-                        path={"https://www.youtube.com/c/F8VNOfficial/videos"}
-                        titleViewAll="Xem tất cả"
-                    />
+                    {courseVideo?.length > 0 && (
+                        <Section
+                            courseType="video"
+                            courseList={courseVideo}
+                            heading={"Videos nổi bật"}
+                            path={
+                                "https://www.youtube.com/c/F8VNOfficial/videos"
+                            }
+                            titleViewAll="Xem tất cả"
+                        />
+                    )}
                 </div>
             </div>
         </div>

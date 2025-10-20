@@ -48,13 +48,13 @@ function Header({ courseId, title }) {
 
     return (
         <div className={styles.wrapper}>
-            <div className={styles.backBtn} title="rời khỏi dây">
+            <a href="/" className={styles.backBtn} title="rời khỏi dây">
                 <FontAwesomeIcon icon={faChevronLeft} className={styles.icon} />
-            </div>
+            </a>
 
-            <Button to="/" className={styles.logo}>
+            <a href="/" className={styles.logo}>
                 <img src="/src/assets/imgs/logo-f8.png" alt="f8" />
-            </Button>
+            </a>
 
             <div className={styles.courseName}>
                 {title || course.title || ""}

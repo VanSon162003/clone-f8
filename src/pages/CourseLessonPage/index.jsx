@@ -44,6 +44,7 @@ function CourseLessonPage() {
     const [idTrack, setIdTrack] = useState(() => +param.get("track-id"));
     const [idLesson, setIdLesson] = useState(() => +param.get("lesson-id"));
 
+    const [totalComments, setTotalComments] = useState(0);
     const [isWatch, setIsWatch] = useState(false);
 
     // reload track mỗi khi chạm đáy 10 phần tử
@@ -82,6 +83,8 @@ function CourseLessonPage() {
             });
 
             if (data.data.tracks.length < limit) setHasMore(false);
+
+            setTotalComments(data.data.total_comment || 0);
         }
     }, [data]);
 
@@ -853,6 +856,8 @@ function CourseLessonPage() {
                     commentableType={"question"}
                     open={openCommentSideBar}
                     onCancel={handleCancelCommentSideBar}
+                    totalComment={totalComments}
+                    setTotalComment={setTotalComments}
                 />
             }
         </>

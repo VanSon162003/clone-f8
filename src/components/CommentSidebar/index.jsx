@@ -21,7 +21,8 @@ function CommentSidebar({
     onCancel = () => {},
     commentableType,
     commentableId,
-    getTotalComment = () => {},
+    totalComment = 0,
+    setTotalComment,
 }) {
     const [isOpen, setIsOpen] = useState(open);
     const [isOpenCommentEditor, setIsOpenCommentEditor] = useState(false);
@@ -92,6 +93,7 @@ function CommentSidebar({
                 reactions: [],
             };
             setComments((prev) => [newComment, ...prev]);
+            setTotalComment((prev) => prev + 1);
         });
 
         return () => {
@@ -110,8 +112,6 @@ function CommentSidebar({
                 return [...prev, ...newOnes];
             });
             if (data.data.length < limit) setHasMore(false);
-
-            getTotalComment(data.data.length);
         }
     }, [data]);
 
@@ -178,6 +178,7 @@ function CommentSidebar({
             };
 
             setComments((prev) => [newComment, ...prev]);
+            setTotalComment((prev) => prev + 1);
             handleCloseComment();
         } catch (error) {
             console.log(error);
@@ -247,6 +248,7 @@ function CommentSidebar({
                         return comment;
                     })
             );
+            setTotalComment((prev) => prev - 1);
         } catch (error) {
             console.error(error);
         }
@@ -313,6 +315,7 @@ function CommentSidebar({
         };
 
         setComments((prev) => addReplyRecursive(prev, parentId, newComment));
+        setTotalComment((prev) => prev + 1);
     };
 
     return (
@@ -388,14 +391,7 @@ function CommentSidebar({
                                 <div className={styles.content}>
                                     <div className={styles.header}>
                                         <h2 className={styles.title}>
-                                            {comments.reduce(
-                                                (total, c) =>
-                                                    total +
-                                                    1 +
-                                                    (c.replies?.length || 0),
-                                                0
-                                            )}{" "}
-                                            bình luận
+                                            {totalComment} bình luận
                                         </h2>
                                         {comments.length > 0 && (
                                             <span

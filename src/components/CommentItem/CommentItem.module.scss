@@ -94,6 +94,14 @@
             word-break: keep-all;
             font-size: 1.6rem;
         }
+
+        :global(.ql-code-block-container) {
+            padding: 16px;
+            border-radius: 8px;
+            background: var(--prism-bg, #f2f9ff);
+            color: #323c4a;
+            font-size: 1.6rem;
+        }
     }
 }
 

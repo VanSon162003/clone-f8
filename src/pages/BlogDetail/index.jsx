@@ -3,7 +3,7 @@ import styles from "./BlogDetail.module.scss";
 import ParentCard from "@/components/ParentCard";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart, faComment } from "@fortawesome/free-regular-svg-icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { faHeart as faHeartSolid } from "@fortawesome/free-solid-svg-icons";
 import Avatar from "@/components/Avatar";
 import Actions from "@/components/Actions";
@@ -33,12 +33,26 @@ function BlogDetail() {
     const { slug } = useParams();
     const [isOpen, setIsopen] = useState(false);
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    const [post, setPost] = useState([]);
     const [totalComment, setTotalComment] = useState(0);
 
     // Fetch post data
-    const { data: postData, isLoading, error } = useGetPostBySlugQuery(slug);
+    const {
+        data: postData,
+        isLoading,
+        error,
+    } = useGetPostBySlugQuery(slug, {
+        refetchOnMountOrArgChange: true,
+        refetchOnFocus: true,
+        refetchOnReconnect: true,
+    });
     // const postData = {};
-    const post = postData?.data;
+    useEffect(() => {
+        if (postData?.data) {
+            setPost(postData.data);
+            setTotalComment(postData.data.total_comment || 0);
+        }
+    }, [postData]);
 
     // Fetch like status and count
     const { data: likeStatus } = useCheckUserLikeQuery(
@@ -102,10 +116,6 @@ function BlogDetail() {
 
     const handleCommentSideBar = () => {
         setIsopen(!isOpen);
-    };
-
-    const getTotalComment = (total) => {
-        setTotalComment((prev) => total || prev);
     };
 
     if (isLoading) {
@@ -328,7 +338,8 @@ function BlogDetail() {
                 open={isOpen}
                 commentableId={post.id}
                 commentableType={"post"}
-                getTotalComment={getTotalComment}
+                totalComment={totalComment}
+                setTotalComment={setTotalComment}
             />
 
             <ShareModal

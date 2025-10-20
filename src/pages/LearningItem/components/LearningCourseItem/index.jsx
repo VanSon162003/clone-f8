@@ -4,7 +4,8 @@ import styles from "./LearningCourseItem.module.scss";
 import Button from "@/components/Button";
 
 function LearningCourseItem({ courseItem = {} }) {
-    console.log('LearningCourseItem received:', courseItem);
+    console.log(courseItem);
+
     const navigate = useNavigate();
 
     const goToCourse = () => {
@@ -13,6 +14,11 @@ function LearningCourseItem({ courseItem = {} }) {
         } else {
             navigate(`/courses/${courseItem.slug}`);
         }
+    };
+
+    const formatCurrencyVND = (value) => {
+        const number = Math.round(parseFloat(value) / 1000) * 1000;
+        return new Intl.NumberFormat("vi-VN").format(number) + "đ";
     };
 
     return (
@@ -26,18 +32,18 @@ function LearningCourseItem({ courseItem = {} }) {
                 </div>
 
                 <div className={styles.info}>
-                    <h2 className={styles.subTitle}>
-                        {courseItem?.title}
-                    </h2>
-                    
+                    <h2 className={styles.subTitle}>{courseItem?.title}</h2>
+
                     <div className={styles.price}>
                         {courseItem?.is_pro ? (
                             <>
                                 <span className={styles.oldPrice}>
-                                    {courseItem?.old_price || "1,200,000đ"}
+                                    {formatCurrencyVND(courseItem?.old_price) ||
+                                        "1,200,000đ"}
                                 </span>
                                 <span className={styles.mainPrice}>
-                                    {courseItem?.price || "599,000đ"}
+                                    {formatCurrencyVND(courseItem?.price) ||
+                                        "599,000đ"}
                                 </span>
                             </>
                         ) : (
@@ -74,13 +80,19 @@ function LearningCourseItem({ courseItem = {} }) {
                     {courseItem?.enrolled && (
                         <div className={styles.progress}>
                             <div className={styles.progressBar}>
-                                <div 
+                                <div
                                     className={styles.progressFill}
-                                    style={{ width: `${courseItem.progressPercent || 0}%` }}
+                                    style={{
+                                        width: `${
+                                            courseItem?.userProgress
+                                                ?.progress || 0
+                                        }%`,
+                                    }}
                                 ></div>
                             </div>
                             <span className={styles.progressText}>
-                                {courseItem.progressPercent || 0}% hoàn thành
+                                {courseItem?.userProgress?.progress || 0}% hoàn
+                                thành
                             </span>
                         </div>
                     )}
@@ -93,7 +105,9 @@ function LearningCourseItem({ courseItem = {} }) {
                         className={styles.wrapBtn}
                     >
                         <span className={styles.btnInner}>
-                            {courseItem?.enrolled ? "TIẾP TỤC HỌC" : "XEM KHOÁ HỌC"}
+                            {courseItem?.enrolled
+                                ? "TIẾP TỤC HỌC"
+                                : "XEM KHOÁ HỌC"}
                         </span>
                     </Button>
                 </div>

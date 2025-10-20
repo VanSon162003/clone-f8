@@ -37,13 +37,13 @@ export const postsApi = createApi({
 
         // Get popular posts (for home page)
         getPopularPosts: builder.query({
-            query: ({ limit = 6 } = {}) => {
+            query: ({ limit = 8 } = {}) => {
                 const params = new URLSearchParams();
                 params.append("page", 1);
                 params.append("limit", limit);
                 params.append("status", "published");
 
-                return `/posts?${params.toString()}`;
+                return `/posts/popular?${params.toString()}`;
             },
             providesTags: ["Post"],
         }),

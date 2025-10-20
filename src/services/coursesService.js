@@ -10,6 +10,10 @@ export const coursesApi = createApi({
             query: () => `/courses`,
         }),
 
+        getCoursesUser: builder.query({
+            query: () => `/courses/user`,
+        }),
+
         getBySlug: builder.query({
             query: ({ slug, offset = 0, limit = 10 }) =>
                 `/courses/${slug}?limit=${limit}&offset=${offset}`,
@@ -62,4 +66,5 @@ export const {
     useUpdateCourseProgressMutation,
     useGetUserLessonProgressQuery,
     useUpdateUserCourseProgressMutation,
+    useGetCoursesUserQuery,
 } = coursesApi;

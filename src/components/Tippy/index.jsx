@@ -21,6 +21,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import isHttps from "@/utils/isHttps";
 import notificationService from "@/services/notificationService";
 import socketClient from "@/utils/websocket";
+import { useGetCoursesUserQuery } from "@/services/coursesService";
 
 function Tippy({
     user = {},
@@ -38,9 +39,20 @@ function Tippy({
     const dispatch = useDispatch();
 
     const [notifications, setNotifications] = useState([]);
+    const [courses, setCourses] = useState([]);
     const [hasReadNotifications, setHasReadNotifications] = useState([]);
 
     const token = localStorage.getItem("token");
+
+    const { data } = useGetCoursesUserQuery(undefined, {
+        refetchOnMountOrArgChange: true,
+        refetchOnFocus: true,
+        refetchOnReconnect: true,
+    });
+
+    useEffect(() => {
+        if (data) setCourses(data.data);
+    }, [data]);
 
     const tippyInset = type === "options" ? "40px 0px auto auto" : "";
 
@@ -130,8 +142,6 @@ function Tippy({
         localStorage.removeItem("token");
         localStorage.removeItem("refresh_token");
     };
-
-    const courses = useApi("/pro");
 
     const handleReadNoti = async (id) => {
         try {
@@ -278,14 +288,20 @@ function Tippy({
                         </div>
 
                         <div className={styles.content}>
-                            {courses.map((course) => {
-                                return (
-                                    <CourseListDetail
-                                        key={course.id}
-                                        course={course}
-                                    />
-                                );
-                            })}
+                            {courses.length > 0 ? (
+                                courses.map((course) => {
+                                    return (
+                                        <CourseListDetail
+                                            key={course.id}
+                                            course={course}
+                                        />
+                                    );
+                                })
+                            ) : (
+                                <span className={styles.noCourses}>
+                                    Chưa có khóa học nào
+                                </span>
+                            )}
                         </div>
                     </>
                 ) : type === "options" ? (

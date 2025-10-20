@@ -89,7 +89,7 @@ function BlogItem({ posts = [] }) {
                             <h2
                                 className={styles.title}
                                 dangerouslySetInnerHTML={{
-                                    __html: post.title,
+                                    __html: post.meta_title || post.title,
                                 }}
                             />
                         </Link>
@@ -98,9 +98,12 @@ function BlogItem({ posts = [] }) {
                             className={styles.desc}
                             dangerouslySetInnerHTML={{
                                 __html:
-                                    post.description ||
-                                    (post.content
-                                        ? post.content.substring(0, 200)
+                                    post.meta_description ||
+                                    (post.meta_description
+                                        ? post.meta_description.substring(
+                                              0,
+                                              100
+                                          )
                                         : ""),
                             }}
                         />
