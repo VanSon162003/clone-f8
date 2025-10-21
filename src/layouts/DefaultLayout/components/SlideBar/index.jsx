@@ -3,12 +3,10 @@ import styles from "./SlideBar.module.scss";
 import { useLocation } from "react-router-dom";
 import Button from "@/components/Button";
 import {
-    faComments,
     faHouse,
     faNewspaper,
     faRoad,
 } from "@fortawesome/free-solid-svg-icons";
-import useCurrentUser from "@/hook/useCurrentUser";
 import { useDispatch, useSelector } from "react-redux";
 import { setSlideBack } from "@/features/auth/headerSlice";
 
@@ -17,7 +15,7 @@ function SlideBar() {
 
     const [active, setActive] = useState(location.pathname);
 
-    const { user } = useCurrentUser();
+    // const { user } = useCurrentUser();
     const dispatch = useDispatch();
 
     const slideBar = useRef(null);
@@ -39,6 +37,8 @@ function SlideBar() {
         } else {
             slideBar.current.style = "display: block";
         }
+
+        setActive(location.pathname);
     }, [location]);
 
     const handleClickSlideBar = (e) => {
@@ -59,9 +59,9 @@ function SlideBar() {
         }
     };
 
-    const handleClickComment = (e) => {
-        e.preventDefault();
-    };
+    // const handleClickComment = (e) => {
+    //     e.preventDefault();
+    // };
 
     const slideBack = useSelector((state) => state.header.slideBack);
 
@@ -110,7 +110,7 @@ function SlideBar() {
                         </Button>
                     </li>
 
-                    {user && (
+                    {/* {user && (
                         <li>
                             <Button
                                 className={`${styles.itemBtn} ${
@@ -122,7 +122,7 @@ function SlideBar() {
                                 <span>Hỏi đáp</span>
                             </Button>
                         </li>
-                    )}
+                    )} */}
                 </ul>
             </div>
         </div>

@@ -22,6 +22,8 @@ import { useRedirectIfRegistered } from "@/hook/useRedirectIfRegistered";
 import isHttps from "@/utils/isHttps";
 
 function CourseItem({ item = {}, courseType, courseEnrolled = false }) {
+    // console.log(item);
+
     const formatCurrencyVND = (value) => {
         const number = Math.round(parseFloat(value) / 1000) * 1000;
         return new Intl.NumberFormat("vi-VN").format(number) + "đ";
@@ -89,7 +91,7 @@ function CourseItem({ item = {}, courseType, courseEnrolled = false }) {
                             to={path}
                             target={courseType === "video" ? "_blank" : "_self"}
                         >
-                            {item.title.replace(/<[^>]+>/g, "")}
+                            {item?.title?.replace(/<[^>]+>/g, "")}
                         </Link>
                     </h3>
 
@@ -122,35 +124,35 @@ function CourseItem({ item = {}, courseType, courseEnrolled = false }) {
                                                 src={
                                                     item.creator
                                                         ? isHttps(
-                                                              item.creator
-                                                                  .avatar
+                                                              item?.creator
+                                                                  ?.avatar
                                                           )
-                                                            ? item.creator
-                                                                  .avatar
+                                                            ? item?.creator
+                                                                  ?.avatar
                                                             : `${
                                                                   import.meta
                                                                       .env
                                                                       .VITE_BASE_URL
                                                               }${
-                                                                  item.creator
-                                                                      .avatar
+                                                                  item?.creator
+                                                                      ?.avatar
                                                               }`
                                                         : "/src/assets/imgs/user.jpg"
                                                 }
-                                                alt={item.creator.full_name.replace(
+                                                alt={item?.creator?.full_name.replace(
                                                     /<[^>]+>/g,
                                                     ""
                                                 )}
-                                                title={`người hướng dẫn: ${item.creator.full_name}`}
+                                                title={`người hướng dẫn: ${item?.creator?.full_name}`}
                                             />
                                         </div>
-                                        <span>{item.creator.full_name}</span>
+                                        <span>{item?.creator?.full_name}</span>
                                     </>
                                 ) : (
                                     <div className={styles.infoItem}>
                                         <FontAwesomeIcon icon={faUser} />
                                         <span>
-                                            {formatNumberVN(item.total_view)}
+                                            {formatNumberVN(item?.total_view)}
                                         </span>
                                     </div>
                                 )}
@@ -162,7 +164,7 @@ function CourseItem({ item = {}, courseType, courseEnrolled = false }) {
                             >
                                 <FontAwesomeIcon icon={faCirclePlay} />
 
-                                <span>{item.total_lesson}</span>
+                                <span>{item?.total_lesson}</span>
                             </div>
 
                             <div
@@ -170,53 +172,53 @@ function CourseItem({ item = {}, courseType, courseEnrolled = false }) {
                                 title="Tổng thời lượng video: 116h50p"
                             >
                                 <FontAwesomeIcon icon={faClock} />
-                                <span>{item.total_duration}</span>
+                                <span>{item?.total_duration}</span>
                             </div>
                         </div>
                     ) : courseType === "article" ? (
                         <Link
-                            to={`/@${item.author?.username || "unknown"}`}
+                            to={`/@${item?.author?.username || "unknown"}`}
                             className={styles.author}
                         >
                             <Avatar
                                 avatar={
                                     item?.author
-                                        ? isHttps(item?.author.avatar)
+                                        ? isHttps(item?.author?.avatar)
                                             ? item?.author.avatar
                                             : `${
                                                   import.meta.env.VITE_BASE_URL
-                                              }${item?.author.avatar}`
+                                              }${item?.author?.avatar}`
                                         : "/src/assets/imgs/user.jpg"
                                 }
                                 authorPro={item.authorPro}
                                 pro={pro}
                                 authorName={
-                                    item.author?.full_name || "Unknown Author"
+                                    item?.author?.full_name || "Unknown Author"
                                 }
                                 admin={item.admin}
                             />
 
                             <span>·</span>
-                            <span>{item.views_count || 0} lượt xem</span>
+                            <span>{item?.views_count || 0} lượt xem</span>
                         </Link>
                     ) : (
                         <div className={styles.status}>
                             <div>
                                 <FontAwesomeIcon icon={faEye} />
 
-                                <span>{formatNumberVN(item.views_count)}</span>
+                                <span>{formatNumberVN(item?.views_count)}</span>
                             </div>
 
                             <div>
                                 <FontAwesomeIcon icon={faThumbsUp} />
 
-                                <span>{formatNumberVN(item.likes_count)}</span>
+                                <span>{formatNumberVN(item?.likes_count)}</span>
                             </div>
 
                             <div>
                                 <FontAwesomeIcon icon={faComment} />
                                 <span>
-                                    {formatNumberVN(item.comments_count)}
+                                    {formatNumberVN(item?.comments_count)}
                                 </span>
                             </div>
                         </div>

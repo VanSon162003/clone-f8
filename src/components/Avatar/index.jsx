@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./Avatar.module.scss";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import Button from "../Button";
+import { timeAgo } from "@/utils/timeAgo";
 
 function Avatar({
     admin,
@@ -59,8 +60,9 @@ function Avatar({
                     </Button>
 
                     <p className={styles.time}>
-                        19 giờ trước <span className={styles.dot}>·</span> 1
-                        phút đọc
+                        {timeAgo(blog.created_at)}{" "}
+                        <span className={styles.dot}>·</span>
+                        {blog.reading_time} phút đọc
                     </p>
                     {admin && (
                         <FontAwesomeIcon

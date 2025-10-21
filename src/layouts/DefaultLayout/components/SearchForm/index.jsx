@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-
 import styles from "./SearchForm.module.scss";
-
 import searchImg from "@/assets/icons/search.svg";
 import SearchResult from "../SearchResult";
+import { useSearchQuery } from "@/services/searchService";
+import useDebounce from "@/hook/useDebounce";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
 function SearchForm() {
     const [value, setValue] = useState("");
 
@@ -11,11 +13,15 @@ function SearchForm() {
     const [searchResult, setSearchResult] = useState(false);
     const [showResult, setShowResult] = useState(false);
 
-    const [searchCourse, setSearchCourse] = useState([]);
-    const [searchArticle, setSearchArticle] = useState([]);
-    const [searchVideo, setSearchVideo] = useState([]);
-
     const input = useRef();
+    const debouncedValue = useDebounce(value, 500);
+
+    const { data: searchResults, isFetching } = useSearchQuery(
+        { q: debouncedValue },
+        {
+            skip: !debouncedValue || debouncedValue.trim().length < 2,
+        }
+    );
 
     document.onclick = (e) => {
         const tippy = e.target.closest("._tippy_1kzjv_53");
@@ -34,36 +40,17 @@ function SearchForm() {
     };
 
     useEffect(() => {
-        if (value.length > 1) {
-            const timeId = setTimeout(() => {
-                fetch(`http://localhost:3000/free?q=${value}`)
-                    .then((res) => res.json())
-                    .then((data) => setSearchCourse(data));
-
-                fetch(`http://localhost:3000/article?q=${value}`)
-                    .then((res) => res.json())
-                    .then((data) => setSearchArticle(data));
-
-                fetch(`http://localhost:3000/video?q=${value}`)
-                    .then((res) => res.json())
-                    .then((data) => setSearchVideo(data));
-
-                if (
-                    searchCourse.length === 0 &&
-                    searchArticle.length === 0 &&
-                    searchVideo.length === 0
-                ) {
-                    setShowResult(false);
-                } else {
-                    setShowResult(true);
-                }
-            }, 1000);
-
-            return () => {
-                clearTimeout(timeId);
-            };
+        if (debouncedValue && debouncedValue.trim().length >= 2) {
+            const hasResults =
+                searchResults?.data &&
+                (searchResults.data.courses?.length > 0 ||
+                    searchResults.data.posts?.length > 0 ||
+                    searchResults.data.videos?.length > 0);
+            setShowResult(hasResults);
+        } else {
+            setShowResult(false);
         }
-    }, [value]);
+    }, [debouncedValue, searchResults]);
 
     const handleCLoseText = () => {
         setValue("");
@@ -96,21 +83,7 @@ function SearchForm() {
 
                 {close && (
                     <div className={styles.closeText} onClick={handleCLoseText}>
-                        <svg
-                            aria-hidden="true"
-                            focusable="false"
-                            data-prefix="fas"
-                            data-icon="xmark"
-                            className="svg-inline--fa fa-xmark "
-                            role="img"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 384 512"
-                        >
-                            <path
-                                fill="currentColor"
-                                d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"
-                            ></path>
-                        </svg>
+                        <FontAwesomeIcon icon={faXmark} />
                     </div>
                 )}
             </div>
@@ -120,52 +93,58 @@ function SearchForm() {
                     <div className={styles.tippyWrap}>
                         <div className={styles.result}>
                             <div className={styles.header}>
-                                <svg
-                                    aria-hidden="true"
-                                    focusable="false"
-                                    data-prefix="fas"
-                                    data-icon="magnifying-glass"
-                                    className="svg-inline--fa fa-magnifying-glass _icon_15ttk_79"
-                                    role="img"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    viewBox="0 0 512 512"
-                                >
-                                    <path
-                                        fill="currentColor"
-                                        d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"
-                                    ></path>
-                                </svg>
+                                <FontAwesomeIcon icon={faMagnifyingGlass} />
 
-                                {showResult ? (
-                                    <span>Không có kết quả cho '{value}'</span>
+                                {debouncedValue.trim().length < 2 ? (
+                                    <span>
+                                        Vui lòng nhập ít nhất 2 ký tự để tìm
+                                        kiếm
+                                    </span>
+                                ) : showResult ? (
+                                    <span>Kết quả cho &apos;{value}&apos;</span>
                                 ) : (
-                                    <span>Kết quả cho '{value}'</span>
+                                    <span>
+                                        Không có kết quả cho &apos;{value}&apos;
+                                    </span>
                                 )}
                             </div>
 
-                            <SearchResult
-                                setClose={setClose}
-                                title={"Khoá học"}
-                                setSearchResult={setSearchResult}
-                                setValue={setValue}
-                                searchList={searchCourse}
-                            />
+                            {searchResults?.data && (
+                                <>
+                                    <SearchResult
+                                        setClose={setClose}
+                                        title={"Khoá học"}
+                                        setSearchResult={setSearchResult}
+                                        setValue={setValue}
+                                        searchList={
+                                            searchResults.data.courses || []
+                                        }
+                                        value={value}
+                                    />
 
-                            <SearchResult
-                                setClose={setClose}
-                                title={"Bài viết"}
-                                setSearchResult={setSearchResult}
-                                setValue={setValue}
-                                searchList={searchArticle}
-                            />
+                                    <SearchResult
+                                        setClose={setClose}
+                                        title={"Bài viết"}
+                                        setSearchResult={setSearchResult}
+                                        setValue={setValue}
+                                        searchList={
+                                            searchResults.data.posts || []
+                                        }
+                                        value={value}
+                                    />
 
-                            <SearchResult
-                                setClose={setClose}
-                                title={"Video"}
-                                setSearchResult={setSearchResult}
-                                setValue={setValue}
-                                searchList={searchVideo}
-                            />
+                                    <SearchResult
+                                        setClose={setClose}
+                                        title={"Video"}
+                                        setSearchResult={setSearchResult}
+                                        setValue={setValue}
+                                        searchList={
+                                            searchResults.data.videos || []
+                                        }
+                                        value={value}
+                                    />
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -18,8 +18,6 @@ const ActivityHeatmap = ({ data = [] }) => {
             date,
             count,
         }));
-        console.log("[ActivityHeatmap] data input:", data);
-        console.log("[ActivityHeatmap] formattedData:", arr);
         return arr;
     }, [data]);
 

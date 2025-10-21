@@ -4,8 +4,6 @@ import styles from "./LearningCourseItem.module.scss";
 import Button from "@/components/Button";
 
 function LearningCourseItem({ courseItem = {} }) {
-    console.log(courseItem);
-
     const navigate = useNavigate();
 
     const goToCourse = () => {
@@ -84,15 +82,13 @@ function LearningCourseItem({ courseItem = {} }) {
                                     className={styles.progressFill}
                                     style={{
                                         width: `${
-                                            courseItem?.userProgress
-                                                ?.progress || 0
+                                            courseItem?.progressPercent || 0
                                         }%`,
                                     }}
                                 ></div>
                             </div>
                             <span className={styles.progressText}>
-                                {courseItem?.userProgress?.progress || 0}% hoàn
-                                thành
+                                {courseItem?.progressPercent || 0}% hoàn thành
                             </span>
                         </div>
                     )}

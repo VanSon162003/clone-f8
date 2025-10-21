@@ -3,7 +3,7 @@ import Editor from "@/components/Editor";
 import styles from "./WritePost.module.scss";
 import ParentCard from "@/components/ParentCard";
 import { toast } from "react-toastify";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import Model from "@/components/Model";
 import ScrollLock from "@/components/ScrollLock";
 import UploadImg from "@/components/UploadImg";
@@ -38,37 +38,51 @@ function WritePost() {
     const contentEditorRef = useRef(null);
 
     const navigate = useNavigate();
+    const location = useLocation();
 
     const [post, setPost] = useState(null);
 
     const id = searchParams.get("id"); // lấy ra id cần edit
 
+    console.log(id);
+
     const { data } = useGetPostByIdQuery(id, {
         refetchOnFocus: true,
         refetchOnMountOrArgChange: true,
+        refetchOnReconnect: true,
     });
 
     useEffect(() => {
-        if (id) {
-            setPost(data?.data);
+        if (location.pathname.includes("new-post")) {
+            setFormEdit({
+                title: "",
+                content: "",
+                metaTitle: "",
+                metaContent: "",
+                thumbnail: "",
+                tags: [],
+                visibility: "published",
+                status: "published",
+                published_at: null,
+            });
         }
-    }, [id, data]);
+    }, [location.pathname]);
 
     useEffect(() => {
-        if (post) {
+        if (data?.data) {
             setFormEdit(() => ({
-                title: post?.title || "",
-                content: post?.content || "",
-                metaTitle: post?.meta_title || "",
-                metaContent: post?.meta_description || "",
-                thumbnail: post?.thumbnail || "",
-                tags: post?.tags || [],
-                visibility: post?.visibility || "published",
-                status: post?.status || "published",
-                published_at: post?.published_at || null,
+                title: data?.data?.title || "",
+                content: data?.data?.content || "",
+                metaTitle: data?.data?.meta_title || "",
+                metaContent: data?.data?.meta_description || "",
+                thumbnail: data?.data?.thumbnail || "",
+                tags: data?.data?.tags || [],
+                visibility: data?.data?.visibility || "published",
+                status: data?.data?.status || "published",
+                published_at: data?.data?.published_at || null,
             }));
         }
-    }, [post]);
+    }, [data?.data]);
 
     const isContentEmpty = (value) => {
         if (!value) return true;
@@ -252,15 +266,10 @@ function WritePost() {
             } else {
                 await createPost(formData).unwrap();
             }
-            toast.success(
-                id
-                    ? "Cập nhật bài viết thành công!"
-                    : "Tạo bài viết thành công!",
-                { autoClose: 3000 }
-            );
+
             setTimeout(() => {
                 navigate("/me/posts");
-            }, 1500);
+            }, 1700);
         } catch (err) {
             console.log(err);
         }
@@ -289,12 +298,11 @@ function WritePost() {
             } else {
                 await createPost(formData).unwrap();
             }
-            toast.success("Lưu nháp thành công!", { autoClose: 3000 });
             setTimeout(() => {
                 navigate("/me/posts");
-            }, 1500);
+            }, 1700);
         } catch (err) {
-            toast.error("Lỗi khi lưu nháp bài viết", { autoClose: 3000 });
+            toast.error("Lỗi khi lưu nháp bài viết", { autoClose: 1500 });
         }
     };
 

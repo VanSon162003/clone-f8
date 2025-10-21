@@ -19,6 +19,8 @@ function LearningItem() {
         error,
     } = useGetLearningPathBySlugQuery(slug, {
         refetchOnMountOrArgChange: true,
+        refetchOnFocus: true,
+        refetchOnReconnect: true,
     });
     const lp = lpRes?.data;
     const courses = useMemo(() => lp?.courses || [], [lp]);

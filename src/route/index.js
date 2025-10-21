@@ -31,6 +31,7 @@ import VerifyEmail from "@/pages/VerifyEmail";
 import ResendEmail from "@/pages/ResendEmail";
 import PaymentSuccess from "@/pages/PaymentSuccess";
 import PaymentCancel from "@/pages/Payment/Cancel";
+import SearchResults from "@/pages/SearchResults";
 
 const routes = [
     {
@@ -180,6 +181,10 @@ const routes = [
         path: config.routes.resendEmail,
         component: ResendEmail,
         layout: null,
+    },
+    {
+        path: config.routes.searchResults,
+        component: SearchResults,
     },
 ];
 

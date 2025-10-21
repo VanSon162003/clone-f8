@@ -197,7 +197,7 @@ function BlogDetail() {
                                         username={`/profile/@${
                                             author.username || "unknown"
                                         }`}
-                                        blog
+                                        blog={post}
                                         fontSize={"5.6px"}
                                         authorName={
                                             author.full_name || "Unknown Author"

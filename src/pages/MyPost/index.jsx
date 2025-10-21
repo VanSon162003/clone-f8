@@ -17,6 +17,7 @@ function MyPost() {
 
     const [posts, setPosts] = useState(null);
     const [page, setPage] = useState(1);
+    const [pagination, setPagination] = useState(null);
     const limit = 10;
 
     const { data } = useGetPostsMeQuery(
@@ -40,10 +41,9 @@ function MyPost() {
                     ),
                 };
             });
+            setPagination(data.data.pagination);
         }
     }, [data]);
-
-    console.log(posts);
 
     const [deletePost] = useDeletePostMutation();
 
@@ -153,6 +153,32 @@ function MyPost() {
                                           </p>
                                       </div>
                                   )}
+                            {pagination && pagination.totalPages > 1 && (
+                                <div className={styles.pagination}>
+                                    <button
+                                        className={styles.pageButton}
+                                        disabled={!pagination.hasPrevPage}
+                                        onClick={() =>
+                                            setPage((prev) => prev - 1)
+                                        }
+                                    >
+                                        Trang trước
+                                    </button>
+                                    <span className={styles.pageInfo}>
+                                        Trang {pagination.currentPage} /{" "}
+                                        {pagination.totalPages}
+                                    </span>
+                                    <button
+                                        className={styles.pageButton}
+                                        disabled={!pagination.hasNextPage}
+                                        onClick={() =>
+                                            setPage((prev) => prev + 1)
+                                        }
+                                    >
+                                        Trang sau
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                     <div className="col col-4 col-xxl-4 col-lg-12">

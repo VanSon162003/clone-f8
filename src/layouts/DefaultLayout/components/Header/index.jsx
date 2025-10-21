@@ -6,10 +6,16 @@ import styles from "../Header/Header.module.scss";
 import SearchForm from "../SearchForm";
 import Actions from "../Actions";
 import { useSelector } from "react-redux";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import Button from "@/components/Button";
 
 function Header() {
     const back = useSelector((state) => state.header.back);
 
+    const handleBack = () => {
+        window.history.back();
+    };
     return (
         <header id="header" className={styles.wrapper}>
             <div className={styles.logo}>
@@ -17,9 +23,12 @@ function Header() {
                     <img src={logo} alt="logo" className={styles.img} />
                 </Link>
                 {back ? (
-                    <Link to={"/"} className={styles.title}>
-                        quay lại
-                    </Link>
+                    <Button onClick={handleBack} className={styles.back}>
+                        <span className={styles.subTitle}>
+                            <FontAwesomeIcon icon={faChevronLeft} />
+                            <span>quay lại</span>
+                        </span>
+                    </Button>
                 ) : (
                     <Link to={"/"} className={styles.title}>
                         Học Lập Trình Để Đi Làm

@@ -47,6 +47,7 @@ function PostItem({
             <h3 title={post.title.replace(/<[^>]+>/g, "")}>
                 <Button
                     to={
+                        (type === "options" && `/blog/${post.slug}`) ||
                         type === "myBookmark"
                             ? `/blog/${post.slug}`
                             : isPublished
@@ -65,6 +66,7 @@ function PostItem({
             <div className={styles.author}>
                 <Button
                     to={
+                        (type === "options" && `/blog/${post.slug}`) ||
                         type === "myBookmark"
                             ? `/blog/${post.slug}`
                             : isPublished

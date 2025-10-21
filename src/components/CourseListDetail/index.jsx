@@ -29,6 +29,8 @@ function CourseListDetail({ course = {} }) {
         return `${years} năm trước`;
     };
 
+    console.log(course);
+
     return (
         <div className={styles.courseItem}>
             <Button to={`learning/${course.slug}`}>
@@ -51,9 +53,9 @@ function CourseListDetail({ course = {} }) {
                     </Button>
                 </h3>
                 <p className={styles.lastCompeted}>
-                    {course?.userProgress?.last_viewed_at
+                    {course?.userProgress?.[0]?.last_viewed_at
                         ? `học cách đây ${timeAgo(
-                              course?.userProgress?.last_viewed_at
+                              course?.userProgress?.[0]?.last_viewed_at
                           )} `
                         : "Học ngay thôi!"}
                 </p>
@@ -61,7 +63,7 @@ function CourseListDetail({ course = {} }) {
                     className={styles.wrap}
                     style={{
                         "--random-with": `${
-                            course?.userProgress?.progress || 0
+                            course?.userProgress?.[0]?.progress || 0
                         }%`,
                     }}
                 ></div>

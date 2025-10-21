@@ -26,8 +26,6 @@ function Home() {
         refetchOnReconnect: true,
     });
 
-    console.log(popularPosts);
-
     const videoData = useGetAllCoursesVideoQuery(undefined, {
         refetchOnMountOrArgChange: true,
         refetchOnFocus: true,

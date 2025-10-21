@@ -31,6 +31,7 @@ const config = {
         courseLessonPage: "/learning/:slug",
         verifyEmail: "/verify-email",
         resendEmail: "/resend-email",
+        searchResults: "/search-results",
     },
 };
 

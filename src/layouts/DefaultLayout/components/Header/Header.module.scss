@@ -22,6 +22,36 @@
     align-items: center;
     justify-content: center;
     gap: 16px;
+
+    .back {
+        display: flex;
+
+        .subTitle {
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: #808990;
+
+            svg {
+                font-size: 1rem;
+                margin-right: 4px;
+                transition: ease 0.3s;
+            }
+        }
+    }
+
+    &:hover {
+        .back {
+            .subTitle {
+                color: #000;
+
+                svg {
+                    transform: translate(-4px);
+                }
+            }
+        }
+    }
 }
 
 .img {
