@@ -15,6 +15,7 @@ import {
 import { useSelector } from "react-redux";
 import isHttps from "@/utils/isHttps";
 import socketClient from "@/utils/websocket";
+import Button from "../Button";
 
 function CommentSidebar({
     open = false,
@@ -340,53 +341,72 @@ function CommentSidebar({
                                 className="container-fluid"
                                 style={{ padding: "16px" }}
                             >
-                                <div className={styles.top}>
-                                    <div className={styles.user}>
-                                        <Avatar
-                                            fontSize={"4.445px"}
-                                            avatar={
-                                                currentUser?.avatar
-                                                    ? isHttps(
-                                                          currentUser?.avatar
-                                                      )
-                                                        ? currentUser?.avatar
-                                                        : `${
-                                                              import.meta.env
-                                                                  .VITE_BASE_URL
-                                                          }${
+                                {currentUser ? (
+                                    <div className={styles.top}>
+                                        <div className={styles.user}>
+                                            <Avatar
+                                                fontSize={"4.445px"}
+                                                avatar={
+                                                    currentUser?.avatar
+                                                        ? isHttps(
                                                               currentUser?.avatar
-                                                          }`
-                                                    : "/src/assets/imgs/user.jpg"
-                                            }
-                                        />
-                                    </div>
-                                    <div
-                                        className={styles.comment}
-                                        onClick={handleOpenComment}
-                                    >
+                                                          )
+                                                            ? currentUser?.avatar
+                                                            : `${
+                                                                  import.meta
+                                                                      .env
+                                                                      .VITE_BASE_URL
+                                                              }${
+                                                                  currentUser?.avatar
+                                                              }`
+                                                        : "/src/assets/imgs/user.jpg"
+                                                }
+                                            />
+                                        </div>
                                         <div
-                                            onClick={(e) => e.stopPropagation()} // chặn nổi bọt từ con
+                                            className={styles.comment}
+                                            onClick={handleOpenComment}
                                         >
-                                            {isOpenCommentEditor ? (
-                                                <Editor
-                                                    onCancel={
-                                                        handleCloseComment
-                                                    }
-                                                    onSubmit={handleAddComment}
-                                                />
-                                            ) : (
-                                                <div
-                                                    className={
-                                                        styles.commentPlaceholder
-                                                    }
-                                                    onClick={handleOpenComment}
-                                                >
-                                                    Nhập bình luận mới của bạn
-                                                </div>
-                                            )}
+                                            <div
+                                                onClick={(e) =>
+                                                    e.stopPropagation()
+                                                } // chặn nổi bọt từ con
+                                            >
+                                                {isOpenCommentEditor ? (
+                                                    <Editor
+                                                        onCancel={
+                                                            handleCloseComment
+                                                        }
+                                                        onSubmit={
+                                                            handleAddComment
+                                                        }
+                                                    />
+                                                ) : (
+                                                    <div
+                                                        className={
+                                                            styles.commentPlaceholder
+                                                        }
+                                                        onClick={
+                                                            handleOpenComment
+                                                        }
+                                                    >
+                                                        Nhập bình luận mới của
+                                                        bạn
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                ) : (
+                                    <div className={styles.noLogin}>
+                                        <span>
+                                            <Button to="/login">
+                                                Đăng nhập
+                                            </Button>{" "}
+                                            để bình luận bài viết này ngay
+                                        </span>
+                                    </div>
+                                )}
 
                                 <div className={styles.content}>
                                     <div className={styles.header}>

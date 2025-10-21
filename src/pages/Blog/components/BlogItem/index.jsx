@@ -3,16 +3,19 @@ import styles from "./BlogItem.module.scss";
 import Avatar from "@/components/Avatar";
 import Actions from "@/components/Actions";
 import { timeAgo } from "@/utils/timeAgo";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
     useGetUserBookmarksQuery,
     useToggleBookmarkMutation,
 } from "@/services/bookmarksService";
 import { useEffect, useState } from "react";
 import isHttps from "@/utils/isHttps";
+import { useSelector } from "react-redux";
 
 function BlogItem({ posts = [] }) {
     const [toggleBookmark] = useToggleBookmarkMutation();
+
+    const navigator = useNavigate();
 
     const { data } = useGetUserBookmarksQuery(undefined, {
         refetchOnMountOrArgChange: true,
@@ -27,11 +30,15 @@ function BlogItem({ posts = [] }) {
         }
     }, [data]);
 
+    const currentUser = useSelector((state) => state.auth.currentUser);
+
     const renderBlogItem = (post) => {
         const author = post.author || {};
         const tags = post.tags || [];
 
         const handleBookmark = async () => {
+            if (!currentUser) navigator("/login");
+
             if (!post?.id) return;
             try {
                 await toggleBookmark({

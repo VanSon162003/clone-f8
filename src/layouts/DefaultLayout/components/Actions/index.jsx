@@ -51,8 +51,6 @@ function Actions() {
             const chanel = socket.subscribe("joinNotificationRoom");
 
             chanel.bind("notification", (data) => {
-                console.log(data);
-
                 const userId = data.userId;
 
                 if (currentUser.id === userId)
@@ -114,7 +112,7 @@ function Actions() {
             setNotifications([]);
             return;
         }
-        setNotifications((prev) => prev.filter((n) => n?.id !== id));
+        setNotifications((prev) => prev.filter((n) => n.id !== id));
     };
 
     return user ? (

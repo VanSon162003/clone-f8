@@ -10,7 +10,7 @@ import Actions from "@/components/Actions";
 import BlogItem from "../Blog/components/BlogItem";
 import Topics from "@/components/Topics";
 import ShareModal from "@/components/ShareModal";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import {
     useGetPostBySlugQuery,
     useGetAllPostsQuery,
@@ -28,6 +28,8 @@ import {
 import { timeAgo } from "@/utils/timeAgo";
 import CommentSidebar from "@/components/CommentSidebar";
 import isHttps from "@/utils/isHttps";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 function BlogDetail() {
     const { slug } = useParams();
@@ -35,6 +37,8 @@ function BlogDetail() {
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
     const [post, setPost] = useState([]);
     const [totalComment, setTotalComment] = useState(0);
+
+    const currentUser = useSelector((state) => state.auth.currentUser);
 
     // Fetch post data
     const {
@@ -92,6 +96,11 @@ function BlogDetail() {
         ) || [];
 
     const handleLike = async () => {
+        if (!currentUser)
+            return toast.error("Cần đăng nhập để thả tim bài viết này", {
+                autoClose: 1500,
+            });
+
         if (!post?.id) return;
         try {
             await toggleLike({
@@ -104,6 +113,10 @@ function BlogDetail() {
     };
 
     const handleBookmark = async () => {
+        if (!currentUser)
+            return toast.error("Cần đăng nhập để lưu bài viết này", {
+                autoClose: 1500,
+            });
         if (!post?.id) return;
         try {
             await toggleBookmark({
