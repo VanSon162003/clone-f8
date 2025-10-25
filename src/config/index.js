@@ -32,6 +32,16 @@ const config = {
         verifyEmail: "/verify-email",
         resendEmail: "/resend-email",
         searchResults: "/search-results",
+        // admin routes
+        admin: "/admin",
+        adminUsers: "/admin/users",
+        adminCourses: "/admin/courses",
+        adminPosts: "/admin/posts",
+        adminComments: "/admin/comments",
+        adminTopics: "/admin/topics",
+        adminInstructors: "/admin/instructors",
+        adminSettings: "/admin/settings",
+        adminStatistics: "/admin/statistics",
     },
 };
 

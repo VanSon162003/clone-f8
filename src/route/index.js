@@ -1,5 +1,16 @@
 import config from "@/config";
-import AdminLayout from "@/layouts/AminLayout";
+import AdminLayout from "@/layouts/AdminLayout";
+import {
+    Dashboard,
+    UsersManagement,
+    CoursesManagement,
+    PostsManagement,
+    CommentsManagement,
+    TopicsManagement,
+    InstructorsManagement,
+    SystemSettings,
+    AdvancedStatistics,
+} from "@/layouts/AdminLayout/pages";
 import AuthenticationApp from "@/layouts/DefaultLayout/components/AuthenticationApp";
 import ForgotPassWord from "@/layouts/DefaultLayout/components/AuthenticationApp/page/ForgotPassWord";
 import Login from "@/layouts/DefaultLayout/components/AuthenticationApp/page/Login";
@@ -185,6 +196,53 @@ const routes = [
     {
         path: config.routes.searchResults,
         component: SearchResults,
+    },
+
+    // admin routes
+    {
+        path: config.routes.admin,
+        component: Dashboard,
+        layout: AdminLayout,
+    },
+    {
+        path: config.routes.adminUsers,
+        component: UsersManagement,
+        layout: AdminLayout,
+    },
+    {
+        path: config.routes.adminCourses,
+        component: CoursesManagement,
+        layout: AdminLayout,
+    },
+    {
+        path: config.routes.adminPosts,
+        component: PostsManagement,
+        layout: AdminLayout,
+    },
+    {
+        path: config.routes.adminComments,
+        component: CommentsManagement,
+        layout: AdminLayout,
+    },
+    {
+        path: config.routes.adminTopics,
+        component: TopicsManagement,
+        layout: AdminLayout,
+    },
+    {
+        path: config.routes.adminInstructors,
+        component: InstructorsManagement,
+        layout: AdminLayout,
+    },
+    {
+        path: config.routes.adminSettings,
+        component: SystemSettings,
+        layout: AdminLayout,
+    },
+    {
+        path: config.routes.adminStatistics,
+        component: AdvancedStatistics,
+        layout: AdminLayout,
     },
 ];
 

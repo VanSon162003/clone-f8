@@ -1,0 +1,9 @@
+export { default as Dashboard } from "./Dashboard";
+export { default as UsersManagement } from "./UsersManagement";
+export { default as CoursesManagement } from "./CoursesManagement";
+export { default as PostsManagement } from "./PostsManagement";
+export { default as CommentsManagement } from "./CommentsManagement";
+export { default as TopicsManagement } from "./TopicsManagement";
+export { default as InstructorsManagement } from "./InstructorsManagement";
+export { default as SystemSettings } from "./SystemSettings";
+export { default as AdvancedStatistics } from "./AdvancedStatistics";
