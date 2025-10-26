@@ -1,7 +1,6 @@
 import config from "@/config";
 import AdminLayout from "@/layouts/AdminLayout";
 import AdminLogin from "@/layouts/AdminLayout/pages/Login";
-import ProtectedAdminRoute from "@/components/ProtectedAdminRoute";
 import {
     Dashboard,
     UsersManagement,
@@ -210,51 +209,55 @@ const routes = [
         path: config.routes.admin,
         component: Dashboard,
         layout: AdminLayout,
-        element: (
-            <ProtectedAdminRoute>
-                <Dashboard />
-            </ProtectedAdminRoute>
-        ),
+        auth: true,
     },
     {
         path: config.routes.adminUsers,
         component: UsersManagement,
         layout: AdminLayout,
+        auth: true,
     },
     {
         path: config.routes.adminCourses,
         component: CoursesManagement,
         layout: AdminLayout,
+        auth: true,
     },
     {
         path: config.routes.adminPosts,
         component: PostsManagement,
         layout: AdminLayout,
+        auth: true,
     },
     {
         path: config.routes.adminComments,
         component: CommentsManagement,
         layout: AdminLayout,
+        auth: true,
     },
     {
         path: config.routes.adminTopics,
         component: TopicsManagement,
         layout: AdminLayout,
+        auth: true,
     },
     {
         path: config.routes.adminInstructors,
         component: InstructorsManagement,
         layout: AdminLayout,
+        auth: true,
     },
     {
         path: config.routes.adminSettings,
         component: SystemSettings,
         layout: AdminLayout,
+        auth: true,
     },
     {
         path: config.routes.adminStatistics,
         component: AdvancedStatistics,
         layout: AdminLayout,
+        auth: true,
     },
 ];
 

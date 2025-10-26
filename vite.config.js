@@ -4,7 +4,11 @@ import path from "path";
 
 // https://vite.dev/config/
 export default defineConfig({
-    plugins: [react()],
+    plugins: [
+        react({
+            include: "**/*.{jsx,js}",
+        }),
+    ],
     resolve: {
         alias: {
             // eslint-disable-next-line no-undef

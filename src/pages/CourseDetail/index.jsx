@@ -15,6 +15,7 @@ import ScrollLock from "@/components/ScrollLock";
 import CourseRegistrationButton from "@/components/CourseRegistrationButton";
 import { useParams } from "react-router-dom";
 import { useGetBySlugQuery } from "@/services/coursesService";
+import isHttps from "@/utils/isHttps";
 
 function CourseDetail() {
     const [course, setCourse] = useState({});
@@ -375,12 +376,17 @@ function CourseDetail() {
                                     onClick={handleOpenIntroduce}
                                     className={styles.imgPreview}
                                 >
-                                    <div
+                                    <img
                                         className={styles.bg}
-                                        style={{
-                                            backgroundImage: `url(${course.thumbnail})`,
-                                        }}
-                                    ></div>
+                                        src={`${
+                                            isHttps(course.thumbnail)
+                                                ? course.thumbnail
+                                                : import.meta.env
+                                                      .VITE_BASE_URL +
+                                                  course.thumbnail
+                                        }`}
+                                        alt=""
+                                    />
 
                                     <FontAwesomeIcon
                                         icon={faCirclePlay}

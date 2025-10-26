@@ -86,11 +86,13 @@ function Profile() {
                         <div className={styles.aside}>
                             <Avatar
                                 avatar={
-                                    isHttps(profile?.avatar)
-                                        ? profile?.avatar
-                                        : `${import.meta.env.VITE_BASE_URL}${
-                                              profile?.avatar
-                                          }` || "/src/assets/imgs/user.jpg"
+                                    profile?.avatar
+                                        ? isHttps(profile?.avatar)
+                                            ? profile?.avatar
+                                            : `${
+                                                  import.meta.env.VITE_BASE_URL
+                                              }${profile?.avatar}`
+                                        : "/src/assets/imgs/user.jpg"
                                 }
                                 fontSize={"24px"}
                                 flexCenter

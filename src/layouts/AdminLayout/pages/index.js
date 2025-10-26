@@ -7,3 +7,4 @@ export { default as TopicsManagement } from "./TopicsManagement";
 export { default as InstructorsManagement } from "./InstructorsManagement";
 export { default as SystemSettings } from "./SystemSettings";
 export { default as AdvancedStatistics } from "./AdvancedStatistics";
+export { default as Login } from "./Login";

@@ -176,7 +176,7 @@ function Actions() {
                                         : `${import.meta.env.VITE_BASE_URL}${
                                               user.avatar
                                           }`
-                                    : "src/assets/imgs/user.jpg"
+                                    : "/src/assets/imgs/user.jpg"
                             }
                             alt="user"
                         />

@@ -261,6 +261,7 @@
         overflow: hidden;
         -webkit-user-select: none;
         user-select: none;
+        cursor: pointer;
 
         &::after {
             content: "";
@@ -276,10 +277,10 @@
 
         .bg {
             width: 100%;
-            padding-top: 56.25%;
-            background-repeat: no-repeat;
-            background-position: 50% 50%;
-            background-size: 100% auto;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            object-position: center;
+            display: block;
         }
 
         .icon {

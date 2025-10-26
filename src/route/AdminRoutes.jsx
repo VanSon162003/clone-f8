@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+
 import AdminLayout from "../layouts/AdminLayout";
 import {
     Dashboard,
@@ -10,6 +11,7 @@ import {
     InstructorsManagement,
     SystemSettings,
     AdvancedStatistics,
+    Login,
 } from "../layouts/AdminLayout/pages";
 import ProtectedRoute from "../components/ProtectedRoute";
 
@@ -33,6 +35,7 @@ function AdminRoutes() {
                 <Route path="instructors" element={<InstructorsManagement />} />
                 <Route path="settings" element={<SystemSettings />} />
                 <Route path="statistics" element={<AdvancedStatistics />} />
+                <Route path="login" element={<Login />} />
             </Route>
         </Routes>
     );

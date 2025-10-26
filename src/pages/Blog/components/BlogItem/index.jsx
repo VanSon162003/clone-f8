@@ -62,7 +62,7 @@ function BlogItem({ posts = [] }) {
                 <div className={styles.header}>
                     <div className={styles.author}>
                         <Button
-                            href={`/profile/@${author.username || "unknown"}`}
+                            to={`/profile/@${author.username || "unknown"}`}
                         >
                             <Avatar
                                 fontSize={"0.29rem"}
@@ -78,7 +78,7 @@ function BlogItem({ posts = [] }) {
                             />
                         </Button>
                         <Button
-                            href={`/profile/@${author.username || "unknown"}`}
+                            to={`/profile/@${author.username || "unknown"}`}
                         >
                             <span>{author.full_name || "Unknown Author"}</span>
                         </Button>

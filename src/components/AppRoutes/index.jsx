@@ -2,8 +2,9 @@ import { Route, Routes } from "react-router-dom";
 
 import DefaultLayout from "@/layouts/DefaultLayout";
 import NoLayout from "@/layouts/NoLayout";
-import routes from "@/route";
+import routes from "@/route/index.jsx";
 import ProtectedRoute from "../ProtectedRoute";
+import ProtectedAdminRoute from "../ProtectedAdminRoute";
 import { Fragment } from "react";
 
 function AppRoutes() {
@@ -17,9 +18,12 @@ function AppRoutes() {
 
                 const Component = route.component;
 
-                const RouteElement = route.protected
-                    ? ProtectedRoute
-                    : Fragment;
+                let RouteElement = Fragment;
+                if (route.protected) {
+                    RouteElement = ProtectedRoute;
+                } else if (route.auth) {
+                    RouteElement = ProtectedAdminRoute;
+                }
                 return (
                     <Route key={route.path} element={<Layout />}>
                         <Route

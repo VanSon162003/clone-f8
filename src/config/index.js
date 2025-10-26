@@ -34,6 +34,7 @@ const config = {
         searchResults: "/search-results",
         // admin routes
         admin: "/admin",
+        adminLogin: "/admin/login",
         adminUsers: "/admin/users",
         adminCourses: "/admin/courses",
         adminPosts: "/admin/posts",
