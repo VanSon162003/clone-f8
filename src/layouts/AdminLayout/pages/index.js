@@ -8,3 +8,5 @@ export { default as InstructorsManagement } from "./InstructorsManagement";
 export { default as SystemSettings } from "./SystemSettings";
 export { default as AdvancedStatistics } from "./AdvancedStatistics";
 export { default as Login } from "./Login";
+export { default as LessonsManagement } from "./LessonsManagement";
+export { default as TracksManagement } from "./ChaptersManagement";

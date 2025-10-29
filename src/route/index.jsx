@@ -11,6 +11,8 @@ import {
     InstructorsManagement,
     SystemSettings,
     AdvancedStatistics,
+    LessonsManagement,
+    TracksManagement,
 } from "@/layouts/AdminLayout/pages";
 import AuthenticationApp from "@/layouts/DefaultLayout/components/AuthenticationApp";
 import ForgotPassWord from "@/layouts/DefaultLayout/components/AuthenticationApp/page/ForgotPassWord";
@@ -214,6 +216,18 @@ const routes = [
     {
         path: config.routes.adminUsers,
         component: UsersManagement,
+        layout: AdminLayout,
+        auth: true,
+    },
+    {
+        path: config.routes.adminLesson,
+        component: LessonsManagement,
+        layout: AdminLayout,
+        auth: true,
+    },
+    {
+        path: config.routes.adminTrack,
+        component: TracksManagement,
         layout: AdminLayout,
         auth: true,
     },

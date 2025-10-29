@@ -251,7 +251,7 @@ function CourseDetail() {
                                                                         }
                                                                     >
                                                                         {
-                                                                            course.total_lesson
+                                                                            track.total_lesson
                                                                         }{" "}
                                                                         bài học
                                                                     </div>

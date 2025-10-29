@@ -43,6 +43,8 @@ const config = {
         adminInstructors: "/admin/instructors",
         adminSettings: "/admin/settings",
         adminStatistics: "/admin/statistics",
+        adminLesson: "/admin/lessons",
+        adminTrack: "/admin/tracks",
     },
 };
 

@@ -47,6 +47,16 @@ function AdminLayout() {
             label: <Link to="/admin/courses">Quản lý khóa học</Link>,
         },
         {
+            key: "tracks",
+            icon: <BookOutlined />,
+            label: <Link to="/admin/tracks">Quản lý chương học</Link>,
+        },
+        {
+            key: "lessons",
+            icon: <BookOutlined />,
+            label: <Link to="/admin/lessons">Quản lý bài học</Link>,
+        },
+        {
             key: "posts",
             icon: <FileTextOutlined />,
             label: <Link to="/admin/posts">Quản lý bài viết</Link>,
