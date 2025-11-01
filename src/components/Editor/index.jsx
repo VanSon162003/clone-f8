@@ -77,7 +77,11 @@ const Editor = forwardRef(
                     if (!res.ok) throw new Error("Upload failed");
 
                     const data = await res.json();
-                    const url = data.url || data.path || data.filePath;
+
+                    const path = data.url || data.path;
+                    const url = path.startsWith("http")
+                        ? path
+                        : `${import.meta.env.VITE_BASE_URL}${path}`;
 
                     const quill = quillRef.current.getEditor();
                     const range = quill.getSelection(true);
@@ -119,6 +123,8 @@ const Editor = forwardRef(
                 ? "Nhập tiêu đề bài viết..."
                 : type === "writePostContent"
                 ? "Nhập nội dung bài viết..."
+                : type === "admin"
+                ? "nhập nội dung..."
                 : "Nhập bình luận mới của bạn";
 
         // ----------------- UTILS -----------------
@@ -389,6 +395,8 @@ const Editor = forwardRef(
                                 </div>
                             </button>
                         </div>
+                    ) : type === "admin" ? (
+                        ""
                     ) : (
                         <div className={styles.buttonsBar}>
                             <button className={styles.btn} onClick={onCancel}>
