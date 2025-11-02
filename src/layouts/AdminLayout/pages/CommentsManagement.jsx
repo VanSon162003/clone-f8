@@ -1,5 +1,14 @@
 import { useState } from "react";
-import { Table, Tag, Button, Input, Modal, message, Tooltip } from "antd";
+import {
+    Table,
+    Tag,
+    Button,
+    Input,
+    Modal,
+    message,
+    Tooltip,
+    Space,
+} from "antd";
 import {
     EyeInvisibleOutlined,
     EyeOutlined,
@@ -10,12 +19,14 @@ import {
     useUpdateCommentVisibilityMutation,
 } from "@/services/admin/commentsService";
 import useDebounce from "@/hook/useDebounce";
+import isHttps from "@/utils/isHttps";
 
 function CommentsManagement() {
     const [searchText, setSearchText] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [hideModalVisible, setHideModalVisible] = useState(false);
+    const [viewModalVisible, setViewModalVisible] = useState(false);
     const [selectedComment, setSelectedComment] = useState(null);
 
     const debouncedSearchText = useDebounce(searchText, 500);
@@ -86,6 +97,7 @@ function CommentsManagement() {
             title: "Người đăng",
             dataIndex: ["user", "name"],
             key: "author",
+            render: (_, record) => <Tag>{record.user.full_name}</Tag>,
         },
         {
             title: "Thuộc về",
@@ -117,30 +129,44 @@ function CommentsManagement() {
         {
             title: "Thao tác",
             key: "actions",
-            width: 120,
-            render: (_, record) =>
-                record.deleted_at ? (
+            width: 180,
+            render: (_, record) => (
+                <Space>
                     <Button
-                        type="primary"
+                        type="default"
                         icon={<EyeOutlined />}
-                        onClick={() => handleVisibilityChange(record, true)}
-                        title="Hiển thị bình luận"
-                    >
-                        Hiển thị
-                    </Button>
-                ) : (
-                    <Button
-                        danger
-                        icon={<EyeInvisibleOutlined />}
                         onClick={() => {
                             setSelectedComment(record);
-                            setHideModalVisible(true);
+                            setViewModalVisible(true);
                         }}
-                        title="Ẩn bình luận"
+                        title="Xem chi tiết"
                     >
-                        Ẩn
+                        Xem
                     </Button>
-                ),
+                    {record.deleted_at ? (
+                        <Button
+                            type="primary"
+                            icon={<EyeOutlined />}
+                            onClick={() => handleVisibilityChange(record, true)}
+                            title="Hiển thị bình luận"
+                        >
+                            Hiển thị
+                        </Button>
+                    ) : (
+                        <Button
+                            danger
+                            icon={<EyeInvisibleOutlined />}
+                            onClick={() => {
+                                setSelectedComment(record);
+                                setHideModalVisible(true);
+                            }}
+                            title="Ẩn bình luận"
+                        >
+                            Ẩn
+                        </Button>
+                    )}
+                </Space>
+            ),
         },
     ];
 
@@ -219,6 +245,177 @@ function CommentsManagement() {
                 >
                     <strong>Nội dung:</strong> {selectedComment?.content}
                 </div>
+            </Modal>
+
+            {/* View Details Modal */}
+            <Modal
+                title="Chi tiết bình luận"
+                open={viewModalVisible}
+                onCancel={() => {
+                    setViewModalVisible(false);
+                    setSelectedComment(null);
+                }}
+                width={700}
+                footer={[
+                    <Button
+                        key="close"
+                        onClick={() => {
+                            setViewModalVisible(false);
+                            setSelectedComment(null);
+                        }}
+                    >
+                        Đóng
+                    </Button>,
+                ]}
+            >
+                {selectedComment && (
+                    <div className="comment-details">
+                        <Space
+                            direction="vertical"
+                            size="large"
+                            style={{ width: "100%" }}
+                        >
+                            <div style={{ marginBottom: 16 }}>
+                                <h3
+                                    style={{
+                                        borderBottom: "1px solid #f0f0f0",
+                                        paddingBottom: 8,
+                                    }}
+                                >
+                                    Thông tin bình luận
+                                </h3>
+                            </div>
+
+                            {/* Thông tin người dùng */}
+                            <div>
+                                <strong>Người bình luận:</strong>
+                                <div
+                                    style={{
+                                        marginTop: 8,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 8,
+                                    }}
+                                >
+                                    {selectedComment.user.avatar && (
+                                        <img
+                                            src={
+                                                isHttps(
+                                                    selectedComment.user.avatar
+                                                )
+                                                    ? selectedComment.user
+                                                          .avatar
+                                                    : `${
+                                                          import.meta.env
+                                                              .VITE_BASE_URL
+                                                      }${
+                                                          selectedComment.user
+                                                              .avatar
+                                                      }`
+                                            }
+                                            alt={selectedComment.user.full_name}
+                                            style={{
+                                                width: 40,
+                                                height: 40,
+                                                borderRadius: "50%",
+                                                objectFit: "cover",
+                                            }}
+                                        />
+                                    )}
+                                    <div>
+                                        <div>
+                                            <strong>
+                                                {selectedComment.user.full_name}
+                                            </strong>
+                                        </div>
+                                        <div style={{ color: "#666" }}>
+                                            {selectedComment.user.email}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Nội dung bình luận */}
+                            <div>
+                                <strong>Nội dung:</strong>
+                                <div
+                                    style={{
+                                        marginTop: 8,
+                                        padding: 16,
+                                        background: "#f5f5f5",
+                                        borderRadius: 4,
+                                        whiteSpace: "pre-wrap",
+                                    }}
+                                >
+                                    {selectedComment.content}
+                                </div>
+                            </div>
+
+                            {/* Thông tin liên quan */}
+                            <div>
+                                <strong>Thuộc về:</strong>
+                                <div style={{ marginTop: 8 }}>
+                                    <Tag
+                                        color={
+                                            selectedComment.commentable_type ===
+                                            "Post"
+                                                ? "blue"
+                                                : "green"
+                                        }
+                                    >
+                                        {selectedComment.commentable_type ===
+                                        "Post"
+                                            ? "Bài viết"
+                                            : "Khóa học"}
+                                    </Tag>
+                                    {selectedComment.commentable?.title}
+                                </div>
+                            </div>
+
+                            {/* Trạng thái */}
+                            <div>
+                                <strong>Trạng thái:</strong>{" "}
+                                <Tag
+                                    color={
+                                        selectedComment.deleted_at
+                                            ? "error"
+                                            : "success"
+                                    }
+                                >
+                                    {selectedComment.deleted_at
+                                        ? "Đã ẩn"
+                                        : "Đang hiển thị"}
+                                </Tag>
+                            </div>
+
+                            {/* Thời gian */}
+                            <div>
+                                <Space direction="vertical">
+                                    <div>
+                                        <strong>Thời gian tạo:</strong>{" "}
+                                        {new Date(
+                                            selectedComment.created_at
+                                        ).toLocaleString("vi-VN")}
+                                    </div>
+                                    <div>
+                                        <strong>Cập nhật lần cuối:</strong>{" "}
+                                        {new Date(
+                                            selectedComment.updated_at
+                                        ).toLocaleString("vi-VN")}
+                                    </div>
+                                    {selectedComment.deleted_at && (
+                                        <div>
+                                            <strong>Thời gian ẩn:</strong>{" "}
+                                            {new Date(
+                                                selectedComment.deleted_at
+                                            ).toLocaleString("vi-VN")}
+                                        </div>
+                                    )}
+                                </Space>
+                            </div>
+                        </Space>
+                    </div>
+                )}
             </Modal>
         </div>
     );

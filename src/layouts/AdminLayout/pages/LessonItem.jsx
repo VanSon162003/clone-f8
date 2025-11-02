@@ -1,5 +1,10 @@
 import { Button, Card, Space } from "antd";
-import { EditOutlined, DeleteOutlined, MenuOutlined } from "@ant-design/icons";
+import {
+    EditOutlined,
+    DeleteOutlined,
+    MenuOutlined,
+    EyeOutlined,
+} from "@ant-design/icons";
 import { useDrag, useDrop } from "react-dnd";
 import isHttps from "@/utils/isHttps";
 import PropTypes from "prop-types";
@@ -25,6 +30,7 @@ LessonItem.propTypes = {
     lesson: lessonPropType.isRequired,
     index: PropTypes.number.isRequired,
     handleEdit: PropTypes.func.isRequired,
+    handleViewDetails: PropTypes.func.isRequired,
     setSelectedLesson: PropTypes.func.isRequired,
     setIsDeleteModalOpen: PropTypes.func.isRequired,
     onMoveLesson: PropTypes.func.isRequired,
@@ -34,6 +40,7 @@ export default function LessonItem({
     lesson,
     index,
     handleEdit,
+    handleViewDetails,
     setSelectedLesson,
     setIsDeleteModalOpen,
     onMoveLesson,
@@ -114,6 +121,13 @@ export default function LessonItem({
                     </div>
                 </div>
                 <Space>
+                    <Button
+                        type="default"
+                        icon={<EyeOutlined />}
+                        onClick={() => handleViewDetails(lesson)}
+                    >
+                        Xem
+                    </Button>
                     <Button
                         icon={<EditOutlined />}
                         onClick={() => handleEdit(lesson)}

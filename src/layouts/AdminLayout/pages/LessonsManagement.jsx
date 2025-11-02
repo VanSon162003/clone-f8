@@ -35,6 +35,7 @@ function LessonsManagement() {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
     const [selectedLesson, setSelectedLesson] = useState(null);
     const [searchText, setSearchText] = useState("");
     const [selectedTrack, setSelectedTrack] = useState(null);
@@ -65,6 +66,11 @@ function LessonsManagement() {
                 err.data?.message || "Có lỗi xảy ra khi di chuyển bài học"
             );
         }
+    };
+
+    const handleViewDetails = (lesson) => {
+        setSelectedLesson(lesson);
+        setIsViewModalOpen(true);
     };
 
     const handleEdit = (lesson) => {
@@ -431,6 +437,9 @@ function LessonsManagement() {
                                                             index={index}
                                                             handleEdit={
                                                                 handleEdit
+                                                            }
+                                                            handleViewDetails={
+                                                                handleViewDetails
                                                             }
                                                             setSelectedLesson={
                                                                 setSelectedLesson
@@ -931,6 +940,143 @@ function LessonsManagement() {
                     Bạn có chắc chắn muốn xóa bài học{" "}
                     <strong>{selectedLesson?.title}</strong> không?
                 </p>
+            </Modal>
+
+            {/* View Details Modal */}
+            <Modal
+                title="Chi tiết bài học"
+                open={isViewModalOpen}
+                onCancel={() => {
+                    setIsViewModalOpen(false);
+                    setSelectedLesson(null);
+                }}
+                width={800}
+                footer={[
+                    <Button
+                        key="close"
+                        onClick={() => {
+                            setIsViewModalOpen(false);
+                            setSelectedLesson(null);
+                        }}
+                    >
+                        Đóng
+                    </Button>,
+                ]}
+            >
+                {selectedLesson && (
+                    <div className="lesson-details">
+                        <div style={{ marginBottom: 24 }}>
+                            <h3
+                                style={{
+                                    borderBottom: "1px solid #f0f0f0",
+                                    paddingBottom: 8,
+                                }}
+                            >
+                                {selectedLesson.title}
+                            </h3>
+                            <Space
+                                direction="vertical"
+                                size="large"
+                                style={{ width: "100%" }}
+                            >
+                                <div>
+                                    <strong>Thuộc chương:</strong>{" "}
+                                    {selectedLesson.track.title}
+                                </div>
+                                <div>
+                                    <strong>Khóa học:</strong>{" "}
+                                    {selectedLesson.track.course.title}
+                                </div>
+                                {selectedLesson.thumbnail && (
+                                    <div>
+                                        <strong>Hình thu nhỏ:</strong>
+                                        <div style={{ marginTop: 8 }}>
+                                            <img
+                                                src={
+                                                    isHttps(
+                                                        selectedLesson.thumbnail
+                                                    )
+                                                        ? selectedLesson.thumbnail
+                                                        : `${
+                                                              import.meta.env
+                                                                  .VITE_BASE_URL
+                                                          }${
+                                                              selectedLesson.thumbnail
+                                                          }`
+                                                }
+                                                alt={selectedLesson.title}
+                                                style={{
+                                                    maxWidth: "100%",
+                                                    maxHeight: "200px",
+                                                    objectFit: "cover",
+                                                    borderRadius: 4,
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+                                <div>
+                                    <strong>Loại video:</strong>{" "}
+                                    {selectedLesson.video_type
+                                        .charAt(0)
+                                        .toUpperCase() +
+                                        selectedLesson.video_type.slice(1)}
+                                </div>
+                                {selectedLesson.video_url && (
+                                    <div>
+                                        <strong>URL Video:</strong>{" "}
+                                        <a
+                                            href={
+                                                isHttps(
+                                                    selectedLesson.video_url
+                                                )
+                                                    ? selectedLesson.video_url
+                                                    : `${
+                                                          import.meta.env
+                                                              .VITE_BASE_URL
+                                                      }${
+                                                          selectedLesson.video_url
+                                                      }`
+                                            }
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            Xem video
+                                        </a>
+                                    </div>
+                                )}
+                                <div>
+                                    <strong>Nội dung bài học:</strong>
+                                    <div
+                                        style={{
+                                            marginTop: 8,
+                                            padding: 16,
+                                            background: "#f5f5f5",
+                                            borderRadius: 4,
+                                            maxHeight: "300px",
+                                            overflowY: "auto",
+                                        }}
+                                        dangerouslySetInnerHTML={{
+                                            __html: selectedLesson.content,
+                                        }}
+                                    />
+                                </div>
+                                <div>
+                                    <strong>Ngày tạo:</strong>{" "}
+                                    {new Date(
+                                        selectedLesson.created_at
+                                    ).toLocaleString("vi-VN")}
+                                </div>
+                                <div>
+                                    <strong>Cập nhật lần cuối:</strong>{" "}
+                                    {new Date(
+                                        selectedLesson.updated_at
+                                    ).toLocaleString("vi-VN")}
+                                </div>
+                            </Space>
+                        </div>
+                    </div>
+                )}
             </Modal>
         </div>
     );

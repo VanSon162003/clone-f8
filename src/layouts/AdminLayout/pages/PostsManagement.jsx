@@ -31,6 +31,7 @@ function PostsManagement() {
     const [approveAllPosts] = useApproveAllPostsMutation();
     const [deleteModalVisible, setDeleteModalVisible] = useState(false);
     const [approveAllModalVisible, setApproveAllModalVisible] = useState(false);
+    const [viewModalVisible, setViewModalVisible] = useState(false);
     const [selectedPost, setSelectedPost] = useState(null);
 
     const debouncedSearchText = useDebounce(searchText, 500);
@@ -153,9 +154,20 @@ function PostsManagement() {
         {
             title: "Thao tác",
             key: "actions",
-            width: 150,
+            width: 200,
             render: (_, record) => (
                 <Space>
+                    <Button
+                        type="default"
+                        icon={<EyeOutlined />}
+                        onClick={() => {
+                            setSelectedPost(record);
+                            setViewModalVisible(true);
+                        }}
+                        title="Xem chi tiết"
+                    >
+                        Xem
+                    </Button>
                     {!record.is_approved && (
                         <Button
                             type="primary"
@@ -286,6 +298,182 @@ function PostsManagement() {
                     bài viết có thể chưa phù hợp.
                 </p>
                 <p>Bạn có chắc chắn muốn tiếp tục?</p>
+            </Modal>
+
+            {/* View Details Modal */}
+            <Modal
+                title="Chi tiết bài viết"
+                open={viewModalVisible}
+                onCancel={() => {
+                    setViewModalVisible(false);
+                    setSelectedPost(null);
+                }}
+                width={800}
+                footer={[
+                    <Button
+                        key="close"
+                        onClick={() => {
+                            setViewModalVisible(false);
+                            setSelectedPost(null);
+                        }}
+                    >
+                        Đóng
+                    </Button>,
+                ]}
+            >
+                {selectedPost && (
+                    <div className="post-details">
+                        <Space
+                            direction="vertical"
+                            size="large"
+                            style={{ width: "100%" }}
+                        >
+                            {/* Tiêu đề bài viết */}
+                            <div style={{ marginBottom: 16 }}>
+                                <h3
+                                    style={{
+                                        borderBottom: "1px solid #f0f0f0",
+                                        paddingBottom: 8,
+                                    }}
+                                    dangerouslySetInnerHTML={{
+                                        __html: selectedPost.title,
+                                    }}
+                                />
+                            </div>
+
+                            {/* Thông tin tác giả */}
+                            <div>
+                                <strong>Tác giả:</strong>
+                                <div
+                                    style={{
+                                        marginTop: 8,
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 8,
+                                    }}
+                                >
+                                    {selectedPost.author?.avatar && (
+                                        <img
+                                            src={`${
+                                                import.meta.env.VITE_BASE_URL
+                                            }${selectedPost.author.avatar}`}
+                                            alt={selectedPost.author.full_name}
+                                            style={{
+                                                width: 40,
+                                                height: 40,
+                                                borderRadius: "50%",
+                                                objectFit: "cover",
+                                            }}
+                                        />
+                                    )}
+                                    <div>
+                                        <div>
+                                            <strong>
+                                                {selectedPost.author?.full_name}
+                                            </strong>
+                                        </div>
+                                        <div style={{ color: "#666" }}>
+                                            {selectedPost.author?.email}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Chủ đề */}
+                            {selectedPost.topics &&
+                                selectedPost.topics.length > 0 && (
+                                    <div>
+                                        <strong>Chủ đề:</strong>
+                                        <div style={{ marginTop: 8 }}>
+                                            {selectedPost.topics.map(
+                                                (topic) => (
+                                                    <Tag
+                                                        key={topic.id}
+                                                        color="blue"
+                                                        style={{
+                                                            marginRight: 8,
+                                                        }}
+                                                    >
+                                                        {topic.name}
+                                                    </Tag>
+                                                )
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+
+                            {/* Nội dung bài viết */}
+                            <div>
+                                <strong>Nội dung:</strong>
+                                <div
+                                    style={{
+                                        marginTop: 8,
+                                        padding: 16,
+                                        background: "#f5f5f5",
+                                        borderRadius: 4,
+                                        maxHeight: "400px",
+                                        overflowY: "auto",
+                                    }}
+                                    dangerouslySetInnerHTML={{
+                                        __html: selectedPost.content,
+                                    }}
+                                />
+                            </div>
+
+                            {/* Thống kê */}
+                            <div>
+                                <Space size="large">
+                                    <span>
+                                        <strong>Lượt xem:</strong>{" "}
+                                        {selectedPost.views_count}
+                                    </span>
+                                    <span>
+                                        <strong>Lượt thích:</strong>{" "}
+                                        {selectedPost.likes_count}
+                                    </span>
+                                    <span>
+                                        <strong>Bình luận:</strong>{" "}
+                                        {selectedPost.comments_count}
+                                    </span>
+                                </Space>
+                            </div>
+
+                            {/* Trạng thái */}
+                            <div>
+                                <strong>Trạng thái:</strong>{" "}
+                                <Tag
+                                    color={
+                                        selectedPost.is_approved
+                                            ? "success"
+                                            : "warning"
+                                    }
+                                >
+                                    {selectedPost.is_approved
+                                        ? "Đã duyệt"
+                                        : "Chưa duyệt"}
+                                </Tag>
+                            </div>
+
+                            {/* Thời gian */}
+                            <div>
+                                <Space direction="vertical">
+                                    <div>
+                                        <strong>Thời gian tạo:</strong>{" "}
+                                        {new Date(
+                                            selectedPost.created_at
+                                        ).toLocaleString("vi-VN")}
+                                    </div>
+                                    <div>
+                                        <strong>Cập nhật lần cuối:</strong>{" "}
+                                        {new Date(
+                                            selectedPost.updated_at
+                                        ).toLocaleString("vi-VN")}
+                                    </div>
+                                </Space>
+                            </div>
+                        </Space>
+                    </div>
+                )}
             </Modal>
         </div>
     );
