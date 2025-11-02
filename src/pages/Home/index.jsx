@@ -7,12 +7,15 @@ import {
 } from "@/services/coursesService";
 import { useGetPopularPostsQuery } from "@/services/postsService";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 function Home() {
     const [coursePro, setCoursePro] = useState([]);
     const [courseFree, setCourseFree] = useState([]);
     const [courseArticle, setCourseArticle] = useState([]);
     const [courseVideo, setCourseVideo] = useState([]);
+
+    const currentUser = useSelector((state) => state.auth.currentUser);
 
     const { data: responseData, isSuccess } = useGetAllCoursesQuery(undefined, {
         refetchOnMountOrArgChange: true,
@@ -41,7 +44,16 @@ function Home() {
         }
 
         if (popularPosts.isSuccess && popularPosts.data?.data?.posts) {
-            setCourseArticle(popularPosts.data.data.posts);
+            const postPublish = popularPosts.data.data.posts.filter((post) => {
+                if (post?.is_approved) {
+                    return true;
+                } else {
+                    if (post?.user_id === currentUser?.id) return true;
+                    return false;
+                }
+            });
+
+            setCourseArticle(postPublish);
         }
 
         if (videoData.isSuccess) {

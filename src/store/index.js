@@ -20,6 +20,8 @@ import { authApi } from "@/services/admin/authService";
 import { coursesManagementApi } from "@/services/admin/coursesManagementService";
 import { tracksManagementApi } from "@/services/admin/tracksService";
 import { lessonsManagementApi } from "@/services/admin/lessonsService";
+import { postsManagementApi } from "@/services/admin/postsService";
+import { commentsManagementApi } from "@/services/admin/commentsService";
 
 const rootConfig = {
     key: "auth",
@@ -43,6 +45,8 @@ const rootReducer = combineReducers({
     [coursesManagementApi.reducerPath]: coursesManagementApi.reducer,
     [tracksManagementApi.reducerPath]: tracksManagementApi.reducer,
     [lessonsManagementApi.reducerPath]: lessonsManagementApi.reducer,
+    [postsManagementApi.reducerPath]: postsManagementApi.reducer,
+    [commentsManagementApi.reducerPath]: commentsManagementApi.reducer,
 });
 
 export const store = configureStore({
@@ -62,6 +66,8 @@ export const store = configureStore({
         coursesManagementApi.middleware,
         tracksManagementApi.middleware,
         lessonsManagementApi.middleware,
+        postsManagementApi.middleware,
+        commentsManagementApi.middleware,
     ],
 });
 

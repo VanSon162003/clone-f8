@@ -6,12 +6,15 @@ import { useGetAllPostsQuery } from "@/services/postsService";
 
 import styles from "./Blog.module.scss";
 import ParentCard from "@/components/ParentCard";
+import { useSelector } from "react-redux";
 
 function Blog() {
     const [searchParams, setSearchParams] = useSearchParams();
     const [currentPage, setCurrentPage] = useState(
         () => parseInt(searchParams.get("page")) || 1
     );
+
+    const currentUser = useSelector((state) => state.auth.currentUser);
 
     const {
         data: postsData,
@@ -32,6 +35,15 @@ function Blog() {
 
     const posts = postsData?.data?.posts || [];
     const pagination = postsData?.data?.pagination || {};
+
+    const postPublish = posts.filter((post) => {
+        if (post?.is_approved) {
+            return true;
+        } else {
+            if (post?.user_id === currentUser?.id) return true;
+            return false;
+        }
+    });
 
     return (
         <ParentCard>
@@ -55,7 +67,7 @@ function Blog() {
                                 <div>Có lỗi xảy ra: {error.message}</div>
                             ) : (
                                 <>
-                                    <BlogItem posts={posts} />
+                                    <BlogItem posts={postPublish} />
 
                                     {/* Pagination */}
                                     {pagination.totalPages > 1 && (
