@@ -47,6 +47,11 @@ function AdminLayout() {
             label: <Link to="/admin/courses">Quản lý khóa học</Link>,
         },
         {
+            key: "learning-paths",
+            icon: <BookOutlined />,
+            label: <Link to="/admin/learning-paths">Quản lý lộ trình</Link>,
+        },
+        {
             key: "tracks",
             icon: <BookOutlined />,
             label: <Link to="/admin/tracks">Quản lý chương học</Link>,

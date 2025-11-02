@@ -13,6 +13,7 @@ import {
     AdvancedStatistics,
     LessonsManagement,
     TracksManagement,
+    LearningPathManagement,
 } from "@/layouts/AdminLayout/pages";
 import AuthenticationApp from "@/layouts/DefaultLayout/components/AuthenticationApp";
 import ForgotPassWord from "@/layouts/DefaultLayout/components/AuthenticationApp/page/ForgotPassWord";
@@ -270,6 +271,12 @@ const routes = [
     {
         path: config.routes.adminStatistics,
         component: AdvancedStatistics,
+        layout: AdminLayout,
+        auth: true,
+    },
+    {
+        path: config.routes.adminLearningPaths,
+        component: LearningPathManagement,
         layout: AdminLayout,
         auth: true,
     },
