@@ -124,7 +124,7 @@ function BlogItem({ posts = [] }) {
                                     {tag.name}
                                 </Link>
                             ))}
-                            <span>{timeAgo(post.created_at)}</span>
+                            <span>{timeAgo(post.createdAt)}</span>
                             <div className={styles.dot}>·</div>
                             <span>{post.views_count || 0} lượt xem</span>
                         </div>

@@ -1,8 +1,13 @@
 import styles from "./Learning.module.scss";
 import Roadmap from "./components/Roadmap";
 import Community from "./components/Community";
+import { useListLearningPathsQuery } from "@/services/learningPathsService";
 
 function Learning() {
+    const { data: lpRes } = useListLearningPathsQuery(undefined, {
+        refetchOnMountOrArgChange: true,
+    });
+    const learningPaths = lpRes?.data || [];
     return (
         <div className={styles.parent}>
             <div className="container-fluid">
@@ -21,8 +26,9 @@ function Learning() {
 
                     <div className={styles.body}>
                         <div className={styles.content}>
-                            <Roadmap type="frontEnd" />
-                            <Roadmap type="backEnd" />
+                            {learningPaths.map((lp) => (
+                                <Roadmap key={lp.id} data={lp} />
+                            ))}
                         </div>
                         <Community />
                     </div>

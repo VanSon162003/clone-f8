@@ -14,6 +14,7 @@ import {
     LessonsManagement,
     TracksManagement,
     LearningPathManagement,
+    SlideshowManagement,
 } from "@/layouts/AdminLayout/pages";
 import AuthenticationApp from "@/layouts/DefaultLayout/components/AuthenticationApp";
 import ForgotPassWord from "@/layouts/DefaultLayout/components/AuthenticationApp/page/ForgotPassWord";
@@ -277,6 +278,12 @@ const routes = [
     {
         path: config.routes.adminLearningPaths,
         component: LearningPathManagement,
+        layout: AdminLayout,
+        auth: true,
+    },
+    {
+        path: config.routes.adminSlideshow,
+        component: SlideshowManagement,
         layout: AdminLayout,
         auth: true,
     },

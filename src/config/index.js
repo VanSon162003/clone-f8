@@ -46,6 +46,7 @@ const config = {
         adminLesson: "/admin/lessons",
         adminTrack: "/admin/tracks",
         adminLearningPaths: "/admin/learning-paths",
+        adminSlideshow: "/admin/slideshow",
     },
 };
 

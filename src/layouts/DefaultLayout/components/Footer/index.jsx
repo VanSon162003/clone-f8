@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import logo from "@/assets/imgs/logo-f8.png";
 import dmca from "@/assets/imgs/hmc.png";
 
 import styles from "./Footer.module.scss";
@@ -19,7 +18,9 @@ function Footer() {
                         <div className={styles.columnTop}>
                             <Link to={"/"}>
                                 <img
-                                    src={logo}
+                                    src={`${
+                                        import.meta.env.VITE_BASE_URL
+                                    }uploads/imgs/logo`}
                                     alt="logo"
                                     className={styles.logo}
                                 />

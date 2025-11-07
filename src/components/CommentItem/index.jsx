@@ -7,6 +7,7 @@ import ReactionButton from "../ReactionButton";
 import Editor from "../Editor";
 import { useHandleReactionCommentMutation } from "@/services/commentsService";
 import isHttps from "@/utils/isHttps";
+import { toast } from "react-toastify";
 
 function CommentItem(
     {
@@ -79,7 +80,8 @@ function CommentItem(
     };
 
     const handleReactionChange = async (commentId, newReaction) => {
-        if (!currentUser) return console.log("đăng nhập trước khi thả cảm xúc");
+        if (!currentUser)
+            return toast.info("Vui lòng đăng nhập để thực hiện hành động này!");
 
         const checkAction = newReaction.action ? null : newReaction;
 
@@ -90,7 +92,6 @@ function CommentItem(
             }).unwrap();
             setCurrentUserReaction(checkAction);
             // api
-            console.log("User reaction changed to:", newReaction);
         } catch (error) {
             console.log(error);
         }

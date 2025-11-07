@@ -14,6 +14,28 @@ import {
     useUpdatePostMutation,
 } from "@/services/postsService";
 
+const getDateAndTime = () => {
+    // Lấy thời gian hiện tại
+    const now = new Date();
+
+    // Chuyển đổi sang giờ Việt Nam bằng cách thêm 7 giờ
+    const vietnamTime = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+
+    // Lấy ngày hiện tại theo giờ Việt Nam
+    const today = vietnamTime.toISOString().split("T")[0];
+
+    // Tạo thời gian cho giờ tiếp theo
+    const nextHour = new Date(vietnamTime.getTime() + 60 * 60 * 1000);
+    const hours = String(nextHour.getHours()).padStart(2, "0");
+    const minutes = String(nextHour.getMinutes()).padStart(2, "0");
+    const time = `${hours}:${minutes}`;
+
+    return {
+        today,
+        time,
+    };
+};
+
 function WritePost() {
     const [formEdit, setFormEdit] = useState({
         title: "",
@@ -26,6 +48,8 @@ function WritePost() {
         status: "published",
         published_at: null,
     });
+    const [scheduleDate, setScheduleDate] = useState(getDateAndTime().today);
+    const [scheduleTime, setScheduleTime] = useState(getDateAndTime().time);
     const [thumbnailFile, setThumbnailFile] = useState(null);
     const [createPost] = useCreatePostMutation();
     const [updatePost] = useUpdatePostMutation();
@@ -221,22 +245,6 @@ function WritePost() {
         });
     };
 
-    const getDateAndTime = () => {
-        const now = new Date();
-
-        const today = now.toISOString().split("T")[0];
-
-        const nextHour = new Date(now.getTime() + 60 * 60 * 1000);
-        const hours = String(nextHour.getHours()).padStart(2, "0");
-        const minutes = String(nextHour.getMinutes()).padStart(2, "0");
-        const time = `${hours}:${minutes}`;
-
-        return {
-            today,
-            time,
-        };
-    };
-
     // Xử lý xuất bản hoặc lên lịch xuất bản
     const handlePublishPost = async () => {
         console.log(formEdit);
@@ -251,7 +259,19 @@ function WritePost() {
         if (formEdit.tags.length > 0)
             formData.append("tags", JSON.stringify(formEdit.tags));
         if (formEdit.visibility === "schedule") {
-            formData.append("published_at", `${new Date()}`);
+            const [year, month, day] = scheduleDate.split("-");
+            const [hours, minutes] = scheduleTime.split(":");
+
+            // Tạo thời gian đã chọn theo múi giờ UTC
+            const scheduledDateTime = new Date(
+                parseInt(year),
+                parseInt(month) - 1,
+                parseInt(day),
+                parseInt(hours),
+                parseInt(minutes)
+            );
+
+            formData.append("published_at", scheduledDateTime.toISOString());
             formData.append("status", "schedule");
             formData.append("visibility", "schedule");
         } else {
@@ -534,8 +554,11 @@ function WritePost() {
                                                     type="date"
                                                     min="2025-10-01"
                                                     className={styles.input}
-                                                    defaultValue={
-                                                        getDateAndTime().today
+                                                    value={scheduleDate}
+                                                    onChange={(e) =>
+                                                        setScheduleDate(
+                                                            e.target.value
+                                                        )
                                                     }
                                                 />
                                             </div>
@@ -548,8 +571,11 @@ function WritePost() {
                                                 <input
                                                     type="time"
                                                     className={styles.input}
-                                                    defaultValue={
-                                                        getDateAndTime().time
+                                                    value={scheduleTime}
+                                                    onChange={(e) =>
+                                                        setScheduleTime(
+                                                            e.target.value
+                                                        )
                                                     }
                                                 />
                                             </div>

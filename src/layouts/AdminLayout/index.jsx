@@ -71,15 +71,17 @@ function AdminLayout() {
             icon: <CommentOutlined />,
             label: <Link to="/admin/comments">Quản lý bình luận</Link>,
         },
-        {
-            key: "topics",
-            icon: <TagOutlined />,
-            label: <Link to="/admin/topics">Quản lý chủ đề</Link>,
-        },
+
         {
             key: "instructors",
             icon: <TeamOutlined />,
             label: <Link to="/admin/instructors">Quản lý giảng viên</Link>,
+        },
+
+        {
+            key: "slideshow",
+            icon: <SettingOutlined />,
+            label: <Link to="/admin/slideshow">Cấu hình slide show</Link>,
         },
         {
             key: "settings",

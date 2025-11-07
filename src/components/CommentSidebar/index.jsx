@@ -16,6 +16,7 @@ import { useSelector } from "react-redux";
 import isHttps from "@/utils/isHttps";
 import socketClient from "@/utils/websocket";
 import Button from "../Button";
+import { toast } from "react-toastify";
 
 function CommentSidebar({
     open = false,
@@ -149,7 +150,8 @@ function CommentSidebar({
     };
 
     const handleAddComment = async (value) => {
-        if (!currentUser) return console.log("Đăng nhập trước comment");
+        if (!currentUser)
+            return toast.info("Vui lòng đăng nhập để thực hiện hành động này!");
 
         try {
             await createComment({

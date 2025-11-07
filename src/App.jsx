@@ -4,13 +4,14 @@ import ScrollTop from "./components/ScrollTop";
 import AppRoutes from "./components/AppRoutes";
 import UserProvider from "./components/UserProvider";
 import ResetHeaderBack from "./components/ResetHeaderBack";
+import DocumentHead from "./components/DocumentHead";
 import { ToastContainer } from "react-toastify";
 function App() {
     return (
         <Router>
+            <DocumentHead />
             <UserProvider />
             <ResetHeaderBack />
-
             <ScrollTop />
             <AppRoutes />
 

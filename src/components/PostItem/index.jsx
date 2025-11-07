@@ -74,11 +74,11 @@ function PostItem({
                             : `/post/edit?id=${post?.id}`
                     }
                 >
-                    Chỉnh sửa {timeAgo(post.created_at)}
+                    Chỉnh sửa {timeAgo(post.updatedAt)}
                 </Button>
 
                 <div className={styles.dot}>·</div>
-                <span>{post.readAt} đọc</span>
+                <span>{post.reading_time} phút đọc</span>
             </div>
 
             <span

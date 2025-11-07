@@ -1,7 +1,5 @@
 import { Link } from "react-router-dom";
 
-import logo from "@/assets/imgs/logo-f8.png";
-
 import styles from "../Header/Header.module.scss";
 import SearchForm from "../SearchForm";
 import Actions from "../Actions";
@@ -20,7 +18,13 @@ function Header() {
         <header id="header" className={styles.wrapper}>
             <div className={styles.logo}>
                 <Link to={"/"}>
-                    <img src={logo} alt="logo" className={styles.img} />
+                    <img
+                        src={`${
+                            import.meta.env.VITE_BASE_URL
+                        }uploads/imgs/logo`}
+                        alt="logo"
+                        className={styles.img}
+                    />
                 </Link>
                 {back ? (
                     <Button onClick={handleBack} className={styles.back}>

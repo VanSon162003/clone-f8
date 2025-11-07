@@ -5,7 +5,6 @@ import {
     faCircleQuestion,
     faFile,
 } from "@fortawesome/free-solid-svg-icons";
-import Button from "@/components/Button";
 import { useEffect, useMemo, useState } from "react";
 import { useGetCourseProgressQuery } from "@/services/coursesService";
 // no route params here; courseId will be passed via props
@@ -53,7 +52,10 @@ function Header({ courseId, title }) {
             </a>
 
             <a href="/" className={styles.logo}>
-                <img src="/src/assets/imgs/logo-f8.png" alt="f8" />
+                <img
+                    src={`${import.meta.env.VITE_BASE_URL}uploads/imgs/logo`}
+                    alt="f8"
+                />
             </a>
 
             <div className={styles.courseName}>

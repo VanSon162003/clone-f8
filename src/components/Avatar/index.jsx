@@ -60,7 +60,7 @@ function Avatar({
                     </Button>
 
                     <p className={styles.time}>
-                        {timeAgo(blog.created_at)}{" "}
+                        {timeAgo(blog.createdAt)}{" "}
                         <span className={styles.dot}>·</span>
                         {blog.reading_time} phút đọc
                     </p>

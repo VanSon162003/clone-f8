@@ -11,3 +11,4 @@ export { default as Login } from "./Login";
 export { default as LessonsManagement } from "./LessonsManagement";
 export { default as TracksManagement } from "./ChaptersManagement";
 export { default as LearningPathManagement } from "./LearningPathManagement";
+export { default as SlideshowManagement } from "./SlideshowManagement";

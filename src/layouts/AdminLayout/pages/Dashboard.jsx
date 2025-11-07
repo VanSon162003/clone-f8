@@ -1,31 +1,44 @@
-import { Card, Row, Col, Statistic } from 'antd';
+import { Card, Row, Col, Statistic, Spin } from "antd";
 import {
     UserOutlined,
     BookOutlined,
     FileTextOutlined,
     DollarOutlined,
-} from '@ant-design/icons';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-
-const data = [
-    { name: 'Jan', revenue: 4000 },
-    { name: 'Feb', revenue: 3000 },
-    { name: 'Mar', revenue: 2000 },
-    { name: 'Apr', revenue: 2780 },
-    { name: 'May', revenue: 1890 },
-    { name: 'Jun', revenue: 2390 },
-];
+} from "@ant-design/icons";
+import { Area } from "@ant-design/plots";
+import { useGetDashboardStatsQuery } from "@/services/admin/dashboardService";
+import numeral from "numeral";
 
 function Dashboard() {
+    const { data, isLoading } = useGetDashboardStatsQuery(undefined, {
+        refetchOnMountOrArgChange: true,
+        refetchOnFocus: true,
+        refetchOnReconnect: true,
+    });
+
+    const chartData =
+        data?.data?.monthly_revenue?.map((item) => ({
+            name: `Tháng ${item.month}`,
+            revenue: item.revenue,
+        })) || [];
+
+    if (isLoading) {
+        return (
+            <div style={{ textAlign: "center", padding: "50px" }}>
+                <Spin size="large" />
+            </div>
+        );
+    }
+
     return (
         <div>
-            <h2>Dashboard</h2>
+            <h2>Tổng quan</h2>
             <Row gutter={16}>
                 <Col span={6}>
                     <Card>
                         <Statistic
                             title="Tổng số người dùng"
-                            value={1128}
+                            value={data?.data?.stats?.total_users || 0}
                             prefix={<UserOutlined />}
                         />
                     </Card>
@@ -34,7 +47,7 @@ function Dashboard() {
                     <Card>
                         <Statistic
                             title="Tổng số khóa học"
-                            value={93}
+                            value={data?.data?.stats?.total_courses || 0}
                             prefix={<BookOutlined />}
                         />
                     </Card>
@@ -43,7 +56,7 @@ function Dashboard() {
                     <Card>
                         <Statistic
                             title="Tổng số bài viết"
-                            value={245}
+                            value={data?.data?.stats?.total_posts || 0}
                             prefix={<FileTextOutlined />}
                         />
                     </Card>
@@ -51,24 +64,45 @@ function Dashboard() {
                 <Col span={6}>
                     <Card>
                         <Statistic
-                            title="Doanh thu tháng này"
-                            value={234500000}
+                            title="Tổng doanh thu"
+                            value={
+                                data?.data?.monthly_revenue?.reduce(
+                                    (acc, item) => acc + item.revenue,
+                                    0
+                                ) || 0
+                            }
                             prefix={<DollarOutlined />}
+                            formatter={(value) => numeral(value).format("0,0")}
+                            suffix="đ"
                         />
                     </Card>
                 </Col>
             </Row>
 
             <div style={{ marginTop: 32 }}>
-                <h3>Biểu đồ doanh thu 6 tháng gần nhất</h3>
-                <BarChart width={800} height={300} data={data}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="revenue" fill="#8884d8" />
-                </BarChart>
+                <Card title="Biểu đồ doanh thu theo tháng">
+                    <Area
+                        data={chartData}
+                        xField="name"
+                        yField="revenue"
+                        meta={{
+                            revenue: {
+                                formatter: (value) =>
+                                    `${numeral(value).format("0,0")}đ`,
+                            },
+                        }}
+                        tooltip={{
+                            formatter: (data) => {
+                                return {
+                                    name: "Doanh thu",
+                                    value:
+                                        numeral(data.revenue).format("0,0") +
+                                        "đ",
+                                };
+                            },
+                        }}
+                    />
+                </Card>
             </div>
         </div>
     );
