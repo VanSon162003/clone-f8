@@ -22,8 +22,6 @@ import { useRedirectIfRegistered } from "@/hook/useRedirectIfRegistered";
 import isHttps from "@/utils/isHttps";
 
 function CourseItem({ item = {}, courseType, courseEnrolled = false }) {
-    // console.log(item);
-
     const formatCurrencyVND = (value) => {
         const number = Math.round(parseFloat(value) / 1000) * 1000;
         return new Intl.NumberFormat("vi-VN").format(number) + "đ";

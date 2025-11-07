@@ -17,8 +17,6 @@ const SlideShow = () => {
         refetchOnReconnect: true,
     });
 
-    console.log(slides);
-
     if (isLoading) {
         return (
             <div className={styles.slide}>
