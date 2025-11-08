@@ -209,14 +209,11 @@ function Tippy({
                                     <img
                                         src={
                                             user.avatar
-                                                ? isHttps(user.avatar)
-                                                    ? user.avatar
-                                                    : `${
-                                                          import.meta.env
-                                                              .VITE_BASE_URL
-                                                      }${user.avatar}`
-                                                : userImg ||
-                                                  "src/assets/imgs/user.jpg"
+                                                ? `${
+                                                      import.meta.env
+                                                          .VITE_BASE_URL
+                                                  }${user.avatar}`
+                                                : "/src/assets/imgs/user.jpg"
                                         }
                                         alt="user"
                                     />

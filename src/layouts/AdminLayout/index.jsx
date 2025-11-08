@@ -13,7 +13,7 @@ import {
     BarChartOutlined,
     LogoutOutlined,
 } from "@ant-design/icons";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getCurrentUser } from "@/features/auth/authSlice";
 
 const { Header, Sider, Content } = Layout;
@@ -22,6 +22,7 @@ function AdminLayout() {
     const [collapsed, setCollapsed] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const currentUser = useSelector((state) => state.auth.currentUser);
 
     const handleLogout = async () => {
         localStorage.removeItem("token");
@@ -30,7 +31,8 @@ function AdminLayout() {
         navigate("/admin/login");
     };
 
-    const menuItems = [
+    // Menu items dành cho admin
+    const adminMenuItems = [
         {
             key: "dashboard",
             icon: <DashboardOutlined />,
@@ -71,13 +73,11 @@ function AdminLayout() {
             icon: <CommentOutlined />,
             label: <Link to="/admin/comments">Quản lý bình luận</Link>,
         },
-
-        {
-            key: "instructors",
-            icon: <TeamOutlined />,
-            label: <Link to="/admin/instructors">Quản lý giảng viên</Link>,
-        },
-
+        // {
+        //     key: "instructors",
+        //     icon: <TeamOutlined />,
+        //     label: <Link to="/admin/instructors">Quản lý giảng viên</Link>,
+        // },
         {
             key: "slideshow",
             icon: <SettingOutlined />,
@@ -94,6 +94,39 @@ function AdminLayout() {
             label: <Link to="/admin/statistics">Thống kê nâng cao</Link>,
         },
     ];
+
+    // Menu items dành cho instructor
+    const instructorMenuItems = [
+        {
+            key: "dashboard",
+            icon: <DashboardOutlined />,
+            label: <Link to="/admin">Dashboard</Link>,
+        },
+        {
+            key: "courses",
+            icon: <BookOutlined />,
+            label: <Link to="/admin/courses">Quản lý khóa học</Link>,
+        },
+        {
+            key: "learning-paths",
+            icon: <BookOutlined />,
+            label: <Link to="/admin/learning-paths">Quản lý lộ trình</Link>,
+        },
+        {
+            key: "tracks",
+            icon: <BookOutlined />,
+            label: <Link to="/admin/tracks">Quản lý chương học</Link>,
+        },
+        {
+            key: "lessons",
+            icon: <BookOutlined />,
+            label: <Link to="/admin/lessons">Quản lý bài học</Link>,
+        },
+    ];
+
+    // Chọn menu items dựa theo role
+    const menuItems =
+        currentUser?.role === "admin" ? adminMenuItems : instructorMenuItems;
 
     return (
         <Layout style={{ minHeight: "100vh" }}>

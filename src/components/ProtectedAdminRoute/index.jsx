@@ -19,7 +19,10 @@ function ProtectedAdminRoute({ children }) {
     }
 
     if (currentUser) {
-        if (currentUser?.role !== "admin") {
+        if (
+            currentUser?.role !== "admin" &&
+            currentUser?.role !== "instructor"
+        ) {
             localStorage.removeItem("token");
             localStorage.removeItem("refresh_token");
             return (

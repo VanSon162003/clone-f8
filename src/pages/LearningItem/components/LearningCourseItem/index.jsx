@@ -24,7 +24,9 @@ function LearningCourseItem({ courseItem = {} }) {
             <div className={styles.inner}>
                 <div className={styles.thumb}>
                     <img
-                        src={courseItem?.thumbnail || courseItem?.img}
+                        src={`${import.meta.env.VITE_BASE_URL}${
+                            courseItem?.thumbnail
+                        }`}
                         alt={courseItem?.title}
                     />
                 </div>

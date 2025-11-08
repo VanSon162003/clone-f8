@@ -9,13 +9,16 @@ import styles from "./SlideShow.module.scss";
 import { useGetSlidesQuery } from "@/services/admin/slideshowApi";
 import { Skeleton } from "antd";
 import { Link } from "react-router-dom";
+import isHttps from "@/utils/isHttps";
 
 const SlideShow = () => {
-    const { data: slides = [], isLoading } = useGetSlidesQuery(undefined, {
+    const { data: slides, isLoading } = useGetSlidesQuery(undefined, {
         refetchOnMountOrArgChange: true,
         refetchOnFocus: true,
         refetchOnReconnect: true,
     });
+
+    console.log(slides);
 
     if (isLoading) {
         return (
@@ -51,7 +54,7 @@ const SlideShow = () => {
             >
                 {slides.map((slide) => {
                     const customStyles = slide.customStyles
-                        ? JSON.parse(JSON.parse(slide.customStyles))
+                        ? JSON.parse(slide.customStyles)
                         : {};
 
                     const classNameStyles = slide.className;
@@ -95,9 +98,14 @@ const SlideShow = () => {
                                         rel="noopener noreferrer"
                                     >
                                         <img
-                                            src={`${
-                                                import.meta.env.VITE_BASE_URL
-                                            }${slide.image}`}
+                                            src={
+                                                isHttps(slide.image)
+                                                    ? slide.image
+                                                    : `${
+                                                          import.meta.env
+                                                              .VITE_BASE_URL
+                                                      }${slide.image}`
+                                            }
                                             alt={slide.title}
                                         />
                                     </Link>

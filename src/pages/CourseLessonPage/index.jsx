@@ -743,9 +743,9 @@ function CourseLessonPage() {
                         // ></iframe>
 
                         <VideoPlayer
-                            videoUrl={`${
-                                import.meta.env.VITE_BASE_URL
-                            }videos/Day9.mp4`}
+                            videoUrl={`${import.meta.env.VITE_BASE_URL}${
+                                lesson?.video_url
+                            }`}
                             videoId={lesson?.id}
                             onProgressUpdate={updateUserCourseProgress}
                         />

@@ -121,12 +121,8 @@ function CourseItem({ item = {}, courseType, courseEnrolled = false }) {
                                             <img
                                                 src={
                                                     item.creator
-                                                        ? isHttps(
-                                                              item?.creator
-                                                                  ?.avatar
-                                                          )
-                                                            ? item?.creator
-                                                                  ?.avatar
+                                                        ? !item?.creator?.avatar
+                                                            ? "/src/assets/imgs/user.jpg"
                                                             : `${
                                                                   import.meta
                                                                       .env
