@@ -498,8 +498,6 @@ function LessonsManagement() {
                     form={createForm}
                     layout="vertical"
                     onFinish={async (values) => {
-                        console.log(values);
-
                         try {
                             const formData = new FormData();
                             Object.keys(values).forEach((key) => {

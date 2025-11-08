@@ -18,8 +18,6 @@ const SlideShow = () => {
         refetchOnReconnect: true,
     });
 
-    console.log(slides);
-
     if (isLoading) {
         return (
             <div className={styles.slide}>
@@ -28,7 +26,7 @@ const SlideShow = () => {
         );
     }
 
-    if (!slides.length) {
+    if (!slides?.length) {
         return null;
     }
 
@@ -53,9 +51,27 @@ const SlideShow = () => {
                 navigation={true}
             >
                 {slides.map((slide) => {
-                    const customStyles = slide.customStyles
-                        ? JSON.parse(slide.customStyles)
-                        : {};
+                    let customStyles = {};
+
+                    try {
+                        let parsed = slide.customStyles;
+
+                        // Nếu là string thì parse
+                        if (typeof parsed === "string") {
+                            parsed = JSON.parse(parsed);
+
+                            // Nếu sau khi parse xong vẫn là string => parse thêm lần nữa
+                            if (typeof parsed === "string") {
+                                parsed = JSON.parse(parsed);
+                            }
+                        }
+
+                        // Nếu có cấp styles thì lấy ra
+                        customStyles = parsed.styles || parsed || {};
+                    } catch (err) {
+                        console.error("Lỗi parse customStyles:", err);
+                        customStyles = {};
+                    }
 
                     const classNameStyles = slide.className;
                     return (

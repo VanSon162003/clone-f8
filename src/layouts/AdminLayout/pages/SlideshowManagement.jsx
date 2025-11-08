@@ -191,18 +191,25 @@ const SlideshowManagement = () => {
                         icon={<EditOutlined />}
                         onClick={() => {
                             setEditingSlide(record);
-                            let customStyles;
+                            let customStyles = {};
+
                             try {
-                                customStyles = record.customStyles
-                                    ? JSON.parse(
-                                          JSON.parse(record.customStyles)
-                                      )
-                                    : {};
-                            } catch (error) {
-                                console.error(
-                                    "Error parsing customStyles:",
-                                    error
-                                );
+                                let parsed = record.customStyles;
+
+                                // Nếu là string thì parse
+                                if (typeof parsed === "string") {
+                                    parsed = JSON.parse(parsed);
+
+                                    // Nếu sau khi parse xong vẫn là string => parse thêm lần nữa
+                                    if (typeof parsed === "string") {
+                                        parsed = JSON.parse(parsed);
+                                    }
+                                }
+
+                                // Nếu có cấp styles thì lấy ra
+                                customStyles = parsed.styles || parsed || {};
+                            } catch (err) {
+                                console.error("Lỗi parse customStyles:", err);
                                 customStyles = {};
                             }
 
@@ -364,12 +371,7 @@ const SlideshowManagement = () => {
                     layout="vertical"
                     onFinish={handleSubmit}
                     initialValues={{
-                        customStyles: form.getFieldValue("customStyles") || {
-                            backgroundColor: "#8EC5FC",
-                            backgroundImage:
-                                "linear-gradient(to right, rgb(0, 126, 254), rgb(6, 195, 254))",
-                            color: "black",
-                        },
+                        customStyles: form.getFieldValue("customStyles"),
                         isActive: true,
                     }}
                 >
