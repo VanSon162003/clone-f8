@@ -3,25 +3,17 @@ import styles from "./Tippy.module.scss";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutCurrentUser } from "@/features/auth/authSlice";
 
-import userImg from "@/assets/imgs/user.jpg";
 import proIcon from "@/assets/icons/pro-icon.svg";
-import { useEffect, useRef, useState } from "react";
-import useApi from "@/hook/useApi";
+import { useEffect, useState } from "react";
 import CourseListDetail from "../CourseListDetail";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFacebook, faTwitter } from "@fortawesome/free-brands-svg-icons";
-import {
-    faEnvelope,
-    faFlag,
-    faLink,
-    faClock,
-} from "@fortawesome/free-solid-svg-icons";
+import { faFlag, faLink, faClock } from "@fortawesome/free-solid-svg-icons";
 import Button from "../Button";
 import { useAuth0 } from "@auth0/auth0-react";
-import isHttps from "@/utils/isHttps";
 import notificationService from "@/services/notificationService";
 import socketClient from "@/utils/websocket";
 import { useGetCoursesUserQuery } from "@/services/coursesService";
+import avatarDefault from "@/assets/imgs/user.jpg";
 
 function Tippy({
     user = {},
@@ -213,7 +205,7 @@ function Tippy({
                                                       import.meta.env
                                                           .VITE_BASE_URL
                                                   }${user.avatar}`
-                                                : "/src/assets/imgs/user.jpg"
+                                                : avatarDefault
                                         }
                                         alt="user"
                                     />

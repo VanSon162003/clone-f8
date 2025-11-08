@@ -39,15 +39,16 @@ function SearchResult({
                                 to={item.path}
                                 className={styles.searchItem}
                             >
+                                {console.log(item)}
                                 <div className={styles.avatar}>
                                     <img
                                         src={
-                                            isHttps(item.img)
-                                                ? item.img
+                                            isHttps(item.thumbnail)
+                                                ? item.thumbnail
                                                 : `${
                                                       import.meta.env
                                                           .VITE_BASE_URL
-                                                  }${item.img}`
+                                                  }${item.thumbnail}`
                                         }
                                         alt={item.title}
                                     />

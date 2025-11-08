@@ -7,7 +7,6 @@ import { useGetAllPostsQuery } from "@/services/postsService";
 import styles from "./Blog.module.scss";
 import ParentCard from "@/components/ParentCard";
 import { useSelector } from "react-redux";
-
 function Blog() {
     const [searchParams, setSearchParams] = useSearchParams();
     const [currentPage, setCurrentPage] = useState(

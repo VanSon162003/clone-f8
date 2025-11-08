@@ -20,6 +20,7 @@ import Avatar from "../Avatar";
 import formatNumberVN from "@/utils/formatNumberVN";
 import { useRedirectIfRegistered } from "@/hook/useRedirectIfRegistered";
 import isHttps from "@/utils/isHttps";
+import avatarDefault from "@/assets/imgs/user.jpg";
 
 function CourseItem({ item = {}, courseType, courseEnrolled = false }) {
     const formatCurrencyVND = (value) => {
@@ -122,7 +123,7 @@ function CourseItem({ item = {}, courseType, courseEnrolled = false }) {
                                                 src={
                                                     item.creator
                                                         ? !item?.creator?.avatar
-                                                            ? "/src/assets/imgs/user.jpg"
+                                                            ? avatarDefault
                                                             : `${
                                                                   import.meta
                                                                       .env
@@ -131,7 +132,7 @@ function CourseItem({ item = {}, courseType, courseEnrolled = false }) {
                                                                   item?.creator
                                                                       ?.avatar
                                                               }`
-                                                        : "/src/assets/imgs/user.jpg"
+                                                        : avatarDefault
                                                 }
                                                 alt={item?.creator?.full_name.replace(
                                                     /<[^>]+>/g,
@@ -182,7 +183,7 @@ function CourseItem({ item = {}, courseType, courseEnrolled = false }) {
                                             : `${
                                                   import.meta.env.VITE_BASE_URL
                                               }${item?.author?.avatar}`
-                                        : "/src/assets/imgs/user.jpg"
+                                        : avatarDefault
                                 }
                                 authorPro={item.authorPro}
                                 pro={pro}

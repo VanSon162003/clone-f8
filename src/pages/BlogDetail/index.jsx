@@ -31,6 +31,8 @@ import isHttps from "@/utils/isHttps";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
+import avatarDefault from "@/assets/imgs/user.jpg";
+
 function BlogDetail() {
     const { slug } = useParams();
     const [isOpen, setIsopen] = useState(false);
@@ -223,7 +225,7 @@ function BlogDetail() {
                                                           import.meta.env
                                                               .VITE_BASE_URL
                                                       }${author?.avatar}`
-                                                : `/src/assets/imgs/user.jpg`
+                                                : avatarDefault
                                         }
                                     />
                                 </div>

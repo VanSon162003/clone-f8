@@ -11,6 +11,7 @@ import {
 import { useEffect, useState } from "react";
 import isHttps from "@/utils/isHttps";
 import { useSelector } from "react-redux";
+import avatarDefault from "@/assets/imgs/user.jpg";
 
 function BlogItem({ posts = [] }) {
     const [toggleBookmark] = useToggleBookmarkMutation();
@@ -73,7 +74,7 @@ function BlogItem({ posts = [] }) {
                                             : `${
                                                   import.meta.env.VITE_BASE_URL
                                               }${author?.avatar}`
-                                        : "/src/assets/imgs/user.jpg"
+                                        : avatarDefault
                                 }
                             />
                         </Button>

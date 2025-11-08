@@ -18,6 +18,9 @@ import socketClient from "@/utils/websocket";
 import Button from "../Button";
 import { toast } from "react-toastify";
 
+import avatarDefault from "@/assets/imgs/user.jpg";
+import noComment from "@/assets/icons/noComment.svg";
+
 function CommentSidebar({
     open = false,
     onCancel = () => {},
@@ -361,7 +364,7 @@ function CommentSidebar({
                                                               }${
                                                                   currentUser?.avatar
                                                               }`
-                                                        : "/src/assets/imgs/user.jpg"
+                                                        : avatarDefault
                                                 }
                                             />
                                         </div>
@@ -513,7 +516,7 @@ function CommentSidebar({
                                             <div className={styles.body}>
                                                 <img
                                                     className={styles.img}
-                                                    src="/src/assets/icons/noComment.svg"
+                                                    src={noComment}
                                                     alt=""
                                                 />
                                                 <p className={styles.message}>

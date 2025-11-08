@@ -11,6 +11,8 @@ import Tippy from "@/components/Tippy";
 import isHttps from "@/utils/isHttps";
 import { useSelector } from "react-redux";
 
+import avatarDefault from "@/assets/imgs/user.jpg";
+
 import socket from "@/utils/websocket";
 
 function Actions() {
@@ -176,7 +178,7 @@ function Actions() {
                                         : `${import.meta.env.VITE_BASE_URL}${
                                               user.avatar
                                           }`
-                                    : "/src/assets/imgs/user.jpg"
+                                    : avatarDefault
                             }
                             alt="user"
                         />
