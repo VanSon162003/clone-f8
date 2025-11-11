@@ -30,6 +30,7 @@ import useQuery from "@/hook/useQuery";
 import DOMPurify from "dompurify";
 import VideoPlayer from "@/components/VideoPlayer";
 import NotesSidebar from "./components/NotesSidebar";
+import TutorialGuide from "./components/TutorialGuide";
 import { useCreateNoteMutation } from "@/services/notesService";
 
 function CourseLessonPage() {
@@ -60,6 +61,7 @@ function CourseLessonPage() {
     const [showNoteToast, setShowNoteToast] = useState(false);
     const [noteToastMessage, setNoteToastMessage] = useState("");
     const [openNotesSidebar, setOpenNotesSidebar] = useState(false);
+    const [tutorialOpen, setTutorialOpen] = useState(false);
     // reload track mỗi khi chạm đáy 10 phần tử
     const [hasMore, setHasMore] = useState(true);
 
@@ -451,6 +453,7 @@ function CourseLessonPage() {
                     courseId={course?.id}
                     title={course?.title}
                     onOpenNotes={() => setOpenNotesSidebar(true)}
+                    onOpenTutorial={() => setTutorialOpen(true)}
                 />
                 {openSideBar && (
                     <div className={styles.sidebar}>
@@ -1038,6 +1041,11 @@ function CourseLessonPage() {
                     {noteToastMessage}
                 </div>
             )}
+
+            <TutorialGuide
+                open={tutorialOpen}
+                onClose={() => setTutorialOpen(false)}
+            />
         </>
     );
 }
