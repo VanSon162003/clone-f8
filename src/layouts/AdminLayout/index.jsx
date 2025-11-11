@@ -88,11 +88,11 @@ function AdminLayout() {
             icon: <SettingOutlined />,
             label: <Link to="/admin/settings">Cấu hình hệ thống</Link>,
         },
-        {
-            key: "statistics",
-            icon: <BarChartOutlined />,
-            label: <Link to="/admin/statistics">Thống kê nâng cao</Link>,
-        },
+        // {
+        //     key: "statistics",
+        //     icon: <BarChartOutlined />,
+        //     label: <Link to="/admin/statistics">Thống kê nâng cao</Link>,
+        // },
     ];
 
     // Menu items dành cho instructor

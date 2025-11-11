@@ -3,7 +3,7 @@ import { useUpdateUserCourseProgressMutation } from "@/services/coursesService";
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
 
-const VideoPlayer = ({ videoId, videoUrl }) => {
+const VideoPlayer = ({ videoId, videoUrl, autoPlay = false }) => {
     const videoRef = useRef(null);
     const playerRef = useRef(null);
     const [updateUserCourseProgress] = useUpdateUserCourseProgressMutation();
@@ -12,11 +12,24 @@ const VideoPlayer = ({ videoId, videoUrl }) => {
         const player = videojs(videoRef.current, {
             controls: true,
             fluid: true,
+            autoplay: autoPlay,
+            playsinline: true,
         });
 
         playerRef.current = player;
 
         player.src({ src: videoUrl, type: "video/mp4" });
+
+        // If autoplay requested, try to play when ready
+        if (autoPlay) {
+            player.ready(() => {
+                const p = player.play();
+                if (p && p.catch)
+                    p.catch(() => {
+                        // autoplay may be blocked by browser; fallback to user interaction
+                    });
+            });
+        }
 
         // Lấy tiến độ từ localStorage
         const savedTime = localStorage.getItem(`video_progress_${videoId}`);
@@ -79,7 +92,7 @@ const VideoPlayer = ({ videoId, videoUrl }) => {
                 playerRef.current.dispose();
             }
         };
-    }, [videoId, videoUrl, updateUserCourseProgress]);
+    }, [videoId, videoUrl, updateUserCourseProgress, autoPlay]);
 
     return (
         <div data-vjs-player>

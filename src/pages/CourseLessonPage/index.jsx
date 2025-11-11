@@ -57,19 +57,24 @@ function CourseLessonPage() {
     const { slug } = useParams();
 
     const { data, isSuccess, isFetching } = useGetBySlugQuery(
-        { slug, offset, limit },
+        {
+            slug,
+            offset,
+            limit,
+        },
         {
             refetchOnMountOrArgChange: true,
+            refetchOnFocus: true,
+            refetchOnReconnect: true,
         }
     );
-
-    // Lấy user lesson progress
     const { data: userLessonData, isSuccess: isUserLessonSuccess } =
         useGetUserLessonProgressQuery(
             { courseId: course?.id },
             {
-                skip: !course?.id,
                 refetchOnMountOrArgChange: true,
+                refetchOnFocus: true,
+                refetchOnReconnect: true,
             }
         );
 
@@ -78,15 +83,21 @@ function CourseLessonPage() {
     // lấy ra các tracks (chương bài học)
     useEffect(() => {
         if (data?.data?.tracks) {
-            setTracks((prev) => {
-                return [...prev, ...data.data.tracks];
-            });
+            // If offset is 0 (initial load or slug changed), replace tracks.
+            // Otherwise append for pagination.
+            if (offset === 0) {
+                setTracks(data.data.tracks);
+            } else {
+                setTracks((prev) => {
+                    return [...prev, ...data.data.tracks];
+                });
+            }
 
             if (data.data.tracks.length < limit) setHasMore(false);
 
             setTotalComments(data.data.total_comment || 0);
         }
-    }, [data]);
+    }, [data, offset]);
 
     const observer = useRef();
 
@@ -195,7 +206,7 @@ function CourseLessonPage() {
                 }
             }
         }
-    }, [tracks, idLesson]); // Re-run khi tracks hoặc idLesson thay đổi
+    }, [tracks, idLesson, trackLessons]); // Re-run khi tracks, idLesson hoặc trackLessons thay đổi
 
     const toggleSideBar = () => {
         setOpenSideBar(!openSideBar);
@@ -361,6 +372,8 @@ function CourseLessonPage() {
             if (!trackLessons.includes(next.track.id)) {
                 setTrackLessons((prev) => [...prev, next.track.id]);
             }
+            // Khi điều hướng tới bài tiếp theo, reset isWatch để hiển thị khung preview
+            setIsWatch(false);
         }
     };
 
@@ -389,7 +402,8 @@ function CourseLessonPage() {
 
     // Kiểm tra xem có thể nhấn nút bài tiếp theo không
     const canGoToNext = () => {
-        return isCurrentLessonCompleted();
+        // Only allow Next if current lesson is completed and there is a next lesson
+        return isCurrentLessonCompleted() && !!findNextLesson();
     };
 
     // Kiểm tra xem có thể nhấn nút bài trước không
@@ -452,7 +466,7 @@ function CourseLessonPage() {
                                         );
 
                                     return (
-                                        <>
+                                        <div key={track.id}>
                                             <div
                                                 ref={
                                                     isLast ? lastTrackRef : null
@@ -528,129 +542,136 @@ function CourseLessonPage() {
                                                                     ?.userLesson
                                                                     ?.completed;
                                                             return (
-                                                                <>
-                                                                    <div
-                                                                        className={`${
-                                                                            styles.learnItem
-                                                                        } ${
-                                                                            trackStepActive ===
-                                                                                lesson.id &&
-                                                                            styles.active
-                                                                        } 
-                                                                        
-                                                                        ${
-                                                                            (!lessonCompleted &&
-                                                                                lessonCompleted !==
-                                                                                    false) ||
-                                                                            (!canClickLesson(
-                                                                                lesson.id
-                                                                            ) &&
-                                                                                styles.lock)
-                                                                        }`}
-                                                                        onClick={(
-                                                                            e
-                                                                        ) => {
-                                                                            // Chỉ cho phép click nếu lesson có thể được click
-                                                                            if (
-                                                                                !canClickLesson(
-                                                                                    lesson.id
-                                                                                )
-                                                                            ) {
-                                                                                e.preventDefault();
-                                                                                return;
-                                                                            }
-
-                                                                            handleTrackStepActive(
-                                                                                e,
-                                                                                lesson.id
-                                                                            );
-
-                                                                            setIdLesson(
-                                                                                lesson.id
-                                                                            );
-                                                                            setIdTrack(
-                                                                                track.id
-                                                                            );
-                                                                        }}
-                                                                    >
-                                                                        <div
-                                                                            className={
-                                                                                styles.info
-                                                                            }
-                                                                        >
-                                                                            <h3
-                                                                                className={
-                                                                                    styles.title
-                                                                                }
-                                                                            >
-                                                                                {`${lesson.position}. ${lesson.title}`}
-                                                                            </h3>
-                                                                            <p
-                                                                                className={
-                                                                                    styles.desc
-                                                                                }
-                                                                            >
-                                                                                <FontAwesomeIcon
-                                                                                    icon={
-                                                                                        (stepType ===
-                                                                                            "Video" &&
-                                                                                            trackStepActive ===
-                                                                                                lesson.id &&
-                                                                                            faCompactDisc) ||
-                                                                                        iconType
-                                                                                    }
-                                                                                    className={
-                                                                                        stepType ===
-                                                                                            "Video" &&
-                                                                                        trackStepActive ===
-                                                                                            lesson.id &&
-                                                                                        styles.active
-                                                                                    }
-                                                                                />
-                                                                                <span>
-                                                                                    {`${formatDuration(
-                                                                                        lesson.duration
-                                                                                    )}`}
-                                                                                </span>
-                                                                            </p>
-                                                                        </div>
-                                                                        <div
-                                                                            className={
-                                                                                styles.iconBox
-                                                                            }
-                                                                        >
-                                                                            {/* falock */}
-                                                                            {!lesson?.userLesson ||
+                                                                <div
+                                                                    key={
+                                                                        lesson.id
+                                                                    }
+                                                                    className={`${
+                                                                        styles.learnItem
+                                                                    } ${
+                                                                        trackStepActive ===
+                                                                            lesson.id &&
+                                                                        styles.active
+                                                                    } 
+                                                                    
+                                                                    ${
+                                                                        (!lessonCompleted &&
+                                                                            lessonCompleted !==
+                                                                                false) ||
+                                                                        (!canClickLesson(
+                                                                            lesson.id
+                                                                        ) &&
+                                                                            styles.lock)
+                                                                    }`}
+                                                                    onClick={(
+                                                                        e
+                                                                    ) => {
+                                                                        // Chỉ cho phép click nếu lesson có thể được click
+                                                                        if (
                                                                             !canClickLesson(
                                                                                 lesson.id
-                                                                            ) ? (
-                                                                                <FontAwesomeIcon
-                                                                                    className={`${styles.stateIcon} ${styles.faLock}`}
-                                                                                    icon={
-                                                                                        trackStepActive !==
+                                                                            )
+                                                                        ) {
+                                                                            e.preventDefault();
+                                                                            return;
+                                                                        }
+
+                                                                        handleTrackStepActive(
+                                                                            e,
+                                                                            lesson.id
+                                                                        );
+
+                                                                        // When switching lessons via sidebar, reset watch state
+                                                                        // so the new lesson shows preview (and does not continue previous playback)
+                                                                        setIsWatch(
+                                                                            false
+                                                                        );
+
+                                                                        setIdLesson(
+                                                                            lesson.id
+                                                                        );
+                                                                        setIdTrack(
+                                                                            track.id
+                                                                        );
+                                                                    }}
+                                                                >
+                                                                    <div
+                                                                        className={
+                                                                            styles.info
+                                                                        }
+                                                                    >
+                                                                        <h3
+                                                                            className={
+                                                                                styles.title
+                                                                            }
+                                                                        >
+                                                                            {`${lesson.position}. ${lesson.title}`}
+                                                                        </h3>
+                                                                        <p
+                                                                            className={
+                                                                                styles.desc
+                                                                            }
+                                                                        >
+                                                                            <FontAwesomeIcon
+                                                                                icon={
+                                                                                    (stepType ===
+                                                                                        "Video" &&
+                                                                                        trackStepActive ===
                                                                                             lesson.id &&
-                                                                                        faLock
-                                                                                    }
-                                                                                />
-                                                                            ) : (
-                                                                                <FontAwesomeIcon
-                                                                                    className={`${styles.stateIcon}`}
-                                                                                    icon={
-                                                                                        (lessonCompleted &&
-                                                                                            faCircleCheck) ||
-                                                                                        null
-                                                                                    }
-                                                                                />
-                                                                            )}
-                                                                        </div>
+                                                                                        faCompactDisc) ||
+                                                                                    iconType
+                                                                                }
+                                                                                className={
+                                                                                    stepType ===
+                                                                                        "Video" &&
+                                                                                    trackStepActive ===
+                                                                                        lesson.id &&
+                                                                                    styles.active
+                                                                                }
+                                                                            />
+                                                                            <span>
+                                                                                {`${formatDuration(
+                                                                                    lesson.duration
+                                                                                )}`}
+                                                                            </span>
+                                                                        </p>
                                                                     </div>
-                                                                </>
+                                                                    <div
+                                                                        className={
+                                                                            styles.iconBox
+                                                                        }
+                                                                    >
+                                                                        {/* falock */}
+                                                                        {!lesson?.userLesson ||
+                                                                        !canClickLesson(
+                                                                            lesson.id
+                                                                        ) ? (
+                                                                            <FontAwesomeIcon
+                                                                                className={`${styles.stateIcon} ${styles.faLock}`}
+                                                                                icon={
+                                                                                    trackStepActive !==
+                                                                                        lesson.id &&
+                                                                                    faLock
+                                                                                }
+                                                                            />
+                                                                        ) : (
+                                                                            <FontAwesomeIcon
+                                                                                className={`${styles.stateIcon}`}
+                                                                                icon={
+                                                                                    (lessonCompleted &&
+                                                                                        faCircleCheck) ||
+                                                                                    null
+                                                                                }
+                                                                            />
+                                                                        )}
+                                                                    </div>
+                                                                </div>
                                                             );
                                                         }
                                                     )}
                                                 </div>
                                             )}
-                                        </>
+                                        </div>
                                     );
                                 })}
                             </div>
@@ -743,11 +764,13 @@ function CourseLessonPage() {
                         // ></iframe>
 
                         <VideoPlayer
+                            key={lesson?.id}
                             videoUrl={`${import.meta.env.VITE_BASE_URL}${
                                 lesson?.video_url
                             }`}
                             videoId={lesson?.id}
                             onProgressUpdate={updateUserCourseProgress}
+                            autoPlay={isWatch}
                         />
                     )}
 

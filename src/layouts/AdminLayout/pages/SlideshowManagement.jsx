@@ -24,6 +24,7 @@ import {
     useDeleteSlideMutation,
     useUpdateSlideOrderMutation,
 } from "@/services/admin/slideshowApi";
+import isHttps from "@/utils/isHttps";
 
 const { TextArea } = Input;
 
@@ -147,7 +148,11 @@ const SlideshowManagement = () => {
             render: (image) =>
                 image ? (
                     <img
-                        src={`${import.meta.env.VITE_BASE_URL}${image}`}
+                        src={
+                            isHttps(image)
+                                ? image
+                                : `${import.meta.env.VITE_BASE_URL}${image}`
+                        }
                         alt="Slide"
                         style={{ height: 50 }}
                     />
@@ -241,9 +246,11 @@ const SlideshowManagement = () => {
                             // Set image preview URL
                             setImageUrl(
                                 record.image
-                                    ? `${import.meta.env.VITE_BASE_URL}${
-                                          record.image
-                                      }`
+                                    ? isHttps(record.image)
+                                        ? record.image
+                                        : `${import.meta.env.VITE_BASE_URL}${
+                                              record.image
+                                          }`
                                     : ""
                             );
 

@@ -32,9 +32,7 @@ const VideoUploader = ({ defaultValue, onChange }) => {
             const response = await new Promise((resolve, reject) => {
                 xhr.open(
                     "POST",
-                    `${
-                        import.meta.env.VITE_BASE_URL_ADMIN
-                    }/lessons/upload-video`
+                    `${import.meta.env.VITE_BASE_URL_ADMIN}lessons/upload-video`
                 );
                 xhr.setRequestHeader(
                     "Authorization",
