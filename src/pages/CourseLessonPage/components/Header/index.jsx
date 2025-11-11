@@ -11,7 +11,7 @@ import { useGetCourseProgressQuery } from "@/services/coursesService";
 
 // const mockData = null;
 
-function Header({ courseId, title }) {
+function Header({ courseId, title, onOpenNotes }) {
     const [course, setCourse] = useState({ title: title || "" });
     const { data: progressDataApi } = useGetCourseProgressQuery(
         { courseId },
@@ -107,7 +107,11 @@ function Header({ courseId, title }) {
                     </p>
                 </div>
 
-                <button className={styles.actionBtn} data-tour="">
+                <button
+                    className={styles.actionBtn}
+                    data-tour=""
+                    onClick={() => onOpenNotes && onOpenNotes()}
+                >
                     <FontAwesomeIcon
                         icon={faFile}
                         className={`${styles.icon}`}

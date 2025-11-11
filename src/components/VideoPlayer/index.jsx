@@ -3,7 +3,14 @@ import { useUpdateUserCourseProgressMutation } from "@/services/coursesService";
 import videojs from "video.js";
 import "video.js/dist/video-js.css";
 
-const VideoPlayer = ({ videoId, videoUrl, autoPlay = false }) => {
+const VideoPlayer = ({
+    videoId,
+    videoUrl,
+    autoPlay = false,
+    onTimeUpdate = () => {},
+    onPlay = () => {},
+    onPause = () => {},
+}) => {
     const videoRef = useRef(null);
     const playerRef = useRef(null);
     const [updateUserCourseProgress] = useUpdateUserCourseProgressMutation();
@@ -30,6 +37,20 @@ const VideoPlayer = ({ videoId, videoUrl, autoPlay = false }) => {
                     });
             });
         }
+
+        // Emit play/pause events to parent
+        const handlePlay = () => onPlay();
+        const handlePause = () => onPause();
+
+        player.on("play", handlePlay);
+        player.on("pause", handlePause);
+
+        // Emit timeupdate events (videojs fires timeupdate periodically when playing)
+        const handleTimeUpdate = () => {
+            const t = player.currentTime ? player.currentTime() : 0;
+            onTimeUpdate(t);
+        };
+        player.on("timeupdate", handleTimeUpdate);
 
         // Lấy tiến độ từ localStorage
         const savedTime = localStorage.getItem(`video_progress_${videoId}`);
@@ -86,6 +107,15 @@ const VideoPlayer = ({ videoId, videoUrl, autoPlay = false }) => {
                 });
             } catch (err) {
                 console.debug("Error sending progress on unmount", err);
+            }
+
+            // remove listeners
+            try {
+                player.off("play", handlePlay);
+                player.off("pause", handlePause);
+                player.off("timeupdate", handleTimeUpdate);
+            } catch (e) {
+                /* ignore */
             }
 
             if (playerRef.current) {

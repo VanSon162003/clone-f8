@@ -26,6 +26,7 @@ import { learningPathsManagementApi } from "@/services/admin/learningPathsServic
 import { dashboardApi } from "@/services/admin/dashboardService";
 import { systemSettingsApi } from "@/services/admin/systemSettingsService";
 import { slideshowApi } from "@/services/admin/slideshowApi";
+import { notesApi } from "@/services/notesService";
 
 const rootConfig = {
     key: "auth",
@@ -56,6 +57,7 @@ const rootReducer = combineReducers({
     [dashboardApi.reducerPath]: dashboardApi.reducer,
     [systemSettingsApi.reducerPath]: systemSettingsApi.reducer,
     [slideshowApi.reducerPath]: slideshowApi.reducer,
+    [notesApi.reducerPath]: notesApi.reducer,
 });
 
 export const store = configureStore({
@@ -81,6 +83,7 @@ export const store = configureStore({
         dashboardApi.middleware,
         systemSettingsApi.middleware,
         slideshowApi.middleware,
+        notesApi.middleware,
     ],
 });
 

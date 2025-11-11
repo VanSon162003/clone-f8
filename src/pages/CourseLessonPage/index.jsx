@@ -27,9 +27,10 @@ import {
     useUpdateUserCourseProgressMutation,
 } from "@/services/coursesService";
 import useQuery from "@/hook/useQuery";
-
 import DOMPurify from "dompurify";
 import VideoPlayer from "@/components/VideoPlayer";
+import NotesSidebar from "./components/NotesSidebar";
+import { useCreateNoteMutation } from "@/services/notesService";
 
 function CourseLessonPage() {
     const { param } = useQuery();
@@ -47,6 +48,18 @@ function CourseLessonPage() {
     const [totalComments, setTotalComments] = useState(0);
     const [isWatch, setIsWatch] = useState(false);
 
+    // video playback state for notes
+    const [currentVideoTime, setCurrentVideoTime] = useState(0);
+    const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+
+    // notes modal
+    const [noteModalOpen, setNoteModalOpen] = useState(false);
+    const [noteContent, setNoteContent] = useState("");
+    const noteTextareaRef = useRef(null);
+    const [createNote, { isLoading: isCreating }] = useCreateNoteMutation();
+    const [showNoteToast, setShowNoteToast] = useState(false);
+    const [noteToastMessage, setNoteToastMessage] = useState("");
+    const [openNotesSidebar, setOpenNotesSidebar] = useState(false);
     // reload track mỗi khi chạm đáy 10 phần tử
     const [hasMore, setHasMore] = useState(true);
 
@@ -75,6 +88,8 @@ function CourseLessonPage() {
                 refetchOnMountOrArgChange: true,
                 refetchOnFocus: true,
                 refetchOnReconnect: true,
+                // Always refetch when courseId changes to ensure fresh data
+                skip: !course?.id,
             }
         );
 
@@ -432,7 +447,11 @@ function CourseLessonPage() {
             <section
                 className={`${styles.indexModule_grid} ${styles.indexModule_fullWidth}`}
             >
-                <Header courseId={course?.id} title={course?.title} />
+                <Header
+                    courseId={course?.id}
+                    title={course?.title}
+                    onOpenNotes={() => setOpenNotesSidebar(true)}
+                />
                 {openSideBar && (
                     <div className={styles.sidebar}>
                         <div id="learn-playlist" className={styles.container}>
@@ -771,6 +790,11 @@ function CourseLessonPage() {
                             videoId={lesson?.id}
                             onProgressUpdate={updateUserCourseProgress}
                             autoPlay={isWatch}
+                            onTimeUpdate={(t) => {
+                                setCurrentVideoTime(t);
+                            }}
+                            onPlay={() => setIsVideoPlaying(true)}
+                            onPause={() => setIsVideoPlaying(false)}
                         />
                     )}
 
@@ -795,11 +819,20 @@ function CourseLessonPage() {
                             <button
                                 className={styles.addNote}
                                 data-tour="notes-tutorial"
+                                onClick={() => {
+                                    // open note modal
+                                    setNoteContent("");
+                                    setNoteModalOpen(true);
+                                }}
                             >
                                 <FontAwesomeIcon icon={faPlus} />
                                 <span className={styles.label}>
                                     Thêm ghi chú tại{" "}
-                                    <span className={styles.num}>00:00</span>
+                                    <span className={styles.num}>
+                                        {formatDuration(
+                                            Math.floor(currentVideoTime)
+                                        )}
+                                    </span>
                                 </span>
                             </button>
                         </div>
@@ -872,7 +905,6 @@ function CourseLessonPage() {
                     disabledPrev={!canGoToPrev()}
                 />
             </section>
-
             {
                 <CommentSidebar
                     commentableId={trackStepActive}
@@ -883,6 +915,129 @@ function CourseLessonPage() {
                     setTotalComment={setTotalComments}
                 />
             }
+
+            <NotesSidebar
+                open={openNotesSidebar}
+                onClose={() => setOpenNotesSidebar(false)}
+                courseId={course?.id}
+                tracks={tracks}
+                onJumpToLesson={(lessonId, time) => {
+                    // close sidebar and jump to lesson
+                    setOpenNotesSidebar(false);
+                    if (lessonId) {
+                        // Find the track that contains this lesson
+                        const trackContainingLesson = tracks.find((t) =>
+                            t.lessons?.some((l) => l.id === lessonId)
+                        );
+
+                        if (trackContainingLesson) {
+                            setIdTrack(trackContainingLesson.id);
+
+                            // Open track in sidebar if not already open
+                            setTrackLessons((prev) => {
+                                if (!prev.includes(trackContainingLesson.id)) {
+                                    return [...prev, trackContainingLesson.id];
+                                }
+                                return prev;
+                            });
+                        }
+
+                        // Set the active lesson
+                        setIdLesson(lessonId);
+                        setTrackStepActive(lessonId);
+
+                        // store desired time so VideoPlayer will seek to it on mount
+                        if (typeof time === "number") {
+                            localStorage.setItem(
+                                `video_progress_${lessonId}`,
+                                time
+                            );
+                        }
+                        setIsWatch(true);
+                    }
+                }}
+            />
+
+            {/* Note modal (styled via CSS module) */}
+            {noteModalOpen && (
+                <div
+                    className={styles.noteModalBackdrop}
+                    onClick={() => setNoteModalOpen(false)}
+                >
+                    <div
+                        className={styles.noteModal}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <h3>Thêm ghi chú</h3>
+                        <p>
+                            Thời gian:{" "}
+                            <strong>
+                                {formatDuration(Math.floor(currentVideoTime))}
+                            </strong>
+                        </p>
+                        <textarea
+                            ref={noteTextareaRef}
+                            value={noteContent}
+                            onChange={(e) => setNoteContent(e.target.value)}
+                            placeholder="Ghi nội dung ghi chú..."
+                            rows={6}
+                        />
+                        <div className={styles.noteModal__actions}>
+                            <button
+                                type="button"
+                                className={`${styles.btn} ${styles["btn--secondary"]}`}
+                                onClick={() => setNoteModalOpen(false)}
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                type="button"
+                                className={`${styles.btn} ${styles["btn--primary"]}`}
+                                onClick={async () => {
+                                    if (!noteContent.trim()) return;
+                                    try {
+                                        await createNote({
+                                            lesson_id: lesson?.id,
+                                            content: noteContent.trim(),
+                                            video_timestamp:
+                                                Math.floor(currentVideoTime),
+                                        }).unwrap();
+
+                                        // reset UI
+                                        setNoteContent("");
+
+                                        setNoteModalOpen(false);
+                                        // show success toast
+                                        setNoteToastMessage(
+                                            "Đã thêm ghi chú thành công"
+                                        );
+                                        setShowNoteToast(true);
+                                        setTimeout(
+                                            () => setShowNoteToast(false),
+                                            2500
+                                        );
+                                    } catch (err) {
+                                        console.error(
+                                            "Failed to create note",
+                                            err
+                                        );
+                                        // keep modal open so user can retry
+                                    }
+                                }}
+                                disabled={!noteContent.trim() || isCreating}
+                            >
+                                {isCreating ? "Đang lưu..." : "Lưu"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {/* Toast */}
+            {showNoteToast && (
+                <div className={styles.noteToast} role="status">
+                    {noteToastMessage}
+                </div>
+            )}
         </>
     );
 }
