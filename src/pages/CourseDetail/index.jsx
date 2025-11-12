@@ -404,6 +404,8 @@ function CourseDetail() {
                                     courseId={course.id}
                                     courseSlug={slug}
                                     isPro={course.is_pro}
+                                    courseTitle={course.title}
+                                    coursePrice={course.price}
                                     onError={(error) =>
                                         console.error(
                                             "Registration error:",

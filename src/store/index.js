@@ -27,6 +27,7 @@ import { dashboardApi } from "@/services/admin/dashboardService";
 import { systemSettingsApi } from "@/services/admin/systemSettingsService";
 import { slideshowApi } from "@/services/admin/slideshowApi";
 import { notesApi } from "@/services/notesService";
+import { sepayService } from "@/services/sepayService";
 
 const rootConfig = {
     key: "auth",
@@ -58,6 +59,7 @@ const rootReducer = combineReducers({
     [systemSettingsApi.reducerPath]: systemSettingsApi.reducer,
     [slideshowApi.reducerPath]: slideshowApi.reducer,
     [notesApi.reducerPath]: notesApi.reducer,
+    [sepayService.reducerPath]: sepayService.reducer,
 });
 
 export const store = configureStore({
@@ -84,6 +86,7 @@ export const store = configureStore({
         systemSettingsApi.middleware,
         slideshowApi.middleware,
         notesApi.middleware,
+        sepayService.middleware,
     ],
 });
 
