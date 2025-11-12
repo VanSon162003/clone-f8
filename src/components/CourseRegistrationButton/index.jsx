@@ -50,7 +50,6 @@ function CourseRegistrationButton({
      */
     const handleSepaySuccess = async (paymentData) => {
         try {
-            console.log("Payment successful:", paymentData);
             // Register course after successful payment
             await registerCourse({ course_id: courseId }).unwrap();
             setShowSepayModal(false);

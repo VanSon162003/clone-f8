@@ -38,6 +38,7 @@ const SepayPaymentModal = ({
     const [countdown, setCountdown] = useState(900); // 15 phút = 900 giây
     const [isChecking, setIsChecking] = useState(false);
     const [isCancelling, setIsCancelling] = useState(false);
+    const [shouldStopPolling, setShouldStopPolling] = useState(false);
 
     // RTK Query mutations/queries
     const [createPayment] = useCreateSepayPaymentMutation();
@@ -49,8 +50,14 @@ const SepayPaymentModal = ({
      */
     useEffect(() => {
         if (isOpen && courseId) {
+            // ✅ Reset polling flag when opening
+            setShouldStopPolling(false);
             handleCreatePayment();
         }
+        // ✅ Cleanup when modal closes
+        return () => {
+            setShouldStopPolling(true);
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpen, courseId]);
 
@@ -72,6 +79,49 @@ const SepayPaymentModal = ({
 
         return () => clearInterval(interval);
     }, [paymentData, success]);
+
+    /**
+     * Auto-polling payment status mỗi 3 giây
+     */
+    useEffect(() => {
+        if (
+            !paymentData?.data.referenceCode ||
+            success ||
+            isChecking ||
+            shouldStopPolling
+        )
+            return;
+
+        const pollInterval = setInterval(async () => {
+            try {
+                const response = await checkPaymentStatus(
+                    paymentData.data.referenceCode
+                ).unwrap();
+
+                if (response?.data?.payed_at) {
+                    setSuccess(true);
+                    setCountdown(0);
+                    if (onSuccess) {
+                        setTimeout(() => {
+                            onSuccess(paymentData);
+                        }, 2000);
+                    }
+                }
+            } catch (err) {
+                console.error("Auto-polling error:", err);
+                // Silently fail, don't show error to user
+            }
+        }, 3000); // Poll every 3 seconds
+
+        return () => clearInterval(pollInterval);
+    }, [
+        paymentData,
+        success,
+        isChecking,
+        shouldStopPolling,
+        checkPaymentStatus,
+        onSuccess,
+    ]);
 
     /**
      * Tạo QR code thanh toán
@@ -169,20 +219,32 @@ const SepayPaymentModal = ({
      * Huỷ bỏ thanh toán
      */
     const handleCancelPayment = async () => {
-        console.log(paymentData);
+        console.log(paymentData, 1111);
 
         if (!paymentData?.data?.paymentId) return;
 
         try {
             setIsCancelling(true);
+            // ✅ Stop auto-polling before cancelling
+            setShouldStopPolling(true);
+
             await cancelPayment(paymentData?.data?.paymentId).unwrap();
             console.log("Payment cancelled successfully");
+
+            // ✅ Reset all state after successful cancellation
+            setPaymentData(null);
+            setError(null);
+            setSuccess(false);
+            setCountdown(900);
+
             onClose();
         } catch (err) {
             console.error("Cancel payment error:", err);
             setError(
                 err?.data?.message || "Lỗi huỷ thanh toán. Vui lòng thử lại."
             );
+            // Re-enable polling if cancel fails
+            setShouldStopPolling(false);
         } finally {
             setIsCancelling(false);
         }
@@ -200,7 +262,11 @@ const SepayPaymentModal = ({
                         className={styles.closeBtn}
                         onClick={
                             paymentData && !success
-                                ? handleCancelPayment
+                                ? () => {
+                                      console.log(123);
+
+                                      handleCancelPayment();
+                                  }
                                 : onClose
                         }
                         disabled={loading || isChecking || isCancelling}
@@ -325,6 +391,8 @@ const SepayPaymentModal = ({
                         <button
                             className={styles.retryBtn}
                             onClick={async () => {
+                                console.log(123);
+
                                 await handleCancelPayment();
                                 await handleCreatePayment();
                             }}
@@ -344,7 +412,11 @@ const SepayPaymentModal = ({
                         className={styles.cancelBtn}
                         onClick={
                             paymentData && !success
-                                ? handleCancelPayment
+                                ? () => {
+                                      console.log(123);
+
+                                      handleCancelPayment();
+                                  }
                                 : onClose
                         }
                         disabled={loading || isChecking || isCancelling}
