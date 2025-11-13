@@ -247,8 +247,6 @@ function WritePost() {
 
     // Xử lý xuất bản hoặc lên lịch xuất bản
     const handlePublishPost = async () => {
-        console.log(formEdit);
-
         const formData = new FormData();
         formData.append("title", formEdit.title);
         formData.append("content", formEdit.content);
@@ -272,7 +270,7 @@ function WritePost() {
             );
 
             formData.append("published_at", scheduledDateTime.toISOString());
-            formData.append("status", "schedule");
+            formData.append("status", "scheduled");
             formData.append("visibility", "schedule");
         } else {
             formData.append("status", "published");
