@@ -125,9 +125,19 @@ function BlogItem({ posts = [] }) {
                                     {tag.name}
                                 </Link>
                             ))}
-                            <span>{timeAgo(post.createdAt)}</span>
-                            <div className={styles.dot}>·</div>
-                            <span>{post.views_count || 0} lượt xem</span>
+                            {post.is_approved ? (
+                                <>
+                                    <span>{timeAgo(post.createdAt)}</span>
+                                    <div className={styles.dot}>·</div>
+                                    <span>
+                                        {post.views_count || 0} lượt xem
+                                    </span>
+                                </>
+                            ) : (
+                                <span className={styles.pending}>
+                                    đang chờ duyệt
+                                </span>
+                            )}
                         </div>
                     </div>
 
