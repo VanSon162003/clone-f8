@@ -15,8 +15,7 @@ export const coursesApi = createApi({
         }),
 
         getBySlug: builder.query({
-            query: ({ slug, offset = 0, limit = 10 }) =>
-                `/courses/${slug}?limit=${limit}&offset=${offset}`,
+            query: ({ slug }) => `/courses/${slug}`,
         }),
         getAllCoursesVideo: builder.query({
             query: () => `/courses/videos`,

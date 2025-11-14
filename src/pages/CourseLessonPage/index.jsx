@@ -74,8 +74,6 @@ function CourseLessonPage() {
     const { data, isSuccess, isFetching } = useGetBySlugQuery(
         {
             slug,
-            offset,
-            limit,
         },
         {
             refetchOnMountOrArgChange: true,
@@ -90,6 +88,8 @@ function CourseLessonPage() {
                 refetchOnMountOrArgChange: true,
                 refetchOnFocus: true,
                 refetchOnReconnect: true,
+                // Always refetch when courseId changes to ensure fresh data
+                skip: !course?.id,
             }
         );
 
