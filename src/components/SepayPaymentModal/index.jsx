@@ -263,8 +263,6 @@ const SepayPaymentModal = ({
                         onClick={
                             paymentData && !success
                                 ? () => {
-                                      console.log(123);
-
                                       handleCancelPayment();
                                   }
                                 : onClose

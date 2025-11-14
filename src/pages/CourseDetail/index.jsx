@@ -405,7 +405,7 @@ function CourseDetail() {
                                     courseSlug={slug}
                                     isPro={course.is_pro}
                                     courseTitle={course.title}
-                                    coursePrice={course.price}
+                                    coursePrice={Math.round(course.price)}
                                     onError={(error) =>
                                         console.error(
                                             "Registration error:",

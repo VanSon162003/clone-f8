@@ -90,8 +90,6 @@ function CourseLessonPage() {
                 refetchOnMountOrArgChange: true,
                 refetchOnFocus: true,
                 refetchOnReconnect: true,
-                // Always refetch when courseId changes to ensure fresh data
-                skip: !course?.id,
             }
         );
 
