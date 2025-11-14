@@ -1,5 +1,3 @@
-import React from "react";
-
 import styles from "./Section.module.scss";
 import CourseList from "../CourseList";
 import { Link } from "react-router-dom";

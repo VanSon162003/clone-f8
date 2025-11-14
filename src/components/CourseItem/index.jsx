@@ -177,7 +177,7 @@ function CourseItem({ item = {}, courseType, courseEnrolled = false }) {
                         >
                             <Avatar
                                 avatar={
-                                    item?.author
+                                    item?.author?.avatar
                                         ? isHttps(item?.author?.avatar)
                                             ? item?.author.avatar
                                             : `${

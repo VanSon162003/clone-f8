@@ -17,7 +17,7 @@ import {
     faPlus,
     faXmark,
 } from "@fortawesome/free-solid-svg-icons";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import CommentSidebar from "@/components/CommentSidebar";
 import { useParams } from "react-router-dom";
 import {
@@ -51,7 +51,6 @@ function CourseLessonPage() {
 
     // video playback state for notes
     const [currentVideoTime, setCurrentVideoTime] = useState(0);
-    const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
     // notes modal
     const [noteModalOpen, setNoteModalOpen] = useState(false);
@@ -94,6 +93,69 @@ function CourseLessonPage() {
         );
 
     const [updateUserCourseProgress] = useUpdateUserCourseProgressMutation();
+
+    // ✅ MOVED UP: Helper functions that need to be defined before useEffect uses them
+    // Kiểm tra xem lesson hiện tại có completed không
+    const isCurrentLessonCompleted = useCallback(() => {
+        const currentLesson = tracks
+            .flatMap((track) => track.lessons)
+            .find((lesson) => lesson.id === idLesson);
+        return currentLesson?.userLesson?.completed || false;
+    }, [tracks, idLesson]);
+
+    // Hàm để tìm lesson tiếp theo
+    const findNextLesson = useCallback(() => {
+        const allLessons = tracks.flatMap((track) => track.lessons);
+        const currentIndex = allLessons.findIndex(
+            (lesson) => lesson.id === idLesson
+        );
+
+        if (currentIndex < allLessons.length - 1) {
+            const nextLesson = allLessons[currentIndex + 1];
+            const nextTrack = tracks.find((track) =>
+                track.lessons.some((lesson) => lesson.id === nextLesson.id)
+            );
+
+            return { lesson: nextLesson, track: nextTrack };
+        }
+        return null;
+    }, [tracks, idLesson]);
+
+    // Hàm để tìm lesson trước đó
+    const findPrevLesson = useCallback(() => {
+        const allLessons = tracks.flatMap((track) => track.lessons);
+        const currentIndex = allLessons.findIndex(
+            (lesson) => lesson.id === idLesson
+        );
+
+        if (currentIndex > 0) {
+            const prevLesson = allLessons[currentIndex - 1];
+            const prevTrack = tracks.find((track) =>
+                track.lessons.some((lesson) => lesson.id === prevLesson.id)
+            );
+
+            return { lesson: prevLesson, track: prevTrack };
+        }
+        return null;
+    }, [tracks, idLesson]);
+
+    // Kiểm tra xem lesson có thể được click không
+    const canClickLesson = useCallback(
+        (lessonId) => {
+            const allLessons = tracks.flatMap((track) => track.lessons);
+            const currentIndex = allLessons.findIndex(
+                (lesson) => lesson.id === lessonId
+            );
+
+            // Lesson đầu tiên luôn có thể click
+            if (currentIndex === 0) return true;
+
+            // Kiểm tra lesson trước đó có completed không
+            const prevLesson = allLessons[currentIndex - 1];
+            return prevLesson?.userLesson?.completed || false;
+        },
+        [tracks]
+    );
 
     // lấy ra các tracks (chương bài học)
     useEffect(() => {
@@ -221,7 +283,13 @@ function CourseLessonPage() {
                 }
             }
         }
-    }, [tracks, idLesson, trackLessons]); // Re-run khi tracks, idLesson hoặc trackLessons thay đổi
+    }, [
+        tracks,
+        idLesson,
+        trackLessons,
+        findNextLesson,
+        isCurrentLessonCompleted,
+    ]); // Re-run khi tracks, idLesson hoặc trackLessons thay đổi
 
     const toggleSideBar = () => {
         setOpenSideBar(!openSideBar);
@@ -266,71 +334,8 @@ function CourseLessonPage() {
         });
     };
 
-    const getYouTubeEmbedUrl = (url) => {
-        if (!url) return null;
-
-        try {
-            const parsedUrl = new URL(url);
-            let videoId = null;
-
-            if (
-                parsedUrl.hostname.includes("youtube.com") &&
-                parsedUrl.searchParams.get("v")
-            ) {
-                videoId = parsedUrl.searchParams.get("v");
-            } else if (parsedUrl.hostname === "youtu.be") {
-                videoId = parsedUrl.pathname.slice(1);
-            } else if (parsedUrl.pathname.startsWith("/embed/")) {
-                videoId = parsedUrl.pathname.split("/embed/")[1];
-            } else if (parsedUrl.pathname.startsWith("/shorts/")) {
-                videoId = parsedUrl.pathname.split("/shorts/")[1];
-            }
-
-            return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
-        } catch (error) {
-            console.error("Invalid URL:", error);
-            return null;
-        }
-    };
-
     const handleWatchVideo = () => {
         setIsWatch(true);
-    };
-
-    // Hàm để tìm lesson tiếp theo
-    const findNextLesson = () => {
-        const allLessons = tracks.flatMap((track) => track.lessons);
-        const currentIndex = allLessons.findIndex(
-            (lesson) => lesson.id === idLesson
-        );
-
-        if (currentIndex < allLessons.length - 1) {
-            const nextLesson = allLessons[currentIndex + 1];
-            const nextTrack = tracks.find((track) =>
-                track.lessons.some((lesson) => lesson.id === nextLesson.id)
-            );
-
-            return { lesson: nextLesson, track: nextTrack };
-        }
-        return null;
-    };
-
-    // Hàm để tìm lesson trước đó
-    const findPrevLesson = () => {
-        const allLessons = tracks.flatMap((track) => track.lessons);
-        const currentIndex = allLessons.findIndex(
-            (lesson) => lesson.id === idLesson
-        );
-
-        if (currentIndex > 0) {
-            const prevLesson = allLessons[currentIndex - 1];
-            const prevTrack = tracks.find((track) =>
-                track.lessons.some((lesson) => lesson.id === prevLesson.id)
-            );
-
-            return { lesson: prevLesson, track: prevTrack };
-        }
-        return null;
     };
 
     // Xử lý khi nhấn nút bài tiếp theo
@@ -404,15 +409,36 @@ function CourseLessonPage() {
             if (!trackLessons.includes(prev.track.id)) {
                 setTrackLessons((prevTracks) => [...prevTracks, prev.track.id]);
             }
-        }
-    };
 
-    // Kiểm tra xem lesson hiện tại có completed không
-    const isCurrentLessonCompleted = () => {
-        const currentLesson = tracks
-            .flatMap((track) => track.lessons)
-            .find((lesson) => lesson.id === idLesson);
-        return currentLesson?.userLesson?.completed || false;
+            // ✅ NEW: Ensure all lessons up to current one have userLesson object
+            // This prevents lock icon from showing on already-unlocked lessons
+            setTracks((prevTracks) =>
+                prevTracks.map((track) => ({
+                    ...track,
+                    lessons: track.lessons.map((lesson) => {
+                        const allLessons = prevTracks.flatMap((t) => t.lessons);
+                        const currentIndex = allLessons.findIndex(
+                            (l) => l.id === prev.lesson.id
+                        );
+                        const lessonIndex = allLessons.findIndex(
+                            (l) => l.id === lesson.id
+                        );
+
+                        // If this lesson is before or at current lesson, ensure it has userLesson
+                        if (lessonIndex <= currentIndex && !lesson.userLesson) {
+                            return {
+                                ...lesson,
+                                userLesson: {
+                                    completed: false,
+                                },
+                            };
+                        }
+
+                        return lesson;
+                    }),
+                }))
+            );
+        }
     };
 
     // Kiểm tra xem có thể nhấn nút bài tiếp theo không
@@ -425,21 +451,6 @@ function CourseLessonPage() {
     const canGoToPrev = () => {
         const prev = findPrevLesson();
         return prev?.lesson?.userLesson?.completed || false;
-    };
-
-    // Kiểm tra xem lesson có thể được click không
-    const canClickLesson = (lessonId) => {
-        const allLessons = tracks.flatMap((track) => track.lessons);
-        const currentIndex = allLessons.findIndex(
-            (lesson) => lesson.id === lessonId
-        );
-
-        // Lesson đầu tiên luôn có thể click
-        if (currentIndex === 0) return true;
-
-        // Kiểm tra lesson trước đó có completed không
-        const prevLesson = allLessons[currentIndex - 1];
-        return prevLesson?.userLesson?.completed || false;
     };
 
     return (
@@ -573,15 +584,16 @@ function CourseLessonPage() {
                                                                             lesson.id &&
                                                                         styles.active
                                                                     } 
+
+                                                                 
                                                                     
                                                                     ${
-                                                                        (!lessonCompleted &&
-                                                                            lessonCompleted !==
-                                                                                false) ||
-                                                                        (!canClickLesson(
+                                                                        !canClickLesson(
                                                                             lesson.id
                                                                         ) &&
-                                                                            styles.lock)
+                                                                        !lesson?.userLesson
+                                                                            ? styles.lock
+                                                                            : ""
                                                                     }`}
                                                                     onClick={(
                                                                         e
@@ -661,26 +673,27 @@ function CourseLessonPage() {
                                                                             styles.iconBox
                                                                         }
                                                                     >
-                                                                        {/* falock */}
-                                                                        {!lesson?.userLesson ||
-                                                                        !canClickLesson(
+                                                                        {/* ✅ Show lock only if lesson is NOT unlocked AND cannot click */}
+                                                                        {/* ✅ Show check only if lesson is unlocked AND completed */}
+                                                                        {canClickLesson(
                                                                             lesson.id
-                                                                        ) ? (
-                                                                            <FontAwesomeIcon
-                                                                                className={`${styles.stateIcon} ${styles.faLock}`}
-                                                                                icon={
-                                                                                    trackStepActive !==
-                                                                                        lesson.id &&
-                                                                                    faLock
-                                                                                }
-                                                                            />
-                                                                        ) : (
+                                                                        ) &&
+                                                                        lesson?.userLesson ? (
                                                                             <FontAwesomeIcon
                                                                                 className={`${styles.stateIcon}`}
                                                                                 icon={
                                                                                     (lessonCompleted &&
                                                                                         faCircleCheck) ||
                                                                                     null
+                                                                                }
+                                                                            />
+                                                                        ) : (
+                                                                            <FontAwesomeIcon
+                                                                                className={`${styles.stateIcon} ${styles.faLock}`}
+                                                                                icon={
+                                                                                    trackStepActive !==
+                                                                                        lesson.id &&
+                                                                                    faLock
                                                                                 }
                                                                             />
                                                                         )}
@@ -794,8 +807,6 @@ function CourseLessonPage() {
                             onTimeUpdate={(t) => {
                                 setCurrentVideoTime(t);
                             }}
-                            onPlay={() => setIsVideoPlaying(true)}
-                            onPause={() => setIsVideoPlaying(false)}
                         />
                     )}
 

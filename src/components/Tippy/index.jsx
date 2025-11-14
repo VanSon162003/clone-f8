@@ -14,6 +14,7 @@ import notificationService from "@/services/notificationService";
 import socketClient from "@/utils/websocket";
 import { useGetCoursesUserQuery } from "@/services/coursesService";
 import avatarDefault from "@/assets/imgs/user.jpg";
+import isHttps from "@/utils/isHttps";
 
 function Tippy({
     user = {},
@@ -201,10 +202,12 @@ function Tippy({
                                     <img
                                         src={
                                             user.avatar
-                                                ? `${
-                                                      import.meta.env
-                                                          .VITE_BASE_URL
-                                                  }${user.avatar}`
+                                                ? isHttps(user.avatar)
+                                                    ? user.avatar
+                                                    : `${
+                                                          import.meta.env
+                                                              .VITE_BASE_URL
+                                                      }${user.avatar}`
                                                 : avatarDefault
                                         }
                                         alt="user"
