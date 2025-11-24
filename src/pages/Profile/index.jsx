@@ -27,6 +27,7 @@ import authService from "@/services/authService";
 import useCurrentUser from "@/hook/useCurrentUser";
 import ActivityHeatmap from "@/components/ActivityHeatmap";
 import isHttps from "@/utils/isHttps";
+import currentAvatar from "@/assets/imgs/user.jpg";
 function Profile() {
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -92,7 +93,7 @@ function Profile() {
                                             : `${
                                                   import.meta.env.VITE_BASE_URL
                                               }${profile?.avatar}`
-                                        : "/src/assets/imgs/user.jpg"
+                                        : currentAvatar
                                 }
                                 fontSize={"24px"}
                                 flexCenter
