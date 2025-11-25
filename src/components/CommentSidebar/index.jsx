@@ -36,6 +36,8 @@ function CommentSidebar({
 
     const currentUser = useSelector((state) => state.auth.currentUser);
 
+    const [totalCommentQuestion, setTotalCommentQuestion] = useState(0);
+
     // lấy 10 comment đầu mỗi khi chạm đáy lấy thêm 10 cái nữa
 
     const [hasMore, setHasMore] = useState(true);
@@ -77,6 +79,14 @@ function CommentSidebar({
     const [createComment] = useCreateCommentMutation();
     const [editComment] = useEditCommentMutation();
     const [deleteComment] = useDeleteCommentMutation();
+
+    useEffect(() => {
+        if (data) {
+            if (commentableType === "question") {
+                setTotalCommentQuestion(data.data.length);
+            }
+        }
+    }, [data, commentableType]);
 
     // socket comment post
     useEffect(() => {
@@ -416,7 +426,10 @@ function CommentSidebar({
                                 <div className={styles.content}>
                                     <div className={styles.header}>
                                         <h2 className={styles.title}>
-                                            {totalComment} bình luận
+                                            {commentableType === "question"
+                                                ? totalCommentQuestion
+                                                : totalComment}{" "}
+                                            bình luận
                                         </h2>
                                         {comments.length > 0 && (
                                             <span
