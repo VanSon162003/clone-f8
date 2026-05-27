@@ -54,7 +54,7 @@ function Profile() {
         if (!profile || !currentUser) return;
         setIsFollowing(
             Array.isArray(profile.followers) &&
-                profile.followers.some((f) => f.id === currentUser.id)
+                profile.followers.some((f) => f.id === currentUser.id),
         );
     }, [profile, currentUser]);
 
@@ -280,20 +280,20 @@ function Profile() {
                                                           const date =
                                                               act.activity_date
                                                                   ? act.activity_date.split(
-                                                                        "T"
+                                                                        "T",
                                                                     )[0]
                                                                   : (
                                                                         act.createdAt ||
                                                                         ""
                                                                     ).split(
-                                                                        "T"
+                                                                        "T",
                                                                     )[0];
                                                           if (!date) return acc;
                                                           const found =
                                                               acc.find(
                                                                   (item) =>
                                                                       item.date ===
-                                                                      date
+                                                                      date,
                                                               );
                                                           if (found) {
                                                               found.count +=
@@ -309,7 +309,7 @@ function Profile() {
                                                           }
                                                           return acc;
                                                       },
-                                                      []
+                                                      [],
                                                   )
                                                 : []
                                         }

@@ -3,23 +3,24 @@ export const timeAgo = (dateString) => {
     const now = new Date();
 
     const diffMs = now - createdDate;
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const diffSeconds = Math.floor(diffMs / 1000);
+    const diffMinutes = Math.floor(diffSeconds / 60);
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
 
     if (diffDays < 1) {
-        return "Hôm nay";
+        const hh = String(createdDate.getHours()).padStart(2, "0");
+        const mm = String(createdDate.getMinutes()).padStart(2, "0");
+        const ss = String(createdDate.getSeconds()).padStart(2, "0");
+
+        return `${hh}:${mm}:${ss}`;
     }
 
     const years = Math.floor(diffDays / 365);
     const months = Math.floor((diffDays % 365) / 30);
     const days = diffDays % 30;
 
-    if (years > 0) {
-        return years === 1 ? "1 năm trước" : `${years} năm trước`;
-    }
-
-    if (months > 0) {
-        return months === 1 ? "1 tháng trước" : `${months} tháng trước`;
-    }
-
-    return days === 1 ? "1 ngày trước" : `${days} ngày trước`;
+    if (years > 0) return `${years} năm trước`;
+    if (months > 0) return `${months} tháng trước`;
+    return `${days} ngày trước`;
 };

@@ -9,6 +9,10 @@ const httpRequest = axios.create({
     // headers: {
     //     Authorization: `Bearer ${localStorage.getItem("token")}`,
     // },
+
+    headers: {
+        "ngrok-skip-browser-warning": "true",
+    },
 });
 
 let isRefreshing = false;
@@ -16,6 +20,7 @@ let tokenListeners = [];
 
 httpRequest.interceptors.request.use((config) => {
     const token = localStorage.getItem("token");
+    config.headers["ngrok-skip-browser-warning"] = "true";
 
     if (token) config.headers.Authorization = `Bearer ${token}`;
 
@@ -67,7 +72,7 @@ httpRequest.interceptors.response.use(
         }
 
         return Promise.reject(error);
-    }
+    },
 );
 
 const send = async (method, url, data, config) => {
