@@ -32,6 +32,7 @@ import VideoPlayer from "@/components/VideoPlayer";
 import NotesSidebar from "./components/NotesSidebar";
 import TutorialGuide from "./components/TutorialGuide";
 import { useCreateNoteMutation } from "@/services/notesService";
+import ExerciseWorkspace from "./components/ExerciseWorkspace";
 
 function CourseLessonPage() {
     const { param } = useQuery();
@@ -80,7 +81,7 @@ function CourseLessonPage() {
             refetchOnReconnect: true,
         }
     );
-    const { data: userLessonData, isSuccess: isUserLessonSuccess } =
+    const { data: userLessonData, isSuccess: isUserLessonSuccess, refetch: refetchUserLessons } =
         useGetUserLessonProgressQuery(
             { courseId: course?.id },
             {
@@ -717,173 +718,146 @@ function CourseLessonPage() {
                         !openSideBar && styles.fulWidth
                     }`}
                 >
-                    {!isWatch ? (
-                        <div
-                            className={`${styles.wrapperInner}  noselect ${styles.fulWidth}`}
-                            onClick={handleWatchVideo}
-                        >
-                            <div data-tour="learning-center">
-                                <div className={styles.videoWrapper}>
-                                    <div
-                                        className={styles.player}
-                                        style={{
-                                            width: "100%",
-                                            height: "100%",
-                                        }}
-                                    >
-                                        <div
-                                            className={
-                                                styles.reactPlayer__preview
-                                            }
-                                            tabIndex={0}
-                                            style={{
-                                                width: "100%",
-                                                height: "100%",
-                                                backgroundSize: "cover",
-                                                backgroundPosition:
-                                                    "center center",
-                                                cursor: "pointer",
-                                                display: "flex",
-                                                alignItems: "center",
-                                                justifyContent: "center",
-                                                backgroundImage: `url(${lesson?.thumbnail})`,
-                                            }}
-                                        >
+                    {lesson?.lesson_type === "Challenge" ? (
+                        <ExerciseWorkspace
+                            lesson={lesson}
+                            onProgressUpdate={refetchUserLessons}
+                        />
+                    ) : (
+                        <>
+                            {!isWatch ? (
+                                <div
+                                    className={`${styles.wrapperInner}  noselect ${styles.fulWidth}`}
+                                    onClick={handleWatchVideo}
+                                >
+                                    <div data-tour="learning-center">
+                                        <div className={styles.videoWrapper}>
                                             <div
-                                                className={
-                                                    styles.reactPlayer__shadow
-                                                }
+                                                className={styles.player}
                                                 style={{
-                                                    background:
-                                                        "radial-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0) 60%)",
-                                                    borderRadius: "64px",
-                                                    width: "64px",
-                                                    height: "64px",
-                                                    display: "flex",
-                                                    alignItems: "center",
-                                                    justifyContent: "center",
+                                                    width: "100%",
+                                                    height: "100%",
                                                 }}
                                             >
                                                 <div
                                                     className={
-                                                        styles.reactPlayer__playIcon
+                                                        styles.reactPlayer__preview
                                                     }
+                                                    tabIndex={0}
                                                     style={{
-                                                        borderStyle: "solid",
-                                                        borderWidth:
-                                                            "16px 0px 16px 26px",
-                                                        borderColor:
-                                                            "transparent transparent transparent white",
-                                                        marginLeft: "7px",
+                                                        width: "100%",
+                                                        height: "100%",
+                                                        backgroundSize: "cover",
+                                                        backgroundPosition:
+                                                            "center center",
+                                                        cursor: "pointer",
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "center",
+                                                        backgroundImage: `url(${lesson?.thumbnail})`,
                                                     }}
-                                                ></div>
+                                                >
+                                                    <div
+                                                        className={
+                                                            styles.reactPlayer__shadow
+                                                        }
+                                                        style={{
+                                                            background:
+                                                                "radial-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0) 60%)",
+                                                            borderRadius: "64px",
+                                                            width: "64px",
+                                                            height: "64px",
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            justifyContent: "center",
+                                                        }}
+                                                    >
+                                                        <div
+                                                            className={
+                                                                styles.reactPlayer__playIcon
+                                                            }
+                                                            style={{
+                                                                borderStyle: "solid",
+                                                                borderWidth:
+                                                                    "16px 0px 16px 26px",
+                                                                borderColor:
+                                                                    "transparent transparent transparent white",
+                                                                marginLeft: "7px",
+                                                            }}
+                                                        ></div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    ) : (
-                        // <iframe
-                        //     width="100%"
-                        //     height="550"
-                        //     src={`${getYouTubeEmbedUrl(
-                        //         lesson.video_url
-                        //     )}?autoplay=1&mute=1`}
-                        //     title="YouTube video player"
-                        //     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-                        //     referrerPolicy="strict-origin-when-cross-origin"
-                        //     allowFullScreen
-                        // ></iframe>
+                            ) : (
+                                <VideoPlayer
+                                    key={lesson?.id}
+                                    videoUrl={`${import.meta.env.VITE_BASE_URL}${
+                                        lesson?.video_url
+                                    }`}
+                                    videoId={lesson?.id}
+                                    onProgressUpdate={updateUserCourseProgress}
+                                    autoPlay={isWatch}
+                                    onTimeUpdate={(t) => {
+                                        setCurrentVideoTime(t);
+                                    }}
+                                />
+                            )}
 
-                        <VideoPlayer
-                            key={lesson?.id}
-                            videoUrl={`${import.meta.env.VITE_BASE_URL}${
-                                lesson?.video_url
-                            }`}
-                            videoId={lesson?.id}
-                            onProgressUpdate={updateUserCourseProgress}
-                            autoPlay={isWatch}
-                            onTimeUpdate={(t) => {
-                                setCurrentVideoTime(t);
-                            }}
-                        />
-                    )}
-
-                    <div
-                        className={`${styles.content} ${
-                            !openSideBar && styles.fulWidth
-                        }`}
-                    >
-                        <div className={styles.contentTop}>
-                            <header className={styles.header}>
-                                <h1 className={styles.heading}>
-                                    {lesson?.title}
-                                </h1>
-                                <p className={styles.updated}>
-                                    Cập nhật{" "}
-                                    {formatVietnameseMonthYear(
-                                        lesson?.updated_at
-                                    )}
-                                </p>
-                            </header>
-
-                            <button
-                                className={styles.addNote}
-                                data-tour="notes-tutorial"
-                                onClick={() => {
-                                    // open note modal
-                                    setNoteContent("");
-                                    setNoteModalOpen(true);
-                                }}
+                            <div
+                                className={`${styles.content} ${
+                                    !openSideBar && styles.fulWidth
+                                }`}
                             >
-                                <FontAwesomeIcon icon={faPlus} />
-                                <span className={styles.label}>
-                                    Thêm ghi chú tại{" "}
-                                    <span className={styles.num}>
-                                        {formatDuration(
-                                            Math.floor(currentVideoTime)
-                                        )}
-                                    </span>
-                                </span>
-                            </button>
-                        </div>
+                                <div className={styles.contentTop}>
+                                    <header className={styles.header}>
+                                        <h1 className={styles.heading}>
+                                            {lesson?.title}
+                                        </h1>
+                                        <p className={styles.updated}>
+                                            Cập nhật{" "}
+                                            {formatVietnameseMonthYear(
+                                                lesson?.updated_at
+                                            )}
+                                        </p>
+                                    </header>
 
-                        <div
-                            className={styles.lessonBody}
-                            style={{
-                                "--font-size": "1.6rem",
-                                "--line-height": "1.8",
-                            }}
-                            dangerouslySetInnerHTML={{
-                                __html: DOMPurify.sanitize(lesson?.content),
-                            }}
-                        >
-                            {/* <p>
-                                Tham gia nhóm{" "}
-                                <a
-                                    rel="noopener noreferrer nofollow"
-                                    target="_blank"
-                                    href="https://www.facebook.com/groups/f8official/"
-                                >
-                                    Học lập trình tại F8
-                                </a>{" "}
-                                trên Facebook để cùng nhau trao đổi trong quá
-                                trình học tập ❤️
-                            </p>
-                            <p>
-                                Các bạn subscribe kênh Youtube{" "}
-                                <a
-                                    rel="noopener noreferrer nofollow"
-                                    target="_blank"
-                                    href="https://url.mycv.vn/f8_youtube?ref=lesson_desc"
-                                >
-                                    F8 Official
-                                </a>{" "}
-                                để nhận thông báo khi có các bài học mới nhé ❤️
-                            </p> */}
-                        </div>
-                    </div>
+                                    <button
+                                        className={styles.addNote}
+                                        data-tour="notes-tutorial"
+                                        onClick={() => {
+                                            // open note modal
+                                            setNoteContent("");
+                                            setNoteModalOpen(true);
+                                        }}
+                                    >
+                                        <FontAwesomeIcon icon={faPlus} />
+                                        <span className={styles.label}>
+                                            Thêm ghi chú tại{" "}
+                                            <span className={styles.num}>
+                                                {formatDuration(
+                                                    Math.floor(currentVideoTime)
+                                                )}
+                                            </span>
+                                        </span>
+                                    </button>
+                                </div>
+
+                                <div
+                                    className={styles.lessonBody}
+                                    style={{
+                                        "--font-size": "1.6rem",
+                                        "--line-height": "1.8",
+                                    }}
+                                    dangerouslySetInnerHTML={{
+                                        __html: DOMPurify.sanitize(lesson?.content),
+                                    }}
+                                />
+                            </div>
+                        </>
+                    )}
 
                     <p className={styles.footer}>
                         Made with{" "}
