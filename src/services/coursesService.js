@@ -53,6 +53,18 @@ export const coursesApi = createApi({
                 body: { lessonId, watchDuration, lastPosition, completed },
             }),
         }),
+        
+        // Exercise endpoints
+        getExerciseByLessonId: builder.query({
+            query: ({ lessonId }) => `/exercises/lesson/${lessonId}`,
+        }),
+        submitExercise: builder.mutation({
+            query: ({ exerciseId, submittedCode, status }) => ({
+                url: `/exercises/${exerciseId}/submit`,
+                method: "POST",
+                body: { submitted_code: submittedCode, status },
+            }),
+        }),
     }),
 });
 
@@ -66,4 +78,6 @@ export const {
     useGetUserLessonProgressQuery,
     useUpdateUserCourseProgressMutation,
     useGetCoursesUserQuery,
+    useGetExerciseByLessonIdQuery,
+    useSubmitExerciseMutation,
 } = coursesApi;
