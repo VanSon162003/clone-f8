@@ -12,3 +12,6 @@ export { default as LessonsManagement } from "./LessonsManagement";
 export { default as TracksManagement } from "./ChaptersManagement";
 export { default as LearningPathManagement } from "./LearningPathManagement";
 export { default as SlideshowManagement } from "./SlideshowManagement";
+export { default as ExamsManagement } from "./ExamsManagement";
+export { default as ExamGrading } from "./ExamGrading";
+

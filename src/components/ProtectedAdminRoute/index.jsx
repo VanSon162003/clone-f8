@@ -3,6 +3,24 @@ import config from "@/config";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 
+const instructorRoles = ["instructor", "intructor"];
+
+const instructorAllowedPaths = [
+    "/admin/courses",
+    "/admin/tracks",
+    "/admin/lessons",
+    "/admin/exams",
+];
+
+const isInstructorAllowedPath = (pathname) => {
+    if (pathname === "/admin") return false;
+
+    return (
+        instructorAllowedPaths.includes(pathname) ||
+        /^\/admin\/exams\/submissions\/[^/]+\/grade$/.test(pathname)
+    );
+};
+
 function ProtectedAdminRoute({ children }) {
     const location = useLocation();
 
@@ -19,9 +37,11 @@ function ProtectedAdminRoute({ children }) {
     }
 
     if (currentUser) {
+        const isInstructor = instructorRoles.includes(currentUser?.role);
+
         if (
             currentUser?.role !== "admin" &&
-            currentUser?.role !== "instructor"
+            !isInstructor
         ) {
             localStorage.removeItem("token");
             localStorage.removeItem("refresh_token");
@@ -32,6 +52,10 @@ function ProtectedAdminRoute({ children }) {
                     replace
                 />
             );
+        }
+
+        if (isInstructor && !isInstructorAllowedPath(location.pathname)) {
+            return <Navigate to={config.routes.adminCourses} replace />;
         }
     }
 

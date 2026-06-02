@@ -29,6 +29,7 @@ const config = {
         myBookmark: "/me/bookmark",
         courseDetail: "/courses/:slug",
         courseLessonPage: "/learning/:slug",
+        courseExamPage: "/learning/:slug/exam",
         verifyEmail: "/verify-email",
         resendEmail: "/resend-email",
         searchResults: "/search-results",
@@ -47,6 +48,8 @@ const config = {
         adminTrack: "/admin/tracks",
         adminLearningPaths: "/admin/learning-paths",
         adminSlideshow: "/admin/slideshow",
+        adminExams: "/admin/exams",
+        adminExamGrading: "/admin/exams/submissions/:submissionId/grade",
     },
 };
 

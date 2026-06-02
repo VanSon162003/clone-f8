@@ -15,7 +15,10 @@ import {
     TracksManagement,
     LearningPathManagement,
     SlideshowManagement,
+    ExamsManagement,
+    ExamGrading,
 } from "@/layouts/AdminLayout/pages";
+import ExamWorkspace from "@/pages/CourseLessonPage/components/ExamWorkspace";
 import AuthenticationApp from "@/layouts/DefaultLayout/components/AuthenticationApp";
 import ForgotPassWord from "@/layouts/DefaultLayout/components/AuthenticationApp/page/ForgotPassWord";
 import Login from "@/layouts/DefaultLayout/components/AuthenticationApp/page/Login";
@@ -284,6 +287,24 @@ const routes = [
     {
         path: config.routes.adminSlideshow,
         component: SlideshowManagement,
+        layout: AdminLayout,
+        auth: true,
+    },
+    {
+        path: config.routes.courseExamPage,
+        component: ExamWorkspace,
+        layout: null,
+        protected: true,
+    },
+    {
+        path: config.routes.adminExams,
+        component: ExamsManagement,
+        layout: AdminLayout,
+        auth: true,
+    },
+    {
+        path: config.routes.adminExamGrading,
+        component: ExamGrading,
         layout: AdminLayout,
         auth: true,
     },

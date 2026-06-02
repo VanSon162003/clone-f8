@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import useQuery from "@/hook/useQuery";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import PropTypes from "prop-types";
 
 import authService from "@/services/authService";
 import Input from "../Input";
@@ -14,6 +15,14 @@ import Button from "@/components/Button";
 import useDebounce from "@/hook/useDebounce";
 import { useDispatch, useSelector } from "react-redux";
 import { accessUser, setAuthErr } from "@/features/auth/authSlice";
+
+const getContinueUrl = (param) => {
+    const continueUrl = param.get("continue");
+
+    if (!continueUrl) return "/";
+
+    return continueUrl.startsWith("/") ? continueUrl : `/${continueUrl}`;
+};
 
 function Form({ type = "" }) {
     const {
@@ -82,9 +91,7 @@ function Form({ type = "" }) {
                 setRedirected(true);
                 localStorage.setItem("token", respone.access_token);
                 localStorage.setItem("refresh_token", respone.refresh_token);
-                window.top.location.href = param.get("continue")
-                    ? `/${param.get("continue")}`
-                    : "/";
+                window.top.location.href = getContinueUrl(param);
             }
             // setToken(respone.access_token);
         } else if (type === "register" && respone && !redirected) {
@@ -113,9 +120,7 @@ function Form({ type = "" }) {
             if (res && res.data && res.data.access_token) {
                 localStorage.setItem("token", res.data.access_token);
                 localStorage.setItem("refresh_token", res.data.refresh_token);
-                window.top.location.href = param.get("continue")
-                    ? `/${param.get("continue")}`
-                    : "/";
+                window.top.location.href = getContinueUrl(param);
             }
         } catch (err) {
             dispatch(
@@ -248,5 +253,9 @@ function Form({ type = "" }) {
         </form>
     );
 }
+
+Form.propTypes = {
+    type: PropTypes.string,
+};
 
 export default Form;

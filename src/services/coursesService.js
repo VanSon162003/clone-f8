@@ -54,7 +54,15 @@ export const coursesApi = createApi({
             query: ({ lessonId, watchDuration, lastPosition, completed }) => ({
                 url: `/courses/user-course-progress`,
                 method: "POST",
-                body: { lessonId, watchDuration, lastPosition, completed },
+                body: {
+                    lessonId,
+                    lesson_id: lessonId,
+                    watchDuration,
+                    watch_duration: watchDuration,
+                    lastPosition,
+                    last_position: lastPosition,
+                    completed,
+                },
             }),
             invalidatesTags: ["CourseProgress", "UserLessonProgress"],
         }),

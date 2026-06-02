@@ -17,17 +17,16 @@ import {
     faPlus,
     faXmark,
 } from "@fortawesome/free-solid-svg-icons";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { useSelector } from "react-redux";
 import CommentSidebar from "@/components/CommentSidebar";
 import { useParams, useSearchParams } from "react-router-dom";
 import {
     useGetBySlugQuery,
     useGetUserLessonProgressQuery,
-    // useUpdateCourseProgressMutation,
+    useUpdateCourseProgressMutation,
     useUpdateUserCourseProgressMutation,
 } from "@/services/coursesService";
-import useQuery from "@/hook/useQuery";
 import DOMPurify from "dompurify";
 import VideoPlayer from "@/components/VideoPlayer";
 import YoutubePlayer from "@/components/YoutubePlayer";
@@ -35,6 +34,7 @@ import NotesSidebar from "./components/NotesSidebar";
 import TutorialGuide from "./components/TutorialGuide";
 import { useCreateNoteMutation } from "@/services/notesService";
 import ExerciseWorkspace from "./components/ExerciseWorkspace";
+import { useGetExamDetailsQuery } from "@/services/examsService";
 
 function CourseLessonPage() {
     const [searchParams, setSearchParams] = useSearchParams();
@@ -97,6 +97,46 @@ function CourseLessonPage() {
         );
 
     const [updateUserCourseProgress] = useUpdateUserCourseProgressMutation();
+    const [updateCourseProgress] = useUpdateCourseProgressMutation();
+
+    const { data: examData, refetch: refetchExam } = useGetExamDetailsQuery(
+        { courseId: course?.id },
+        { skip: !course?.id }
+    );
+    const exam = examData?.data;
+
+    const isCourseCompletedForExam = useMemo(() => {
+        const allLessons = tracks.flatMap((track) => track.lessons || []);
+        const totalLessons =
+            course?.totalLessonByCourse || allLessons.length || 0;
+        const completedLessons = allLessons.filter(
+            (lesson) => lesson?.userLesson?.completed
+        ).length;
+        const userProgress = course?.userProgress?.[0];
+        const rawLearnedLessons = userProgress?.learned_lessons;
+        let learnedLessons = [];
+
+        if (Array.isArray(rawLearnedLessons)) {
+            learnedLessons = rawLearnedLessons;
+        } else if (typeof rawLearnedLessons === "string") {
+            try {
+                learnedLessons = JSON.parse(rawLearnedLessons) || [];
+            } catch (error) {
+                console.debug("Cannot parse learned_lessons:", error);
+            }
+        }
+
+        if (!totalLessons) return false;
+
+        return (
+            completedLessons >= totalLessons ||
+            learnedLessons.length >= totalLessons ||
+            Number(userProgress?.progress || 0) >= 100 ||
+            Boolean(userProgress?.is_completed)
+        );
+    }, [course, tracks]);
+
+    const isExamLocked = Boolean(exam?.is_locked) && !isCourseCompletedForExam;
 
     // ✅ MOVED UP: Helper functions that need to be defined before useEffect uses them
     // Kiểm tra xem lesson hiện tại có completed không
@@ -394,6 +434,48 @@ function CourseLessonPage() {
         setIsWatch(true);
     };
 
+    const markLessonCompletedOnServer = async (targetLesson) => {
+        const lessonId = targetLesson?.id || idLesson;
+        if (!lessonId) return;
+
+        const lastPosition = Number(
+            localStorage.getItem(`video_progress_${lessonId}`)
+        );
+        const watchDuration = isNaN(lastPosition)
+            ? targetLesson?.duration || 0
+            : lastPosition;
+
+        const results = await Promise.allSettled([
+            updateUserCourseProgress({
+                lessonId,
+                watchDuration,
+                lastPosition: watchDuration,
+                completed: true,
+            }).unwrap(),
+            course?.id
+                ? updateCourseProgress({
+                      courseId: course.id,
+                      lessonId,
+                  }).unwrap()
+                : Promise.resolve(),
+        ]);
+
+        if (results.every((result) => result.status === "rejected")) {
+            throw results[0].reason;
+        }
+    };
+
+    const syncAllCompletedLessonsOnServer = async () => {
+        const allLessons = tracks.flatMap((track) => track.lessons || []);
+        if (allLessons.length === 0) return;
+
+        await Promise.all(
+            allLessons.map((lesson) => markLessonCompletedOnServer(lesson))
+        );
+
+        await Promise.all([refetchUserLessons(), refetchExam()]);
+    };
+
     const handleChallengePass = () => {
         setTracks((prevTracks) =>
             prevTracks.map((track) => ({
@@ -411,7 +493,11 @@ function CourseLessonPage() {
                 ),
             }))
         );
+        markLessonCompletedOnServer(lesson).catch((err) => {
+            console.debug("Failed to sync challenge completion:", err);
+        });
         refetchUserLessons();
+        refetchExam();
     };
 
     // Xử lý khi nhấn nút bài tiếp theo
@@ -420,40 +506,26 @@ function CourseLessonPage() {
 
         // Attempt to mark current lesson as completed on the server
         try {
-            const lastPosition = Number(
-                localStorage.getItem(`video_progress_${idLesson}`)
-            );
-            const watchDuration = isNaN(lastPosition) ? 0 : lastPosition;
+            await markLessonCompletedOnServer(lesson);
 
-            // call API to update lesson progress as completed
-            updateUserCourseProgress({
-                lessonId: idLesson,
-                watchDuration,
-                lastPosition: watchDuration,
-                completed: true,
-            })
-                .then(() => {
-                    // Optimistically update local tracks to mark current lesson completed
-                    setTracks((prevTracks) =>
-                        prevTracks.map((track) => ({
-                            ...track,
-                            lessons: track.lessons.map((lesson) =>
-                                lesson.id === idLesson
-                                    ? {
-                                          ...lesson,
-                                          userLesson: {
-                                              ...(lesson.userLesson || {}),
-                                              completed: true,
-                                          },
-                                      }
-                                    : lesson
-                            ),
-                        }))
-                    );
-                })
-                .catch((err) => {
-                    console.debug("Failed to update lesson completion:", err);
-                });
+            // Optimistically update local tracks to mark current lesson completed
+            setTracks((prevTracks) =>
+                prevTracks.map((track) => ({
+                    ...track,
+                    lessons: track.lessons.map((item) =>
+                        item.id === idLesson
+                            ? {
+                                  ...item,
+                                  userLesson: {
+                                      ...(item.userLesson || {}),
+                                      completed: true,
+                                  },
+                              }
+                            : item
+                    ),
+                }))
+            );
+            refetchExam();
         } catch (err) {
             console.debug("Error preparing progress payload:", err);
         }
@@ -470,6 +542,10 @@ function CourseLessonPage() {
             }
             // Khi điều hướng tới bài tiếp theo, reset isWatch để hiển thị khung preview
             setIsWatch(false);
+        } else if (exam) {
+            await syncAllCompletedLessonsOnServer();
+            // No next lesson, but course has an exam. Redirect to the exam workspace!
+            window.location.href = `/learning/${slug}/exam`;
         }
     };
 
@@ -520,7 +596,15 @@ function CourseLessonPage() {
     // Kiểm tra xem có thể nhấn nút bài tiếp theo không
     const canGoToNext = () => {
         // If there is no next lesson, we cannot go next
-        if (!findNextLesson()) return false;
+        if (!findNextLesson()) {
+            if (exam) {
+                if (lesson?.lesson_type === "Challenge") {
+                    return isCurrentLessonCompleted();
+                }
+                return true;
+            }
+            return false;
+        }
 
         // If current lesson is a Challenge (exercise), it must be completed to go next
         if (lesson?.lesson_type === "Challenge") {
@@ -791,6 +875,50 @@ function CourseLessonPage() {
                                         </div>
                                     );
                                 })}
+                                {exam && (
+                                    <div
+                                        className={styles.sectionWrapper}
+                                        style={{
+                                            borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+                                            paddingTop: "16px",
+                                            marginTop: "16px",
+                                            cursor: isExamLocked ? "not-allowed" : "pointer"
+                                        }}
+                                        onClick={(e) => {
+                                            if (isExamLocked) {
+                                                e.preventDefault();
+                                                return;
+                                            }
+                                            window.location.href = `/learning/${slug}/exam`;
+                                        }}
+                                    >
+                                        <div style={{ display: "flex", flexDirection: "column", gap: "6px", flex: 1 }}>
+                                            <h3 className={styles.sectionTitle} style={{ color: isExamLocked ? "#888" : "#f05123", fontWeight: "bold", fontSize: "1.4rem" }}>
+                                                🏆 Bài kiểm tra cuối khóa: {exam.title}
+                                            </h3>
+                                            <span className={styles.sectionDesc}>
+                                                <FontAwesomeIcon icon={faFileLines} style={{ marginRight: "6px" }} />
+                                                <span>
+                                                    {exam.duration} phút | {exam.mcCount} trắc nghiệm, {exam.essayCount} tự luận
+                                                </span>
+                                            </span>
+                                        </div>
+                                        <span className={styles.sectionIcon}>
+                                            {isExamLocked ? (
+                                                <FontAwesomeIcon
+                                                    className={`${styles.stateIcon} ${styles.faLock}`}
+                                                    icon={faLock}
+                                                />
+                                            ) : (
+                                                <FontAwesomeIcon
+                                                    className={`${styles.stateIcon}`}
+                                                    icon={faCircleCheck}
+                                                    style={{ color: "#30d158" }}
+                                                />
+                                            )}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

@@ -75,6 +75,11 @@ function AdminLayout() {
             label: <Link to="/admin/lessons">Quản lý bài học</Link>,
         },
         {
+            key: "exams",
+            icon: <FileTextOutlined />,
+            label: <Link to="/admin/exams">Quản lý bài thi</Link>,
+        },
+        {
             key: "posts",
             icon: <FileTextOutlined />,
             label: <Link to="/admin/posts">Quản lý bài viết</Link>,
@@ -109,19 +114,9 @@ function AdminLayout() {
     // Menu items dành cho instructor
     const instructorMenuItems = [
         {
-            key: "dashboard",
-            icon: <DashboardOutlined />,
-            label: <Link to="/admin">Dashboard</Link>,
-        },
-        {
             key: "courses",
             icon: <BookOutlined />,
             label: <Link to="/admin/courses">Quản lý khóa học</Link>,
-        },
-        {
-            key: "learning-paths",
-            icon: <BookOutlined />,
-            label: <Link to="/admin/learning-paths">Quản lý lộ trình</Link>,
         },
         {
             key: "tracks",
@@ -132,6 +127,11 @@ function AdminLayout() {
             key: "lessons",
             icon: <BookOutlined />,
             label: <Link to="/admin/lessons">Quản lý bài học</Link>,
+        },
+        {
+            key: "exams",
+            icon: <FileTextOutlined />,
+            label: <Link to="/admin/exams">Quản lý bài thi</Link>,
         },
     ];
 

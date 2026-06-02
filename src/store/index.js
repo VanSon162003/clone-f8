@@ -29,6 +29,8 @@ import { slideshowApi } from "@/services/admin/slideshowApi";
 import { exercisesManagementApi } from "@/services/admin/exercisesService";
 import { notesApi } from "@/services/notesService";
 import { sepayService } from "@/services/sepayService";
+import { examsApi } from "@/services/examsService";
+import { examsManagementApi } from "@/services/admin/examsService";
 
 const rootConfig = {
     key: "auth",
@@ -62,6 +64,8 @@ const rootReducer = combineReducers({
     [exercisesManagementApi.reducerPath]: exercisesManagementApi.reducer,
     [notesApi.reducerPath]: notesApi.reducer,
     [sepayService.reducerPath]: sepayService.reducer,
+    [examsApi.reducerPath]: examsApi.reducer,
+    [examsManagementApi.reducerPath]: examsManagementApi.reducer,
 });
 
 export const store = configureStore({
@@ -90,6 +94,8 @@ export const store = configureStore({
         exercisesManagementApi.middleware,
         notesApi.middleware,
         sepayService.middleware,
+        examsApi.middleware,
+        examsManagementApi.middleware,
     ],
 });
 
