@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import {
@@ -31,6 +31,7 @@ import {
     useGetExerciseByLessonIdQuery,
     useUpsertExerciseMutation,
     useDeleteExerciseMutation,
+    useAiGenerateExerciseMutation,
 } from "@/services/admin/exercisesService";
 import { useGetAllTracksManagementQuery } from "@/services/admin/tracksService";
 import useDebounce from "@/hook/useDebounce";
@@ -1147,6 +1148,59 @@ function ExerciseModal({
 }) {
     const existingExercise = exerciseData?.data;
 
+    // AI Generate state
+    const [aiTopic, setAiTopic] = useState("");
+    const [aiPreview, setAiPreview] = useState(null); // preview of last AI generation
+    const [aiGenerateExercise, { isLoading: isAiGenerating }] = useAiGenerateExerciseMutation();
+    const topicInputRef = useRef(null);
+
+    // Reset AI state when modal closes
+    useMemo(() => {
+        if (!open) {
+            setAiTopic("");
+            setAiPreview(null);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open]);
+
+    const handleAiGenerate = async () => {
+        if (!aiTopic.trim() || aiTopic.trim().length < 5) {
+            message.warning("Vui lòng nhập chủ đề bài tập (tối thiểu 5 ký tự)");
+            topicInputRef.current?.focus();
+            return;
+        }
+        const language = form.getFieldValue("language") || "javascript";
+        try {
+            const result = await aiGenerateExercise({ topic: aiTopic.trim(), language }).unwrap();
+            const data = result.data;
+
+            // Auto-fill the form with AI result
+            form.setFieldsValue({
+                problem_statement: data.problem_statement,
+                initial_code: data.initial_code,
+                solution_code: data.solution_code,
+                test_cases: data.test_cases.map((tc) => ({
+                    name: tc.name,
+                    input: String(tc.input ?? ""),
+                    expected_output: String(tc.expected_output ?? ""),
+                    is_hidden: Boolean(tc.is_hidden),
+                })),
+            });
+
+            // Store preview for display
+            setAiPreview({
+                problem_statement: data.problem_statement,
+                test_count: data.test_cases.length,
+                hidden_count: data.test_cases.filter((tc) => tc.is_hidden).length,
+            });
+
+            message.success("✨ AI đã sinh xong bài tập! Đã điền vào form, bạn có thể chỉnh sửa thêm.");
+        } catch (err) {
+            const msg = err.data?.message || err.message || "Có lỗi khi gọi AI";
+            message.error(msg);
+        }
+    };
+
     // Sync form values when exercise data loads
     useMemo(() => {
         if (!open) return;
@@ -1248,6 +1302,7 @@ function ExerciseModal({
                         test_cases: [{ name: "Test 1", input: "", expected_output: "", is_hidden: false }],
                     }}
                 >
+                    {/* ── Language Selector ── */}
                     <div style={{ display: "flex", gap: 16, marginBottom: 16 }}>
                         <Form.Item
                             name="language"
@@ -1270,6 +1325,109 @@ function ExerciseModal({
                             />
                         </Form.Item>
                     </div>
+
+                    {/* ── AI Generate Section ── */}
+                    <div
+                        style={{
+                            background: "linear-gradient(135deg, #f0f5ff 0%, #f6ffed 100%)",
+                            border: "1px dashed #91caff",
+                            borderRadius: 8,
+                            padding: "16px 20px",
+                            marginBottom: 20,
+                        }}
+                    >
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                            <span style={{ fontSize: 16 }}>✨</span>
+                            <span style={{ fontWeight: 600, color: "#1677ff", fontSize: 14 }}>
+                                Sinh bài tập tự động bằng AI
+                            </span>
+                            <Tag color="blue" style={{ fontSize: 11, marginLeft: 4 }}>GPT-4o-mini</Tag>
+                        </div>
+
+                        <div style={{ display: "flex", gap: 10, alignItems: "flex-end" }}>
+                            <div style={{ flex: 1 }}>
+                                <div style={{ fontSize: 12, color: "#666", marginBottom: 4 }}>
+                                    Nhập chủ đề / yêu cầu ngắn gọn:
+                                </div>
+                                <Input
+                                    ref={topicInputRef}
+                                    value={aiTopic}
+                                    onChange={(e) => setAiTopic(e.target.value)}
+                                    placeholder="Ví dụ: Viết hàm tính tổng mảng số nguyên, Kiểm tra palindrome, Đếm số từ trong chuỗi..."
+                                    onPressEnter={handleAiGenerate}
+                                    maxLength={200}
+                                    showCount
+                                    disabled={isAiGenerating}
+                                />
+                            </div>
+                            <Button
+                                type="primary"
+                                onClick={handleAiGenerate}
+                                loading={isAiGenerating}
+                                style={{
+                                    background: isAiGenerating ? undefined : "linear-gradient(135deg, #6366f1, #8b5cf6)",
+                                    border: "none",
+                                    minWidth: 150,
+                                }}
+                                icon={!isAiGenerating && <span>✨</span>}
+                            >
+                                {isAiGenerating ? "Đang sinh bài tập..." : "Tạo bài tập"}
+                            </Button>
+                        </div>
+
+                        {/* AI Preview Card — shown after successful generation */}
+                        {aiPreview && (
+                            <div
+                                style={{
+                                    marginTop: 12,
+                                    padding: "10px 14px",
+                                    background: "#fff",
+                                    border: "1px solid #b7eb8f",
+                                    borderRadius: 6,
+                                    display: "flex",
+                                    alignItems: "flex-start",
+                                    gap: 10,
+                                }}
+                            >
+                                <span style={{ fontSize: 18, flexShrink: 0 }}>✅</span>
+                                <div style={{ flex: 1, minWidth: 0 }}>
+                                    <div style={{ fontWeight: 600, color: "#389e0d", fontSize: 13, marginBottom: 4 }}>
+                                        AI đã điền vào form ({aiPreview.test_count} test cases,{" "}
+                                        {aiPreview.hidden_count} ẩn)
+                                    </div>
+                                    <div
+                                        style={{
+                                            fontSize: 12,
+                                            color: "#555",
+                                            whiteSpace: "nowrap",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                        }}
+                                    >
+                                        {aiPreview.problem_statement?.slice(0, 120)}...
+                                    </div>
+                                </div>
+                                <Tooltip title="Xóa preview">
+                                    <Button
+                                        type="text"
+                                        size="small"
+                                        onClick={() => setAiPreview(null)}
+                                        style={{ color: "#999", flexShrink: 0 }}
+                                    >
+                                        ✕
+                                    </Button>
+                                </Tooltip>
+                            </div>
+                        )}
+
+                        <div style={{ fontSize: 11, color: "#999", marginTop: 8 }}>
+                            💡 AI sẽ tự động điền đề bài, code mẫu và test cases vào form. Bạn có thể chỉnh sửa trước khi lưu.
+                        </div>
+                    </div>
+
+                    <Divider style={{ margin: "0 0 16px" }}>
+                        <span style={{ fontSize: 12, color: "#999" }}>Hoặc nhập thủ công</span>
+                    </Divider>
 
                     <Form.Item
                         name="problem_statement"

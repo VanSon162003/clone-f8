@@ -33,6 +33,15 @@ export const exercisesManagementApi = createApi({
                 { type: "AdminExercises", id: lessonId },
             ],
         }),
+
+        aiGenerateExercise: builder.mutation({
+            query: (body) => ({
+                url: "/exercises/ai-generate",
+                method: "POST",
+                body,
+            }),
+            // No cache tags needed — this is a pure generation endpoint
+        }),
     }),
 });
 
@@ -40,4 +49,5 @@ export const {
     useGetExerciseByLessonIdQuery,
     useUpsertExerciseMutation,
     useDeleteExerciseMutation,
+    useAiGenerateExerciseMutation,
 } = exercisesManagementApi;
