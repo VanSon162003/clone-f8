@@ -5,6 +5,7 @@ import baseQuery from "./baseQuery";
 export const coursesApi = createApi({
     reducerPath: "coursesApi",
     baseQuery,
+    tagTypes: ["CourseProgress", "UserLessonProgress"],
     endpoints: (builder) => ({
         getAllCourses: builder.query({
             query: () => `/courses`,
@@ -33,6 +34,7 @@ export const coursesApi = createApi({
         // Progress endpoints
         getCourseProgress: builder.query({
             query: ({ courseId }) => `/courses/${courseId}/progress`,
+            providesTags: ["CourseProgress"],
         }),
         updateCourseProgress: builder.mutation({
             query: ({ courseId, lessonId }) => ({
@@ -40,11 +42,13 @@ export const coursesApi = createApi({
                 method: "POST",
                 body: { lesson_id: lessonId },
             }),
+            invalidatesTags: ["CourseProgress", "UserLessonProgress"],
         }),
 
         // User Lesson Progress endpoints
         getUserLessonProgress: builder.query({
             query: ({ courseId }) => `/courses/${courseId}/user-lessons`,
+            providesTags: ["UserLessonProgress"],
         }),
         updateUserCourseProgress: builder.mutation({
             query: ({ lessonId, watchDuration, lastPosition, completed }) => ({
@@ -52,6 +56,7 @@ export const coursesApi = createApi({
                 method: "POST",
                 body: { lessonId, watchDuration, lastPosition, completed },
             }),
+            invalidatesTags: ["CourseProgress", "UserLessonProgress"],
         }),
         
         // Exercise endpoints
@@ -64,6 +69,7 @@ export const coursesApi = createApi({
                 method: "POST",
                 body: { submitted_code: submittedCode, status },
             }),
+            invalidatesTags: ["CourseProgress", "UserLessonProgress"],
         }),
     }),
 });

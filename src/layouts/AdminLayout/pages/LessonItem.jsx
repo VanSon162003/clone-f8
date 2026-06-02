@@ -53,35 +53,30 @@ export default function LessonItem({
 
     const [{ isDragging }, drag, dragPreview] = useDrag({
         type: ItemTypes.LESSON,
-        item: { id: lesson.id, index },
+        item: { id: lesson.id, index, trackId: lesson.track.id },
         collect: (monitor) => ({
             isDragging: monitor.isDragging(),
         }),
     });
 
-    const [, drop] = useDrop({
+    const [{ isOver }, drop] = useDrop({
         accept: ItemTypes.LESSON,
-        hover: (item) => {
-            if (!ref.current) {
-                return;
-            }
+        canDrop: (item) => {
+            return item.trackId === lesson.track.id;
+        },
+        drop: (item) => {
             const dragIndex = item.index;
             const hoverIndex = index;
 
-            // Don't replace items with themselves
             if (dragIndex === hoverIndex) {
                 return;
             }
 
-            // Time to actually perform the action
             onMoveLesson(dragIndex, hoverIndex);
-
-            // Note: we're mutating the monitor item here!
-            // Generally it's better to avoid mutations,
-            // but it's good here for the sake of performance
-            // to avoid expensive index searches.
-            item.index = hoverIndex;
         },
+        collect: (monitor) => ({
+            isOver: monitor.isOver() && monitor.canDrop(),
+        }),
     });
 
     const opacity = isDragging ? 0.4 : 1;
@@ -101,6 +96,8 @@ export default function LessonItem({
                     marginBottom: 8,
                     opacity,
                     background: isChallenge ? "#f6ffed" : undefined,
+                    border: isOver ? "2px dashed #1890ff" : undefined,
+                    transition: "border 0.2s ease",
                 }}
             >
                 <div style={{ display: "flex", alignItems: "center", gap: 16 }}>

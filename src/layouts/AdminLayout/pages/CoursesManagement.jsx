@@ -172,8 +172,21 @@ function CoursesManagement() {
                         onClick={() => {
                             setSelectedCourse(record);
 
+                            let normalizedLevel = record.level;
+                            if (record.level) {
+                                const lowerLevel = record.level.toLowerCase();
+                                if (lowerLevel === "cơ bản" || lowerLevel === "beginner") {
+                                    normalizedLevel = "beginner";
+                                } else if (lowerLevel === "trung bình" || lowerLevel === "intermediate") {
+                                    normalizedLevel = "intermediate";
+                                } else if (lowerLevel === "nâng cao" || lowerLevel === "advanced") {
+                                    normalizedLevel = "advanced";
+                                }
+                            }
+
                             form.setFieldsValue({
                                 ...record,
+                                level: normalizedLevel,
                                 what_you_learn: Array.isArray(record.what_you_learn)
                                     ? record.what_you_learn.join("\n")
                                     : (record.what_you_learn ? JSON.parse(record.what_you_learn).join("\n") : ""),

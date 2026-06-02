@@ -519,8 +519,16 @@ function CourseLessonPage() {
 
     // Kiểm tra xem có thể nhấn nút bài tiếp theo không
     const canGoToNext = () => {
-        // Only allow Next if current lesson is completed and there is a next lesson
-        return isCurrentLessonCompleted() && !!findNextLesson();
+        // If there is no next lesson, we cannot go next
+        if (!findNextLesson()) return false;
+
+        // If current lesson is a Challenge (exercise), it must be completed to go next
+        if (lesson?.lesson_type === "Challenge") {
+            return isCurrentLessonCompleted();
+        }
+
+        // For other lesson types (Video, Lesson/Reading, etc.), allow going next freely
+        return true;
     };
 
     // Kiểm tra xem có thể nhấn nút bài trước không

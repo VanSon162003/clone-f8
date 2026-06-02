@@ -79,16 +79,42 @@ function Header({ courseId, title, onOpenNotes, onOpenTutorial }) {
                             "--shadow-border-color": "#4d4f50",
                         }}
                     >
-                        <div className={styles.shadow}></div>
-
-                        <div className={styles.pie}>
-                            <div
-                                className={`${styles.leftSide} ${styles.halfCircle}`}
-                            ></div>
-                            {/* <div
-                                className={`${styles.rightSide} ${styles.halfCircle}`}
-                            ></div> */}
-                        </div>
+                        <svg
+                            width="34"
+                            height="34"
+                            viewBox="0 0 34 34"
+                            style={{
+                                transform: "rotate(-90deg)",
+                                width: "100%",
+                                height: "100%",
+                                display: "block"
+                            }}
+                        >
+                            {/* Base grey track circle */}
+                            <circle
+                                cx="17"
+                                cy="17"
+                                r="15"
+                                fill="transparent"
+                                stroke="#4d4f50"
+                                strokeWidth="2"
+                            />
+                            {/* Orange progress circle */}
+                            <circle
+                                cx="17"
+                                cy="17"
+                                r="15"
+                                fill="transparent"
+                                stroke="#f05123"
+                                strokeWidth="2"
+                                strokeDasharray={2 * Math.PI * 15}
+                                strokeDashoffset={2 * Math.PI * 15 * (1 - progressData.percent / 100)}
+                                strokeLinecap="round"
+                                style={{
+                                    transition: "stroke-dashoffset 0.3s ease-in-out",
+                                }}
+                            />
+                        </svg>
 
                         <div className={styles.body}>
                             <div className={styles.percent}>

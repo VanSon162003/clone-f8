@@ -37,9 +37,10 @@ const DraggableRow = ({
     className,
     style,
     record,
+    ref: forwardedRef,
     ...restProps
 }) => {
-    const ref = useRef(null);
+    const localRef = useRef(null);
 
     DraggableRow.propTypes = {
         index: PropTypes.number.isRequired,
@@ -47,6 +48,7 @@ const DraggableRow = ({
         className: PropTypes.string,
         style: PropTypes.object,
         record: PropTypes.object.isRequired,
+        ref: PropTypes.object,
     };
 
     const [{ isOver, dropClassName }, drop] = useDrop({
@@ -74,13 +76,27 @@ const DraggableRow = ({
         }),
     });
 
-    drop(drag(ref));
+    drag(drop(localRef));
+
+    const setRefs = (node) => {
+        localRef.current = node;
+        if (typeof forwardedRef === "function") {
+            forwardedRef(node);
+        } else if (forwardedRef) {
+            forwardedRef.current = node;
+        }
+    };
 
     return (
         <tr
-            ref={ref}
+            ref={setRefs}
             className={`${className} ${isOver ? dropClassName : ""}`}
-            style={{ cursor: "move", ...style }}
+            style={{ 
+                cursor: "move", 
+                backgroundColor: isOver ? "#f0f5ff" : undefined,
+                transition: "background-color 0.2s ease",
+                ...style 
+            }}
             {...restProps}
         />
     );

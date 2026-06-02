@@ -477,11 +477,9 @@ function ExerciseWorkspace({ lesson, onProgressUpdate, onNext }) {
                             Trạng thái: ĐẠT (PASSED)
                         </span>
                     ) : (
-                        submissionStatus === "failed" && (
-                            <span className={`${styles.statusIndicator} ${styles.failed}`}>
-                                Trạng thái: CHƯA ĐẠT (FAILED)
-                            </span>
-                        )
+                        <span className={`${styles.statusIndicator} ${styles.failed}`}>
+                            Trạng thái: CHƯA ĐẠT (FAILED)
+                        </span>
                     )}
                 </div>
 

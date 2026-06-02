@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Layout, Menu, Button, message } from "antd";
-import { Outlet, Link, useNavigate } from "react-router-dom";
+import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import {
     DashboardOutlined,
     UserOutlined,
@@ -21,8 +21,19 @@ const { Header, Sider, Content } = Layout;
 function AdminLayout() {
     const [collapsed, setCollapsed] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
     const dispatch = useDispatch();
     const currentUser = useSelector((state) => state.auth.currentUser);
+
+    const getSelectedKey = () => {
+        const pathParts = location.pathname.split("/");
+        if (pathParts.length <= 2 || pathParts[2] === "") {
+            return "dashboard";
+        }
+        return pathParts[2];
+    };
+
+    const selectedKey = getSelectedKey();
 
     const handleLogout = async () => {
         localStorage.removeItem("token");
@@ -144,7 +155,7 @@ function AdminLayout() {
                 />
                 <Menu
                     theme="dark"
-                    defaultSelectedKeys={["dashboard"]}
+                    selectedKeys={[selectedKey]}
                     mode="inline"
                     items={menuItems}
                 />
