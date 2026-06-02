@@ -137,6 +137,11 @@ function CourseLessonPage() {
     }, [course, tracks]);
 
     const isExamLocked = Boolean(exam?.is_locked) && !isCourseCompletedForExam;
+    const isYoutubeVideoLesson =
+        lesson?.video_type?.toLowerCase() === "youtube" ||
+        (lesson?.video_url &&
+            (lesson.video_url.includes("youtube.com") ||
+                lesson.video_url.includes("youtu.be")));
 
     // ✅ MOVED UP: Helper functions that need to be defined before useEffect uses them
     // Kiểm tra xem lesson hiện tại có completed không
@@ -938,7 +943,17 @@ function CourseLessonPage() {
                     ) : (
                         <>
                             {lesson?.lesson_type === "Video" && (
-                                !isWatch ? (
+                                isYoutubeVideoLesson ? (
+                                    <YoutubePlayer
+                                        key={lesson?.id}
+                                        videoUrl={lesson?.video_url}
+                                        videoId={lesson?.id}
+                                        autoPlay={isWatch}
+                                        onTimeUpdate={(t) => {
+                                            setCurrentVideoTime(t);
+                                        }}
+                                    />
+                                ) : !isWatch ? (
                                     <div
                                         className={`${styles.wrapperInner}  noselect ${styles.fulWidth}`}
                                         onClick={handleWatchVideo}
@@ -1004,16 +1019,6 @@ function CourseLessonPage() {
                                             </div>
                                         </div>
                                     </div>
-                                ) : (lesson?.video_type?.toLowerCase() === "youtube" || (lesson?.video_url && (lesson.video_url.includes("youtube.com") || lesson.video_url.includes("youtu.be") || lesson.video_url.includes("vimeo.com")))) ? (
-                                    <YoutubePlayer
-                                        key={lesson?.id}
-                                        videoUrl={lesson?.video_url}
-                                        videoId={lesson?.id}
-                                        autoPlay={isWatch}
-                                        onTimeUpdate={(t) => {
-                                            setCurrentVideoTime(t);
-                                        }}
-                                    />
                                 ) : (
                                     <VideoPlayer
                                         key={lesson?.id}

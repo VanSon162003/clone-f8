@@ -473,12 +473,6 @@ function LessonsManagement() {
             ];
         }
 
-        // Chuẩn bị video url
-        let videoUrl = lesson.video_url;
-        if (videoUrl && !isHttps(videoUrl)) {
-            videoUrl = `${import.meta.env.VITE_BASE_URL}${videoUrl}`;
-        }
-
         // Set giá trị cho form
         form.setFieldsValue({
             lesson_mode: lesson.lesson_type === "Challenge" ? "exercise" : "lesson",
@@ -486,7 +480,7 @@ function LessonsManagement() {
             title: lesson.title,
             track_id: lesson.track.id,
             video_type: lesson.video_type,
-            video_url: videoUrl,
+            video_url: lesson.video_url,
             content: lesson.content,
             thumbnail: thumbnailList,
         });

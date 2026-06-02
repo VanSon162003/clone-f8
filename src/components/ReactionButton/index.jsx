@@ -14,10 +14,8 @@ function ReactionButton({
     const [selected, setSelected] = useState(null);
 
     useEffect(() => {
-        if (userReaction && !selected) {
-            setSelected(userReaction);
-        }
-    }, [userReaction, selected]);
+        setSelected(userReaction || null);
+    }, [userReaction]);
 
     const handleReact = (reaction) => {
         const wasSelected = selected && selected.id === reaction.id;

@@ -21,6 +21,56 @@ import { toast } from "react-toastify";
 import avatarDefault from "@/assets/imgs/user.jpg";
 import noComment from "@/assets/icons/noComment.svg";
 
+const countComments = (comments = []) =>
+    comments.reduce(
+        (total, comment) => total + 1 + (comment.replies?.length || 0),
+        0
+    );
+
+const removeCommentById = (comments = [], id) => {
+    let deletedCount = 0;
+
+    const nextComments = comments.reduce((result, comment) => {
+        if (comment.id === id) {
+            deletedCount += 1 + (comment.replies?.length || 0);
+            return result;
+        }
+
+        const replies = comment.replies || [];
+        const nextReplies = replies.filter((reply) => {
+            const shouldKeep = reply.id !== id;
+            if (!shouldKeep) deletedCount += 1;
+            return shouldKeep;
+        });
+
+        result.push({ ...comment, replies: nextReplies });
+        return result;
+    }, []);
+
+    return { nextComments, deletedCount };
+};
+
+const buildLocalComment = ({ apiComment, content, currentUser, parentId = null }) => ({
+    id: apiComment?.data?.id || apiComment?.id || Date.now(),
+    parent_id: parentId,
+    like_count: apiComment?.data?.like_count || apiComment?.like_count || 0,
+    content: apiComment?.data?.content || apiComment?.content || content,
+    deleted_at: null,
+    created_at: apiComment?.data?.created_at || apiComment?.created_at || new Date().toISOString(),
+    updated_at: apiComment?.data?.updated_at || apiComment?.updated_at || new Date().toISOString(),
+    user: apiComment?.data?.user ||
+        apiComment?.user || {
+            id: currentUser.id,
+            full_name: currentUser.full_name,
+            username: currentUser.username,
+            avatar: currentUser.avatar,
+            commentReactions: [],
+        },
+    replies: apiComment?.data?.replies || apiComment?.replies || [],
+    reactions: apiComment?.data?.reactions || apiComment?.reactions || [],
+    currentUserReaction: apiComment?.data?.currentUserReaction || apiComment?.currentUserReaction || null,
+});
+
 function CommentSidebar({
     open = false,
     onCancel = () => {},
@@ -56,6 +106,7 @@ function CommentSidebar({
     );
 
     const { data, isFetching } = useGetAllByTypeQuery(queryArgs, {
+        skip: !open || !commentableType || !commentableId,
         refetchOnMountOrArgChange: true,
         refetchOnFocus: true,
         refetchOnReconnect: true,
@@ -81,12 +132,14 @@ function CommentSidebar({
     const [deleteComment] = useDeleteCommentMutation();
 
     useEffect(() => {
-        if (data) {
-            if (commentableType === "question") {
-                setTotalCommentQuestion(data.data.length);
-            }
+        const nextTotal = countComments(data?.data || []);
+
+        if (commentableType === "question") {
+            setTotalCommentQuestion(nextTotal);
+        } else if (typeof setTotalComment === "function" && offset === 0) {
+            setTotalComment(nextTotal);
         }
-    }, [data, commentableType]);
+    }, [data, commentableType, offset, setTotalComment]);
 
     // socket comment post
     useEffect(() => {
@@ -116,19 +169,28 @@ function CommentSidebar({
         };
     }, [commentableId, currentUser]);
 
+    useEffect(() => {
+        setComments([]);
+        setOffset(0);
+        setHasMore(true);
+        setTotalCommentQuestion(0);
+    }, [commentableId, commentableType]);
+
     // lấy ra comments
     useEffect(() => {
         if (data?.data) {
             setComments((prev) => {
+                if (offset === 0) return data.data;
+
                 const existingIds = new Set(prev.map((c) => c.id));
-                const newOnes = data?.data?.filter(
+                const newOnes = data.data.filter(
                     (c) => !existingIds.has(c?.id)
                 );
                 return [...prev, ...newOnes];
             });
             if (data.data.length < limit) setHasMore(false);
         }
-    }, [data]);
+    }, [data, offset]);
 
     useEffect(() => {
         setIsOpen(open);
@@ -167,34 +229,21 @@ function CommentSidebar({
             return toast.info("Vui lòng đăng nhập để thực hiện hành động này!");
 
         try {
-            await createComment({
+            const apiComment = await createComment({
                 content: value,
                 type: commentableType,
                 id: commentableId,
             }).unwrap();
 
-            const newComment = {
-                id: Math.floor(Math.random() * 900),
-                parent_id: null,
-                like_count: 0,
+            const newComment = buildLocalComment({
+                apiComment,
                 content: value,
-
-                deleted_at: null,
-                created_at: Date.now(),
-                updated_at: Date.now(),
-                user: {
-                    id: currentUser.id,
-                    full_name: currentUser.full_name,
-                    username: currentUser.username,
-                    avatar: currentUser.avatar,
-                    commentReactions: [],
-                },
-                replies: [],
-                reactions: [],
-            };
+                currentUser,
+            });
 
             setComments((prev) => [newComment, ...prev]);
             setTotalComment((prev) => prev + 1);
+            setTotalCommentQuestion((prev) => prev + 1);
             handleCloseComment();
         } catch (error) {
             console.log(error);
@@ -248,23 +297,14 @@ function CommentSidebar({
 
         try {
             await deleteComment({ id }).unwrap();
-
-            setComments((prev) =>
-                prev
-                    .filter((comment) => comment.id !== id)
-                    .map((comment) => {
-                        if (comment.replies && comment.replies.length > 0) {
-                            return {
-                                ...comment,
-                                replies: comment.replies.filter(
-                                    (reply) => reply.id !== id
-                                ),
-                            };
-                        }
-                        return comment;
-                    })
+            const { nextComments, deletedCount } = removeCommentById(
+                comments,
+                id
             );
-            setTotalComment((prev) => prev - 1);
+
+            setComments(nextComments);
+            setTotalComment((prev) => Math.max(0, prev - deletedCount));
+            setTotalCommentQuestion((prev) => Math.max(0, prev - deletedCount));
         } catch (error) {
             console.error(error);
         }
@@ -303,35 +343,23 @@ function CommentSidebar({
 
         const parentId = findComment?.id || id;
 
-        await createComment({
+        const apiComment = await createComment({
             content: content,
             type: commentableType,
             id: commentableId,
             parent_id: parentId,
+        }).unwrap();
+
+        const newComment = buildLocalComment({
+            apiComment,
+            content,
+            currentUser,
+            parentId,
         });
-
-        const newComment = {
-            id: Math.floor(Math.random() * 900),
-            parent_id: null,
-            like_count: 0,
-            content: content,
-
-            deleted_at: null,
-            created_at: Date.now(),
-            updated_at: Date.now(),
-            user: {
-                id: currentUser.id,
-                full_name: currentUser.full_name,
-                username: currentUser.username,
-                avatar: currentUser.avatar,
-                commentReactions: [],
-            },
-            replies: [],
-            reactions: [],
-        };
 
         setComments((prev) => addReplyRecursive(prev, parentId, newComment));
         setTotalComment((prev) => prev + 1);
+        setTotalCommentQuestion((prev) => prev + 1);
     };
 
     return (

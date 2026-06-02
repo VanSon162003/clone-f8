@@ -101,6 +101,14 @@
     :global(.ql-container) {
         border: none;
     }
+
+    :global(.ql-editor) {
+        min-height: 72px;
+        padding: 12px 0;
+        font-size: 1.6rem;
+        line-height: 1.6;
+    }
+
     :global(.ql-toolbar) {
         // display: flex;
     }
@@ -118,9 +126,14 @@
     }
 
     :global(.ql-editor.ql-blank::before) {
+        top: 12px;
+        left: 0;
+        right: 0;
         font-style: normal;
         font-size: 1.6rem;
-        color: #ccc;
+        line-height: 1.6;
+        color: #808b9a;
+        pointer-events: none;
     }
 }
 

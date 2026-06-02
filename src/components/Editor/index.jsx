@@ -243,8 +243,6 @@ const Editor = forwardRef(
         const handleValueChange = (content) => {
             const textOnly = content.replace(/<[^>]*>/g, "").trim();
 
-            if (!textOnly) return;
-
             setValue(content);
 
             // Gọi callback để parent component nhận được giá trị mới
@@ -255,7 +253,11 @@ const Editor = forwardRef(
             const quill = editorRef.current?.querySelector(".quill");
             if (!quill) return;
 
-            if (
+            if (!textOnly) {
+                setError("");
+                quill.style.border = "1px solid transparent";
+                quill.style.background = "#eef4fc";
+            } else if (
                 type === "writePost" &&
                 textOnly.length > 0 &&
                 textOnly.length < 3

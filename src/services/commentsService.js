@@ -37,11 +37,17 @@ export const commentsApi = createApi({
 
         handleReactionComment: builder.mutation({
             query: ({ commentId, reaction }) => {
-                console.log(reaction);
+                const reactionId = reaction?.reaction_type_id || reaction?.id;
+
                 return {
                     url: `/comments/${commentId}/reaction`,
                     method: "POST",
-                    body: { reaction },
+                    body: {
+                        reaction: {
+                            reaction_type_id: reactionId,
+                            action: reaction?.action,
+                        },
+                    },
                 };
             },
         }),

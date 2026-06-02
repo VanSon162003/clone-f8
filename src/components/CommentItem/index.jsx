@@ -57,10 +57,12 @@ function CommentItem(
             );
 
             setActed(sorted);
+        } else {
+            setActed([]);
         }
-        setTotalReaction(comment?.like_count);
-        setCurrentUserReaction(user?.commentReactions?.[0]?.reactionType);
-    }, [comment, user]);
+        setTotalReaction(comment?.like_count || 0);
+        setCurrentUserReaction(comment?.currentUserReaction || null);
+    }, [comment]);
 
     useEffect(() => {
         const handleClickOutside = (e) => {
