@@ -34,11 +34,13 @@ function CourseDetail() {
     useEffect(() => {
         if (data?.data && isSuccess) {
             setCourse((prev) => {
+                const rawRequirement = data.data.requirement;
+                const rawWhatYouLearn = data.data.what_you_learn;
                 return {
                     ...prev,
                     ...data.data,
-                    requirement: JSON.parse(data.data.requirement),
-                    what_you_learn: JSON.parse(data.data.what_you_learn),
+                    requirement: typeof rawRequirement === "string" ? JSON.parse(rawRequirement) : rawRequirement,
+                    what_you_learn: typeof rawWhatYouLearn === "string" ? JSON.parse(rawWhatYouLearn) : rawWhatYouLearn,
                 };
             });
         }
@@ -345,9 +347,9 @@ function CourseDetail() {
                                                 className={`${styles.list} ${styles.column}`}
                                             >
                                                 {course.requirement?.map(
-                                                    (item) => {
+                                                    (item, index) => {
                                                         return (
-                                                            <li key={item.id}>
+                                                            <li key={index}>
                                                                 <FontAwesomeIcon
                                                                     className={
                                                                         styles.icon

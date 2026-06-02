@@ -1,9 +1,10 @@
-import { Button, Card, Space } from "antd";
+import { Button, Card, Space, Tag } from "antd";
 import {
     EditOutlined,
     DeleteOutlined,
     MenuOutlined,
     EyeOutlined,
+    CodeOutlined,
 } from "@ant-design/icons";
 import { useDrag, useDrop } from "react-dnd";
 import isHttps from "@/utils/isHttps";
@@ -16,6 +17,7 @@ const lessonPropType = PropTypes.shape({
     title: PropTypes.string.isRequired,
     description: PropTypes.string,
     thumbnail: PropTypes.string,
+    lesson_type: PropTypes.string,
     track: PropTypes.shape({
         id: PropTypes.number.isRequired,
         title: PropTypes.string.isRequired,
@@ -31,6 +33,7 @@ LessonItem.propTypes = {
     index: PropTypes.number.isRequired,
     handleEdit: PropTypes.func.isRequired,
     handleViewDetails: PropTypes.func.isRequired,
+    handleManageExercise: PropTypes.func.isRequired,
     setSelectedLesson: PropTypes.func.isRequired,
     setIsDeleteModalOpen: PropTypes.func.isRequired,
     onMoveLesson: PropTypes.func.isRequired,
@@ -41,6 +44,7 @@ export default function LessonItem({
     index,
     handleEdit,
     handleViewDetails,
+    handleManageExercise,
     setSelectedLesson,
     setIsDeleteModalOpen,
     onMoveLesson,
@@ -83,6 +87,8 @@ export default function LessonItem({
     const opacity = isDragging ? 0.4 : 1;
     drag(drop(ref));
 
+    const isChallenge = lesson.lesson_type === "Challenge";
+
     return (
         <div ref={dragPreview}>
             <Card.Grid
@@ -94,6 +100,7 @@ export default function LessonItem({
                     padding: 16,
                     marginBottom: 8,
                     opacity,
+                    background: isChallenge ? "#f6ffed" : undefined,
                 }}
             >
                 <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
@@ -116,7 +123,14 @@ export default function LessonItem({
                         }}
                     />
                     <div>
-                        <div style={{ fontWeight: "bold" }}>{lesson.title}</div>
+                        <div style={{ fontWeight: "bold", display: "flex", alignItems: "center", gap: 8 }}>
+                            {lesson.title}
+                            {isChallenge && (
+                                <Tag color="green" style={{ fontSize: 11 }}>
+                                    Bài tập
+                                </Tag>
+                            )}
+                        </div>
                         <div>{lesson.description || "Không có mô tả"}</div>
                     </div>
                 </div>
@@ -133,6 +147,14 @@ export default function LessonItem({
                         onClick={() => handleEdit(lesson)}
                     >
                         Sửa
+                    </Button>
+                    <Button
+                        type={isChallenge ? "primary" : "default"}
+                        icon={<CodeOutlined />}
+                        onClick={() => handleManageExercise(lesson)}
+                        style={isChallenge ? {} : { borderColor: "#1890ff", color: "#1890ff" }}
+                    >
+                        Bài tập
                     </Button>
                     <Button
                         danger

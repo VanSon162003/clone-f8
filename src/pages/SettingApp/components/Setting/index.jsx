@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 
 import styles from "./Setting.module.scss";
-import logo from "@/assets/imgs/logo-f8.png/";
+import logo from "@/assets/imgs/logo-f8.png";
 import { faShield, faUser } from "@fortawesome/free-solid-svg-icons";
 import Profile from "../Profile";
 import { ToastContainer } from "react-toastify";

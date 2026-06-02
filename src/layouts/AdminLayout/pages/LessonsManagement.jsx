@@ -13,10 +13,13 @@ import {
     Card,
     Pagination,
     Collapse,
+    Tag,
+    Divider,
+    Tooltip,
 } from "antd";
 import VideoUploader from "@/components/Editor/VideoUploader";
 import Editor from "@/components/Editor";
-import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
+import { PlusOutlined, UploadOutlined, MinusCircleOutlined, CodeOutlined } from "@ant-design/icons";
 import {
     useGetAllLessonsManagementQuery,
     useCreateLessonMutation,
@@ -24,6 +27,11 @@ import {
     useDeleteLessonMutation,
     useUpdateLessonPositionMutation,
 } from "@/services/admin/lessonsService";
+import {
+    useGetExerciseByLessonIdQuery,
+    useUpsertExerciseMutation,
+    useDeleteExerciseMutation,
+} from "@/services/admin/exercisesService";
 import { useGetAllTracksManagementQuery } from "@/services/admin/tracksService";
 import useDebounce from "@/hook/useDebounce";
 import LessonItem from "./LessonItem";
@@ -36,6 +44,8 @@ function LessonsManagement() {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [isExerciseModalOpen, setIsExerciseModalOpen] = useState(false);
+    const [exerciseLesson, setExerciseLesson] = useState(null);
     const [selectedLesson, setSelectedLesson] = useState(null);
     const [searchText, setSearchText] = useState("");
     const [selectedTrack, setSelectedTrack] = useState(null);
@@ -45,6 +55,7 @@ function LessonsManagement() {
     const debouncedSearchText = useDebounce(searchText, 500);
     const [form] = Form.useForm();
     const [createForm] = Form.useForm();
+    const [exerciseForm] = Form.useForm();
 
     const handleMoveLesson = async (dragIndex, hoverIndex, track) => {
         try {
@@ -66,6 +77,11 @@ function LessonsManagement() {
                 err.data?.message || "Có lỗi xảy ra khi di chuyển bài học"
             );
         }
+    };
+
+    const handleManageExercise = (lesson) => {
+        setExerciseLesson(lesson);
+        setIsExerciseModalOpen(true);
     };
 
     const handleViewDetails = (lesson) => {
@@ -218,6 +234,17 @@ function LessonsManagement() {
     const [updateLesson] = useUpdateLessonMutation();
     const [deleteLesson] = useDeleteLessonMutation();
     const [updateLessonPosition] = useUpdateLessonPositionMutation();
+    const [upsertExercise, { isLoading: isUpsertingExercise }] = useUpsertExerciseMutation();
+    const [deleteExercise, { isLoading: isDeletingExercise }] = useDeleteExerciseMutation();
+
+    // Fetch exercise data when exercise modal is open
+    const {
+        data: exerciseData,
+        isFetching: isFetchingExercise,
+    } = useGetExerciseByLessonIdQuery(
+        exerciseLesson?.id,
+        { skip: !exerciseLesson || !isExerciseModalOpen }
+    );
 
     return (
         <div>
@@ -440,6 +467,9 @@ function LessonsManagement() {
                                                             }
                                                             handleViewDetails={
                                                                 handleViewDetails
+                                                            }
+                                                            handleManageExercise={
+                                                                handleManageExercise
                                                             }
                                                             setSelectedLesson={
                                                                 setSelectedLesson
@@ -1076,8 +1106,336 @@ function LessonsManagement() {
                     </div>
                 )}
             </Modal>
+            {/* Exercise Management Modal */}
+            <ExerciseModal
+                open={isExerciseModalOpen}
+                lesson={exerciseLesson}
+                exerciseData={exerciseData}
+                isFetching={isFetchingExercise}
+                form={exerciseForm}
+                upsertExercise={upsertExercise}
+                isUpsertingExercise={isUpsertingExercise}
+                deleteExercise={deleteExercise}
+                isDeletingExercise={isDeletingExercise}
+                refetch={refetch}
+                onClose={() => {
+                    setIsExerciseModalOpen(false);
+                    setExerciseLesson(null);
+                    exerciseForm.resetFields();
+                }}
+            />
         </div>
     );
 }
 
 export default LessonsManagement;
+
+// ─── Exercise Modal Component ────────────────────────────────────────────────
+
+function ExerciseModal({
+    open,
+    lesson,
+    exerciseData,
+    isFetching,
+    form,
+    upsertExercise,
+    isUpsertingExercise,
+    deleteExercise,
+    isDeletingExercise,
+    refetch,
+    onClose,
+}) {
+    const existingExercise = exerciseData?.data;
+
+    // Sync form values when exercise data loads
+    useMemo(() => {
+        if (!open) return;
+        if (existingExercise) {
+            const testCases = (existingExercise.test_cases || []).map((tc) => ({
+                name: tc.name || "",
+                input: tc.input !== undefined ? String(tc.input) : "",
+                expected_output: tc.expected_output !== undefined
+                    ? String(tc.expected_output)
+                    : (tc.output !== undefined ? String(tc.output) : ""),
+                is_hidden: tc.is_hidden || false,
+            }));
+            form.setFieldsValue({
+                language: existingExercise.language || "javascript",
+                problem_statement: existingExercise.problem_statement || "",
+                initial_code: existingExercise.initial_code || "",
+                solution_code: existingExercise.solution_code || "",
+                test_cases: testCases.length > 0 ? testCases : [{ name: "", input: "", expected_output: "", is_hidden: false }],
+            });
+        } else if (!isFetching) {
+            // New exercise - set defaults
+            form.setFieldsValue({
+                language: "javascript",
+                problem_statement: "",
+                initial_code: "",
+                solution_code: "",
+                test_cases: [{ name: "Test 1", input: "", expected_output: "", is_hidden: false }],
+            });
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [existingExercise, isFetching, open]);
+
+    const handleSubmit = async (values) => {
+        try {
+            await upsertExercise({
+                lesson_id: lesson.id,
+                problem_statement: values.problem_statement,
+                language: values.language,
+                initial_code: values.initial_code || "",
+                solution_code: values.solution_code || "",
+                test_cases: (values.test_cases || []).map((tc, i) => ({
+                    name: tc.name || `Test ${i + 1}`,
+                    input: tc.input,
+                    expected_output: tc.expected_output,
+                    is_hidden: tc.is_hidden || false,
+                })),
+            }).unwrap();
+            message.success(existingExercise ? "Cập nhật bài tập thành công!" : "Tạo bài tập thành công!");
+            refetch();
+            onClose();
+        } catch (err) {
+            message.error(err.data?.message || "Có lỗi xảy ra");
+        }
+    };
+
+    const handleDelete = async () => {
+        try {
+            await deleteExercise(lesson?.id).unwrap();
+            message.success("Đã xóa bài tập và chuyển về bài học thông thường");
+            refetch();
+            onClose();
+        } catch (err) {
+            message.error(err.data?.message || "Có lỗi xảy ra khi xóa bài tập");
+        }
+    };
+
+    const LANGUAGE_STARTER = {
+        javascript: `// Viết hàm của bạn ở đây\nfunction solution() {\n\n}`,
+        html: `<!DOCTYPE html>\n<html lang="vi">\n<head>\n  <meta charset="UTF-8">\n  <title>Bài tập HTML</title>\n</head>\n<body>\n  <!-- Viết code ở đây -->\n</body>\n</html>`,
+        css: `/* Viết CSS ở đây */\nbody {\n\n}`,
+    };
+
+    return (
+        <Modal
+            title={
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <CodeOutlined style={{ color: "#52c41a" }} />
+                    <span>Quản lý bài tập: <strong>{lesson?.title}</strong></span>
+                    {existingExercise && (
+                        <Tag color="green">Đã có bài tập</Tag>
+                    )}
+                </div>
+            }
+            open={open}
+            onCancel={onClose}
+            footer={null}
+            width={900}
+            destroyOnClose
+        >
+            {isFetching ? (
+                <div style={{ textAlign: "center", padding: 40 }}>Đang tải...</div>
+            ) : (
+                <Form
+                    form={form}
+                    layout="vertical"
+                    onFinish={handleSubmit}
+                    initialValues={{
+                        language: "javascript",
+                        test_cases: [{ name: "Test 1", input: "", expected_output: "", is_hidden: false }],
+                    }}
+                >
+                    <div style={{ display: "flex", gap: 16, marginBottom: 16 }}>
+                        <Form.Item
+                            name="language"
+                            label="Ngôn ngữ lập trình"
+                            rules={[{ required: true, message: "Vui lòng chọn ngôn ngữ!" }]}
+                            style={{ minWidth: 200, marginBottom: 0 }}
+                        >
+                            <Select
+                                options={[
+                                    { value: "javascript", label: "JavaScript" },
+                                    { value: "html", label: "HTML" },
+                                    { value: "css", label: "CSS" },
+                                ]}
+                                onChange={(lang) => {
+                                    const currentInitial = form.getFieldValue("initial_code");
+                                    if (!currentInitial || currentInitial.trim() === "") {
+                                        form.setFieldValue("initial_code", LANGUAGE_STARTER[lang] || "");
+                                    }
+                                }}
+                            />
+                        </Form.Item>
+                    </div>
+
+                    <Form.Item
+                        name="problem_statement"
+                        label="Đề bài"
+                        rules={[{ required: true, message: "Vui lòng nhập đề bài!" }]}
+                    >
+                        <TextArea
+                            rows={5}
+                            placeholder="Mô tả yêu cầu của bài tập, ví dụ: Viết hàm tính tổng hai số..."
+                        />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="initial_code"
+                        label="Code khởi đầu (học viên sẽ thấy phần này)"
+                    >
+                        <TextArea
+                            rows={5}
+                            placeholder="Code template cho học viên"
+                            style={{ fontFamily: "monospace", fontSize: 13 }}
+                        />
+                    </Form.Item>
+
+                    <Form.Item
+                        name="solution_code"
+                        label="Code giải mẫu (chỉ admin xem)"
+                    >
+                        <TextArea
+                            rows={5}
+                            placeholder="Code giải mẫu để tham khảo"
+                            style={{ fontFamily: "monospace", fontSize: 13 }}
+                        />
+                    </Form.Item>
+
+                    <Divider orientation="left">Test Cases</Divider>
+                    <Form.List
+                        name="test_cases"
+                        rules={[
+                            {
+                                validator: async (_, testCases) => {
+                                    if (!testCases || testCases.length < 1) {
+                                        return Promise.reject(new Error("Cần ít nhất 1 test case!"));
+                                    }
+                                },
+                            },
+                        ]}
+                    >
+                        {(fields, { add, remove }, { errors }) => (
+                            <>
+                                {fields.map(({ key, name, ...restField }) => (
+                                    <Card
+                                        key={key}
+                                        size="small"
+                                        style={{ marginBottom: 12, background: "#fafafa", border: "1px solid #e8e8e8" }}
+                                        extra={
+                                            fields.length > 1 ? (
+                                                <Tooltip title="Xóa test case">
+                                                    <MinusCircleOutlined
+                                                        onClick={() => remove(name)}
+                                                        style={{ color: "#ff4d4f", cursor: "pointer" }}
+                                                    />
+                                                </Tooltip>
+                                            ) : null
+                                        }
+                                        title={`Test Case ${name + 1}`}
+                                    >
+                                        <div style={{ display: "flex", gap: 16 }}>
+                                            <Form.Item
+                                                {...restField}
+                                                name={[name, "name"]}
+                                                label="Tên test"
+                                                style={{ flex: 1, marginBottom: 0 }}
+                                            >
+                                                <Input placeholder="Tên mô tả test case" />
+                                            </Form.Item>
+                                            <Form.Item
+                                                {...restField}
+                                                name={[name, "is_hidden"]}
+                                                label="Ẩn với học viên"
+                                                valuePropName="checked"
+                                                style={{ marginBottom: 0 }}
+                                            >
+                                                <Select
+                                                    style={{ width: 130 }}
+                                                    options={[
+                                                        { value: false, label: "Hiện" },
+                                                        { value: true, label: "Ẩn" },
+                                                    ]}
+                                                />
+                                            </Form.Item>
+                                        </div>
+                                        <div style={{ display: "flex", gap: 16, marginTop: 8 }}>
+                                            <Form.Item
+                                                {...restField}
+                                                name={[name, "input"]}
+                                                label="Input (để trống nếu không cần)"
+                                                style={{ flex: 1, marginBottom: 0 }}
+                                            >
+                                                <Input
+                                                    placeholder="Ví dụ: 5 hoặc [1,2,3]"
+                                                    style={{ fontFamily: "monospace" }}
+                                                />
+                                            </Form.Item>
+                                            <Form.Item
+                                                {...restField}
+                                                name={[name, "expected_output"]}
+                                                label="Kết quả mong đợi"
+                                                rules={[{ required: true, message: "Cần nhập kết quả!" }]}
+                                                style={{ flex: 1, marginBottom: 0 }}
+                                            >
+                                                <Input
+                                                    placeholder="Ví dụ: 15 hoặc true"
+                                                    style={{ fontFamily: "monospace" }}
+                                                />
+                                            </Form.Item>
+                                        </div>
+                                    </Card>
+                                ))}
+                                <Form.ErrorList errors={errors} />
+                                <Button
+                                    type="dashed"
+                                    onClick={() => add({ name: `Test ${fields.length + 1}`, input: "", expected_output: "", is_hidden: false })}
+                                    block
+                                    icon={<PlusOutlined />}
+                                >
+                                    Thêm test case
+                                </Button>
+                            </>
+                        )}
+                    </Form.List>
+
+                    <div style={{ display: "flex", justifyContent: "space-between", marginTop: 24 }}>
+                        <div>
+                            {existingExercise && (
+                                <Button
+                                    danger
+                                    loading={isDeletingExercise}
+                                    onClick={() => {
+                                        Modal.confirm({
+                                            title: "Xóa bài tập",
+                                            content: "Bạn có chắc muốn xóa bài tập này? Bài học sẽ được chuyển về dạng bài học thường.",
+                                            okText: "Xóa",
+                                            cancelText: "Hủy",
+                                            okButtonProps: { danger: true },
+                                            onOk: handleDelete,
+                                        });
+                                    }}
+                                >
+                                    Xóa bài tập
+                                </Button>
+                            )}
+                        </div>
+                        <Space>
+                            <Button onClick={onClose}>Hủy</Button>
+                            <Button
+                                type="primary"
+                                htmlType="submit"
+                                loading={isUpsertingExercise}
+                                icon={<CodeOutlined />}
+                            >
+                                {existingExercise ? "Cập nhật bài tập" : "Tạo bài tập"}
+                            </Button>
+                        </Space>
+                    </div>
+                </Form>
+            )}
+        </Modal>
+    );
+}

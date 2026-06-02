@@ -18,8 +18,9 @@ import {
     faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useRef, useState, useCallback } from "react";
+import { useSelector } from "react-redux";
 import CommentSidebar from "@/components/CommentSidebar";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import {
     useGetBySlugQuery,
     useGetUserLessonProgressQuery,
@@ -29,13 +30,15 @@ import {
 import useQuery from "@/hook/useQuery";
 import DOMPurify from "dompurify";
 import VideoPlayer from "@/components/VideoPlayer";
+import YoutubePlayer from "@/components/YoutubePlayer";
 import NotesSidebar from "./components/NotesSidebar";
 import TutorialGuide from "./components/TutorialGuide";
 import { useCreateNoteMutation } from "@/services/notesService";
 import ExerciseWorkspace from "./components/ExerciseWorkspace";
 
 function CourseLessonPage() {
-    const { param } = useQuery();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const currentUser = useSelector((state) => state.auth.currentUser);
 
     const [openSideBar, setOpenSideBar] = useState(true);
     const [openCommentSideBar, setOpenCommentSideBar] = useState(false);
@@ -44,8 +47,8 @@ function CourseLessonPage() {
     const [lessonByTrackId, setLessonByTrackId] = useState(null); // Lấy ra track id mà người dùng đang học tại chương nào
     const [course, setCourse] = useState({});
     const [lesson, setLesson] = useState({});
-    const [idTrack, setIdTrack] = useState(() => +param.get("track-id"));
-    const [idLesson, setIdLesson] = useState(() => +param.get("lesson-id"));
+    const [idTrack, setIdTrack] = useState(() => +searchParams.get("track-id") || null);
+    const [idLesson, setIdLesson] = useState(() => +searchParams.get("lesson-id") || null);
 
     const [totalComments, setTotalComments] = useState(0);
     const [isWatch, setIsWatch] = useState(false);
@@ -99,22 +102,22 @@ function CourseLessonPage() {
     // Kiểm tra xem lesson hiện tại có completed không
     const isCurrentLessonCompleted = useCallback(() => {
         const currentLesson = tracks
-            .flatMap((track) => track.lessons)
-            .find((lesson) => lesson.id === idLesson);
+            .flatMap((track) => track.lessons || [])
+            .find((lesson) => lesson?.id === idLesson);
         return currentLesson?.userLesson?.completed || false;
     }, [tracks, idLesson]);
 
     // Hàm để tìm lesson tiếp theo
     const findNextLesson = useCallback(() => {
-        const allLessons = tracks.flatMap((track) => track.lessons);
+        const allLessons = tracks.flatMap((track) => track.lessons || []);
         const currentIndex = allLessons.findIndex(
-            (lesson) => lesson.id === idLesson
+            (lesson) => lesson?.id === idLesson
         );
 
         if (currentIndex < allLessons.length - 1) {
             const nextLesson = allLessons[currentIndex + 1];
             const nextTrack = tracks.find((track) =>
-                track.lessons.some((lesson) => lesson.id === nextLesson.id)
+                track.lessons?.some((lesson) => lesson?.id === nextLesson?.id)
             );
 
             return { lesson: nextLesson, track: nextTrack };
@@ -124,15 +127,15 @@ function CourseLessonPage() {
 
     // Hàm để tìm lesson trước đó
     const findPrevLesson = useCallback(() => {
-        const allLessons = tracks.flatMap((track) => track.lessons);
+        const allLessons = tracks.flatMap((track) => track.lessons || []);
         const currentIndex = allLessons.findIndex(
-            (lesson) => lesson.id === idLesson
+            (lesson) => lesson?.id === idLesson
         );
 
         if (currentIndex > 0) {
             const prevLesson = allLessons[currentIndex - 1];
             const prevTrack = tracks.find((track) =>
-                track.lessons.some((lesson) => lesson.id === prevLesson.id)
+                track.lessons?.some((lesson) => lesson?.id === prevLesson?.id)
             );
 
             return { lesson: prevLesson, track: prevTrack };
@@ -143,9 +146,9 @@ function CourseLessonPage() {
     // Kiểm tra xem lesson có thể được click không
     const canClickLesson = useCallback(
         (lessonId) => {
-            const allLessons = tracks.flatMap((track) => track.lessons);
+            const allLessons = tracks.flatMap((track) => track.lessons || []);
             const currentIndex = allLessons.findIndex(
-                (lesson) => lesson.id === lessonId
+                (lesson) => lesson?.id === lessonId
             );
 
             // Lesson đầu tiên luôn có thể click
@@ -199,7 +202,7 @@ function CourseLessonPage() {
             setLesson(() => {
                 const track = tracks?.find((track) => track.id === idTrack);
 
-                const lesson = track?.lessons.find(
+                const lesson = track?.lessons?.find(
                     (lesson) => lesson.id === idLesson
                 );
 
@@ -210,8 +213,36 @@ function CourseLessonPage() {
 
     // kiểm tra người dùng đang học đến bìa nào và active đến đó
     useEffect(() => {
-        if (!course) return;
+        if (!course || Object.keys(course).length === 0) return;
 
+        // 1. Check if URL already has valid search params
+        const urlLessonId = +searchParams.get("lesson-id");
+        const urlTrackId = +searchParams.get("track-id");
+
+        if (urlLessonId && urlTrackId) {
+            setTrackLessons((prev) => prev.includes(urlTrackId) ? prev : [...prev, urlTrackId]);
+            setLessonByTrackId(urlTrackId);
+            setTrackStepActive(urlLessonId);
+            setIdTrack(urlTrackId);
+            setIdLesson(urlLessonId);
+            return;
+        }
+
+        // 2. Check if we have a saved last visited lesson in localStorage for this user & course
+        const userKey = currentUser?.id || "guest";
+        const lastLessonId = +localStorage.getItem(`last_lesson_${userKey}_${course.id}`);
+        const lastTrackId = +localStorage.getItem(`last_track_${userKey}_${course.id}`);
+
+        if (lastLessonId && lastTrackId) {
+            setTrackLessons((prev) => prev.includes(lastTrackId) ? prev : [...prev, lastTrackId]);
+            setLessonByTrackId(lastTrackId);
+            setTrackStepActive(lastLessonId);
+            setIdTrack(lastTrackId);
+            setIdLesson(lastLessonId);
+            return;
+        }
+
+        // 3. Fallback to database progress
         const currentLessonId =
             course?.userProgress?.[0]?.UserCourseProgress?.current_lesson_id;
 
@@ -220,7 +251,7 @@ function CourseLessonPage() {
         );
 
         if (currentTrack) {
-            setTrackLessons((prev) => [...prev, currentTrack.id]);
+            setTrackLessons((prev) => prev.includes(currentTrack.id) ? prev : [...prev, currentTrack.id]);
             setLessonByTrackId(currentTrack.id);
         }
 
@@ -228,17 +259,41 @@ function CourseLessonPage() {
 
         setIdTrack(currentTrack?.id);
         setIdLesson(currentLessonId);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [course]);
+
+    // Sync active lesson with URL search params
+    useEffect(() => {
+        if (idLesson && idTrack) {
+            setSearchParams((prev) => {
+                const newParams = new URLSearchParams(prev);
+                newParams.set("lesson-id", idLesson);
+                newParams.set("track-id", idTrack);
+                return newParams;
+            }, { replace: true });
+        }
+    }, [idLesson, idTrack, setSearchParams]);
+
+    // Save last visited lesson in localStorage
+    useEffect(() => {
+        if (course?.id && idLesson && idTrack) {
+            const userKey = currentUser?.id || "guest";
+            localStorage.setItem(`last_lesson_${userKey}_${course.id}`, idLesson);
+            localStorage.setItem(`last_track_${userKey}_${course.id}`, idTrack);
+        }
+    }, [idLesson, idTrack, course?.id, currentUser?.id]);
 
     // xét course
     useEffect(() => {
         if (data?.data && isSuccess) {
             setCourse((prev) => {
+                const rawRequirement = data.data.requirement;
+                const rawWhatYouLearn = data.data.what_you_learn;
                 return {
                     ...prev,
                     ...data.data,
-                    requirement: JSON.parse(data.data.requirement),
-                    what_you_learn: JSON.parse(data.data.what_you_learn),
+                    requirement: typeof rawRequirement === "string" ? JSON.parse(rawRequirement) : rawRequirement,
+                    what_you_learn: typeof rawWhatYouLearn === "string" ? JSON.parse(rawWhatYouLearn) : rawWhatYouLearn,
                 };
             });
         }
@@ -337,6 +392,26 @@ function CourseLessonPage() {
 
     const handleWatchVideo = () => {
         setIsWatch(true);
+    };
+
+    const handleChallengePass = () => {
+        setTracks((prevTracks) =>
+            prevTracks.map((track) => ({
+                ...track,
+                lessons: track.lessons.map((lesson) =>
+                    lesson.id === idLesson
+                        ? {
+                              ...lesson,
+                              userLesson: {
+                                  ...(lesson.userLesson || {}),
+                                  completed: true,
+                              },
+                          }
+                        : lesson
+                ),
+            }))
+        );
+        refetchUserLessons();
     };
 
     // Xử lý khi nhấn nút bài tiếp theo
@@ -721,89 +796,105 @@ function CourseLessonPage() {
                     {lesson?.lesson_type === "Challenge" ? (
                         <ExerciseWorkspace
                             lesson={lesson}
-                            onProgressUpdate={refetchUserLessons}
+                            onProgressUpdate={handleChallengePass}
+                            onNext={handleNextLesson}
                         />
                     ) : (
                         <>
-                            {!isWatch ? (
-                                <div
-                                    className={`${styles.wrapperInner}  noselect ${styles.fulWidth}`}
-                                    onClick={handleWatchVideo}
-                                >
-                                    <div data-tour="learning-center">
-                                        <div className={styles.videoWrapper}>
-                                            <div
-                                                className={styles.player}
-                                                style={{
-                                                    width: "100%",
-                                                    height: "100%",
-                                                }}
-                                            >
+                            {lesson?.lesson_type === "Video" && (
+                                !isWatch ? (
+                                    <div
+                                        className={`${styles.wrapperInner}  noselect ${styles.fulWidth}`}
+                                        onClick={handleWatchVideo}
+                                    >
+                                        <div data-tour="learning-center">
+                                            <div className={styles.videoWrapper}>
                                                 <div
-                                                    className={
-                                                        styles.reactPlayer__preview
-                                                    }
-                                                    tabIndex={0}
+                                                    className={styles.player}
                                                     style={{
                                                         width: "100%",
                                                         height: "100%",
-                                                        backgroundSize: "cover",
-                                                        backgroundPosition:
-                                                            "center center",
-                                                        cursor: "pointer",
-                                                        display: "flex",
-                                                        alignItems: "center",
-                                                        justifyContent: "center",
-                                                        backgroundImage: `url(${lesson?.thumbnail})`,
                                                     }}
                                                 >
                                                     <div
                                                         className={
-                                                            styles.reactPlayer__shadow
+                                                            styles.reactPlayer__preview
                                                         }
+                                                        tabIndex={0}
                                                         style={{
-                                                            background:
-                                                                "radial-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0) 60%)",
-                                                            borderRadius: "64px",
-                                                            width: "64px",
-                                                            height: "64px",
+                                                            width: "100%",
+                                                            height: "100%",
+                                                            backgroundSize: "cover",
+                                                            backgroundPosition:
+                                                                "center center",
+                                                            cursor: "pointer",
                                                             display: "flex",
                                                             alignItems: "center",
                                                             justifyContent: "center",
+                                                            backgroundImage: `url(${lesson?.thumbnail})`,
                                                         }}
                                                     >
                                                         <div
                                                             className={
-                                                                styles.reactPlayer__playIcon
+                                                                styles.reactPlayer__shadow
                                                             }
                                                             style={{
-                                                                borderStyle: "solid",
-                                                                borderWidth:
-                                                                    "16px 0px 16px 26px",
-                                                                borderColor:
-                                                                    "transparent transparent transparent white",
-                                                                marginLeft: "7px",
+                                                                background:
+                                                                    "radial-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0) 60%)",
+                                                                borderRadius: "64px",
+                                                                width: "64px",
+                                                                height: "64px",
+                                                                display: "flex",
+                                                                alignItems: "center",
+                                                                justifyContent: "center",
                                                             }}
-                                                        ></div>
+                                                        >
+                                                            <div
+                                                                className={
+                                                                    styles.reactPlayer__playIcon
+                                                                }
+                                                                style={{
+                                                                    borderStyle: "solid",
+                                                                    borderWidth:
+                                                                        "16px 0px 16px 26px",
+                                                                    borderColor:
+                                                                        "transparent transparent transparent white",
+                                                                    marginLeft: "7px",
+                                                                }}
+                                                            ></div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            ) : (
-                                <VideoPlayer
-                                    key={lesson?.id}
-                                    videoUrl={`${import.meta.env.VITE_BASE_URL}${
-                                        lesson?.video_url
-                                    }`}
-                                    videoId={lesson?.id}
-                                    onProgressUpdate={updateUserCourseProgress}
-                                    autoPlay={isWatch}
-                                    onTimeUpdate={(t) => {
-                                        setCurrentVideoTime(t);
-                                    }}
-                                />
+                                ) : (lesson?.video_type?.toLowerCase() === "youtube" || (lesson?.video_url && (lesson.video_url.includes("youtube.com") || lesson.video_url.includes("youtu.be") || lesson.video_url.includes("vimeo.com")))) ? (
+                                    <YoutubePlayer
+                                        key={lesson?.id}
+                                        videoUrl={lesson?.video_url}
+                                        videoId={lesson?.id}
+                                        autoPlay={isWatch}
+                                        onTimeUpdate={(t) => {
+                                            setCurrentVideoTime(t);
+                                        }}
+                                    />
+                                ) : (
+                                    <VideoPlayer
+                                        key={lesson?.id}
+                                        videoUrl={
+                                            lesson?.video_url
+                                                ? (lesson.video_url.startsWith("http://") || lesson.video_url.startsWith("https://")
+                                                    ? lesson.video_url
+                                                    : `${import.meta.env.VITE_BASE_URL}${lesson.video_url.startsWith("/") ? lesson.video_url.substring(1) : lesson.video_url}`)
+                                                : ""
+                                        }
+                                        videoId={lesson?.id}
+                                        autoPlay={isWatch}
+                                        onTimeUpdate={(t) => {
+                                            setCurrentVideoTime(t);
+                                        }}
+                                    />
+                                )
                             )}
 
                             <div

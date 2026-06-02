@@ -30,19 +30,26 @@ function Header({ courseId, title, onOpenNotes, onOpenTutorial }) {
 
     // Tính toán progress dựa trên completed và total lessons
     const progressData = useMemo(() => {
-        if (course) {
-            const userProgress = course?.userProgress?.[0];
-
-            const totalCompleted =
-                JSON.parse(userProgress?.learned_lessons || null)?.length || 0;
-
-            const completed = userProgress?.is_completed;
-            const total = course?.totalLessonByCourse || 0;
-            const percent = userProgress?.progress
-                ? Math.round(userProgress?.progress)
-                : 0;
-            return { completed, total, percent, totalCompleted };
+        const userProgress = course?.userProgress?.[0];
+        const rawLearnedLessons = userProgress?.learned_lessons;
+        
+        let learnedArr = [];
+        if (Array.isArray(rawLearnedLessons)) {
+            learnedArr = rawLearnedLessons;
+        } else if (typeof rawLearnedLessons === "string") {
+            try {
+                learnedArr = JSON.parse(rawLearnedLessons) || [];
+            } catch (e) {
+                console.error("Error parsing learned_lessons:", e);
+            }
         }
+
+        const totalCompleted = learnedArr?.length || 0;
+        const completed = userProgress?.is_completed || false;
+        const total = course?.totalLessonByCourse || 0;
+        const percent = userProgress?.progress ? Math.round(userProgress?.progress) : 0;
+        
+        return { completed, total, percent, totalCompleted };
     }, [course]);
 
     return (

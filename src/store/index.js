@@ -26,6 +26,7 @@ import { learningPathsManagementApi } from "@/services/admin/learningPathsServic
 import { dashboardApi } from "@/services/admin/dashboardService";
 import { systemSettingsApi } from "@/services/admin/systemSettingsService";
 import { slideshowApi } from "@/services/admin/slideshowApi";
+import { exercisesManagementApi } from "@/services/admin/exercisesService";
 import { notesApi } from "@/services/notesService";
 import { sepayService } from "@/services/sepayService";
 
@@ -58,6 +59,7 @@ const rootReducer = combineReducers({
     [dashboardApi.reducerPath]: dashboardApi.reducer,
     [systemSettingsApi.reducerPath]: systemSettingsApi.reducer,
     [slideshowApi.reducerPath]: slideshowApi.reducer,
+    [exercisesManagementApi.reducerPath]: exercisesManagementApi.reducer,
     [notesApi.reducerPath]: notesApi.reducer,
     [sepayService.reducerPath]: sepayService.reducer,
 });
@@ -85,6 +87,7 @@ export const store = configureStore({
         dashboardApi.middleware,
         systemSettingsApi.middleware,
         slideshowApi.middleware,
+        exercisesManagementApi.middleware,
         notesApi.middleware,
         sepayService.middleware,
     ],

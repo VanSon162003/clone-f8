@@ -174,19 +174,12 @@ function CoursesManagement() {
 
                             form.setFieldsValue({
                                 ...record,
-                                what_you_learn: Array.isArray(
-                                    record.what_you_learn
-                                )
-                                    ? record.what_you_learn.join(",") // JSON → string
-                                    : JSON.parse(record.what_you_learn).join(
-                                          "\n"
-                                      ),
-                                requirement:
-                                    Array.isArray(record.requirement) || ""
-                                        ? record.requirement.join("\n") // JSON → string
-                                        : JSON.parse(record.requirement).join(
-                                              "\n"
-                                          ) || "",
+                                what_you_learn: Array.isArray(record.what_you_learn)
+                                    ? record.what_you_learn.join("\n")
+                                    : (record.what_you_learn ? JSON.parse(record.what_you_learn).join("\n") : ""),
+                                requirement: Array.isArray(record.requirement)
+                                    ? record.requirement.join("\n")
+                                    : (record.requirement ? JSON.parse(record.requirement).join("\n") : ""),
                             });
 
                             // Set thumbnail preview như cũ
